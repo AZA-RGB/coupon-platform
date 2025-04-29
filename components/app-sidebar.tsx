@@ -1,5 +1,5 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +12,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "./mode-toggler"
-import { isRTL } from "@/utils/i18nUtil"
 
+import LangToggler from "./langToggler"
+import {getLangDir} from "rtl-detect";
 
 export function AppSidebar() {
 const t =useTranslations ()
@@ -45,11 +46,17 @@ const items = [
     icon: Settings,
   },
 ]
-
+  const locale = useLocale();
+  const dir =getLangDir(locale);
   return (
-    <Sidebar side={isRTL()?"right":"left"}>
+    <Sidebar side={getLangDir(useLocale())=='rtl' ?"right":"left"}>
       <SidebarHeader>
+        <div className="flex place-content-between">
+
+        <LangToggler />
         <ModeToggle/>
+        </div>
+
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
