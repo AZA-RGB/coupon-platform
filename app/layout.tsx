@@ -5,7 +5,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getLocale } from "next-intl/server";
-import {getLangDir} from 'rtl-detect';
+import {getLangDir} from "rtl-detect";
 import { useLocale } from "next-intl";
 const geistSans = Geist({
   variable: "--font-geist-sans",
