@@ -1,5 +1,5 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
+import {useTranslations} from 'next-intl'
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "./mode-toggler"
+import { isRTL } from "@/utils/i18nUtil"
 
+
+export function AppSidebar() {
+const t =useTranslations ()
 // Menu items.
 const items = [
   {
@@ -31,7 +35,7 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Search",
+    title: t('search'),
     url: "#",
     icon: Search,
   },
@@ -42,9 +46,8 @@ const items = [
   },
 ]
 
-export function AppSidebar() {
   return (
-    <Sidebar side="right">
+    <Sidebar side={isRTL()?"right":"left"}>
       <SidebarHeader>
         <ModeToggle/>
       </SidebarHeader>
