@@ -30,7 +30,7 @@ export default function RootLayout({
   const locale = useLocale();
   const dir =getLangDir(locale);
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
