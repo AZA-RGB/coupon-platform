@@ -1,22 +1,26 @@
 "use client";
 
-import * as React from "react"
-import {Languages} from "lucide-react"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Languages } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { setUserLocale } from "@/utils/i18nUtil";
 
 export default function LangToggler() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-        <Languages/>
+      <DropdownMenuTrigger
+        asChild
+        className="flex place-content-between w-full"
+      >
+        <Button variant="outline">
+        Languages
+          <Languages />
         </Button>
       </DropdownMenuTrigger>
 
@@ -25,9 +29,8 @@ export default function LangToggler() {
           English
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setUserLocale("ar")}>
-        ara
+          ara
         </DropdownMenuItem>
-        
       </DropdownMenuContent>
     </DropdownMenu>
   );

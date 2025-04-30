@@ -1,8 +1,25 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-import {useLocale, useTranslations} from 'next-intl'
+import {
+  Calendar,
+  ChevronUp,
+  Home,
+  Inbox,
+  Keyboard,
+  Mail,
+  MessageSquare,
+  Plus,
+  PlusCircle,
+  Search,
+  Settings,
+  User,
+  User2,
+  UserPlus,
+  Users,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,54 +27,66 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { ModeToggle } from "./mode-toggler"
+} from "@/components/ui/sidebar";
+import { ModeToggle } from "./mode-toggler";
 
-import LangToggler from "./langToggler"
-import {getLangDir} from "rtl-detect";
+import LangToggler from "./langToggler";
+import { getLangDir } from "rtl-detect";
+import {
+  DropdownMenu,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSubTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { Button } from "./ui/button";
 
 export function AppSidebar() {
-const t =useTranslations ()
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: t('search'),
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+  const t = useTranslations();
+  // Menu items.
+  const items = [
+    {
+      title: "Home",
+      url: "#",
+      icon: Home,
+    },
+    {
+      title: "Inbox",
+      url: "#",
+      icon: Inbox,
+    },
+    {
+      title: "Calendar",
+      url: "#",
+      icon: Calendar,
+    },
+    {
+      title: t("search"),
+      url: "#",
+      icon: Search,
+    },
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings,
+    },
+  ];
   const locale = useLocale();
-  const dir =getLangDir(locale);
+  const dir = getLangDir(locale);
   return (
-    <Sidebar side={getLangDir(useLocale())=='rtl' ?"right":"left"}>
-      <SidebarHeader>
-        <div className="flex place-content-between">
-
-        <LangToggler />
-        <ModeToggle/>
-        </div>
-
-      </SidebarHeader>
+    <Sidebar
+      side={getLangDir(useLocale()) == "rtl" ? "right" : "left"}
+      collapsible="icon"
+    >
+      <SidebarHeader></SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -66,8 +95,8 @@ const items = [
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="flex justify-between">
                     <a href={item.url}>
-                      <span>{item.title}</span>
                       <item.icon />
+                      <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -76,6 +105,31 @@ const items = [
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton asChild className="flex justify-between">
+              <div>
+                <Settings />
+                <span>Settings</span>
+              </div>
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="flex place-content-between">
+                  <ModeToggle />
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger className="flex place-content-between">
+                  <LangToggler />
+                </DropdownMenuSubTrigger>
+              </DropdownMenuSub>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
