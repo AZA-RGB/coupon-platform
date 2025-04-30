@@ -1,19 +1,28 @@
 import {
   Calendar,
+  ChartNoAxesCombined,
   ChevronUp,
+  Film,
+  GitPullRequest,
+  GitPullRequestArrow,
   Home,
   Inbox,
   Keyboard,
   Mail,
   MessageSquare,
+  MessageSquareWarning,
   Plus,
   PlusCircle,
   Search,
   Settings,
+  Tickets,
+  TicketX,
   User,
   User2,
   UserPlus,
   Users,
+  Users2,
+  UsersRound,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -27,6 +36,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggler";
 
@@ -44,39 +54,53 @@ import {
 } from "./ui/dropdown-menu";
 import {
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSubTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export function AppSidebar() {
   const t = useTranslations();
-  // Menu items.
   const items = [
     {
-      title: "Home",
-      url: "#",
-      icon: Home,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: ChartNoAxesCombined,
     },
     {
-      title: "Inbox",
-      url: "#",
-      icon: Inbox,
+      title: "Coupons",
+      url: "/",
+      icon: TicketX,
     },
     {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
+      title: "Coupon types",
+      url: "/",
+      icon: Tickets,
     },
     {
-      title: t("search"),
-      url: "#",
-      icon: Search,
+      title: 'Providers',
+      url: "/",
+      icon: UsersRound,
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
+      title: 'Customers',
+      url: "/",
+      icon: Users,
+    },
+    {
+      title: 'Complains',
+      url: "/",
+      icon: MessageSquareWarning,
+    },
+    {
+      title: 'Requests',
+      url: "/",
+      icon: GitPullRequestArrow,
+    },
+    {
+      title: "Reels",
+      url: "/",
+      icon: Film,
     },
   ];
   const locale = useLocale();
@@ -86,7 +110,17 @@ export function AppSidebar() {
       side={getLangDir(useLocale()) == "rtl" ? "right" : "left"}
       collapsible="icon"
     >
-      <SidebarHeader></SidebarHeader>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton className="flex place-content-between">
+              <User/>
+              Mangae Profile
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <SidebarSeparator/>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -94,10 +128,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="flex justify-between">
-                    <a href={item.url}>
-                      <item.icon />
+                    <Link  href={item.url}>
+                      <item.icon className="text-primary h-5 w-5"/>
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -116,12 +150,12 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="flex place-content-between">
                   <ModeToggle />
                 </DropdownMenuSubTrigger>
+            <DropdownMenuSeparator />
                 <DropdownMenuSubTrigger className="flex place-content-between">
                   <LangToggler />
                 </DropdownMenuSubTrigger>
