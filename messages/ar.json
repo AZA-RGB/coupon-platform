@@ -2,5 +2,15 @@
     "HomePage": {
       "title": "Hello world!"
     },
-    "search":"بحث"
+    "search":"بحث",
+    "RequestReviewForm": {
+    "providerName": "اسم المزود",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "example@example.com",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "+963950501812",
+    "acceptButton": "قبول الطلب",
+    "denyButton": "رفض",
+    "imageAlt": "صورة الطلب"
+  }
   }
