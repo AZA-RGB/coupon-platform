@@ -2,5 +2,15 @@
     "HomePage": {
       "title": "Hello world!"
     },
-    "search":"Search"
+    "search":"Search",
+    "RequestReviewForm": {
+    "providerName": "Provider Name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+1234567890",
+    "acceptButton": "Accept request",
+    "denyButton": "Deny",
+    "imageAlt": "Request image"
+  }
   }

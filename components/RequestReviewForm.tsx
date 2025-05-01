@@ -4,11 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useTranslations } from "next-intl";
 
 export function RequestReviewForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const t = useTranslations('RequestReviewForm');
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
@@ -25,31 +28,36 @@ export function RequestReviewForm({
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </div>
-                <h1 className="text-2xl font-bold">Provider Name</h1>
+                <h1 className="text-2xl font-bold">{t('providerName')}</h1>
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('emailLabel')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t('emailPlaceholder')}
                   disabled
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">Phone number</Label>
-                <Input type="email" placeholder="+963950501812" disabled />
+                <Label htmlFor="phone">{t('phoneLabel')}</Label>
+                <Input 
+                  id="phone"
+                  type="tel" 
+                  placeholder={t('phonePlaceholder')} 
+                  disabled 
+                />
               </div>
               <div className="grid gap-3">
                 <Input disabled />
               </div>
               <div className="flex place-content-start gap-8">
-                <Button type="submit">Accept request</Button>
+                <Button type="submit">{t('acceptButton')}</Button>
                 <Button
                   type="submit"
                   className="hover:bg-chart-5 bg-destructive"
                 >
-                  Cancle
+                  {t('denyButton')}
                 </Button>
               </div>
             </div>
@@ -57,7 +65,7 @@ export function RequestReviewForm({
           <div className="bg-muted relative hidden md:block">
             <img
               src="../request.jpeg"
-              alt="Image"
+              alt={t('imageAlt')}
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.9] "
             />
           </div>
