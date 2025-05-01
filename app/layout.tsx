@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getLocale } from "next-intl/server";
-import {getLangDir} from "rtl-detect";
+import { getLangDir } from "rtl-detect";
 import { useLocale } from "next-intl";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,25 +32,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = useLocale();
-  const dir =getLangDir(locale);
+  const dir = getLangDir(locale);
   return (
-    <html lang={locale} dir={dir} >
+    <html lang={locale} dir={dir}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarTrigger />
-          <main>
-            {children}
-          </main>
-        </SidebarProvider>
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+              <AppSidebar />
+              <SidebarTrigger />
+            <SidebarInset>
+              <main>{children}</main>
+            </SidebarInset>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
