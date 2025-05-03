@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,51 +10,50 @@ import FileUploadDropzone from "./file-uplaod-zone";
 import MultipleSelector from "./ui/multiple-selector";
 
 export function AddType({ className, ...props }: React.ComponentProps<"div">) {
-  const t = useTranslations("RequestReviewForm");
+  const t = useTranslations("AddTypeForm");
   const OPTIONS = [
     { label: "nextjs", value: "Nextjs" },
-    { label: "Vite", value: "vite",   },
-    { label: "Nuxt", value: "nuxt",   },
-    { label: "Vue", value: "vue,  ",   },
+    { label: "Vite", value: "vite" },
+    { label: "Nuxt", value: "nuxt" },
+    { label: "Vue", value: "vue" },
     { label: "Remix", value: "remix" },
-    { label: "Svelte", value: "svelte",   },
-    { label: "Angular", value: "angular",   },
-    { label: "Ember", value: "ember",   },
+    { label: "Svelte", value: "svelte" },
+    { label: "Angular", value: "angular" },
+    { label: "Ember", value: "ember" },
     { label: "React", value: "react" },
-    { label: "Gatsby", value: "gatsby",   },
-    { label: "Astro", value: "astro",   },
+    { label: "Gatsby", value: "gatsby" },
+    { label: "Astro", value: "astro" },
   ];
+  
   return (
-    <div className={cn("flex ", className)} {...props}>
-      <Card className=" ">
+    <div className={cn("flex justify-center ", className)} {...props}>
+      <Card className="w-1/2 ">
         <CardContent className="">
           <form className="">
-            <div className="flex flex-col  gap-6">
+            <div className="flex flex-col gap-6">
               <FileUploadDropzone />
               <div className="grid gap-3">
-                <Label htmlFor="type">Type</Label>
-                <Input id="type" placeholder="eg,collaborative" />
+                <Label htmlFor="type">{t("type")}</Label>
+                <Input id="type" placeholder={t("typePlaceholder")} />
               </div>
               <div className="grid gap-3">
                 <MultipleSelector
-                    hidePlaceholderWhenSelected
+                  className="max-h-60 overflow-y-hidden"
+                  hidePlaceholderWhenSelected
                   defaultOptions={OPTIONS}
-                  placeholder="Select frameworks you like..."
+                  placeholder={t("assignCriteria")}
                   emptyIndicator={
                     <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                      no results found.
+                      {t("noResults")}
                     </p>
                   }
                 />
               </div>
 
               <div className="flex place-content-start gap-8">
-                <Button type="submit">Add new type</Button>
-                <Button
-                  type="submit"
-                  className="hover:bg-destructive dark:hover:bg-destructive dark:bg-muted  border border-primary"
-                >
-                  cancel
+                <Button type="submit">{t("addNewType")}</Button>
+                <Button variant="outline" type="submit">
+                  {t("cancel")}
                 </Button>
               </div>
             </div>

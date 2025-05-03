@@ -12,5 +12,17 @@
     "acceptButton": "Accept request",
     "denyButton": "Deny",
     "imageAlt": "Request image"
+  },
+  "AddTypeForm": {
+    "type": "Type",
+    "typePlaceholder": "e.g., collaborative",
+    "assignCriteria": "Assign criteria for this type",
+    "noResults": "No results found",
+    "addNewType": "Add new type",
+    "cancel": "Cancel"
+  },
+  "FileUploadDropzone": {
+    "addCoverImage": "Add cover image",
+    "acceptedFormats": "\".jpg\", \".jpeg\", \".png\", \".gif\" are accepted"
   }
   }

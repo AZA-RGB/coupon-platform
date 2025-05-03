@@ -12,5 +12,17 @@
     "acceptButton": "قبول الطلب",
     "denyButton": "رفض",
     "imageAlt": "صورة الطلب"
+  },
+  "AddTypeForm": {
+    "type": "النوع",
+    "typePlaceholder": "مثال: تعاوني",
+    "assignCriteria": "تعيين معايير لهذا النوع",
+    "noResults": "لم يتم العثور على نتائج",
+    "addNewType": "إضافة نوع جديد",
+    "cancel": "إلغاء"
+  },
+  "FileUploadDropzone": {
+    "addCoverImage": "إضافة صورة غلاف",
+    "acceptedFormats": "يتم قبول \".jpg\" و \".jpeg\" و \".png\" و \".gif\""
   }
   }

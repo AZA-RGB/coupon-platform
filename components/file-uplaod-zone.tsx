@@ -1,5 +1,6 @@
 "use client";
  
+import { ImageDown, ImageUp } from 'lucide-react';
 import {
   FileUploader,
   FileInput,
@@ -29,9 +30,10 @@ const FileUploadDropzone = () => {
       dropzoneOptions={dropzone}
     >
       <FileInput>
-        <div className="flex flex-col items-center justify-center bg-muted border border-primary border-dashed h-32 w-full border bg-background rounded-md">
-          <h1 className="text-gray-400">Add cover image</h1>
-          <div className='font-extralight '>".jpg", ".jpeg", ".png", ".gif" are accepted</div>
+        <div className="flex flex-col items-center justify-center  border-primary border-dashed h-32 w-full border bg-background rounded-md">
+          <ImageUp className='text-primary' />
+          <h1 className="dark:text-gray-100">Add cover image</h1>
+          <div className='text-xs text-gray-500 dark:text-gray-400'>".jpg", ".jpeg", ".png", ".gif" are accepted</div>
         </div>
       </FileInput>
       <FileUploaderContent className="flex items-center flex-row gap-2">
