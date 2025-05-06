@@ -1,19 +1,15 @@
-"use client";
- 
-import { ImageDown, ImageUp } from 'lucide-react';
+import { ImageUp } from "lucide-react";
 import {
   FileUploader,
   FileInput,
   FileUploaderContent,
   FileUploaderItem,
-} from './ui/file-uploader'
+} from "./ui/file-uploader";
 import Image from "next/image";
-import { useState } from "react";
-import { DropzoneOptions } from "react-dropzone";
- 
-const FileUploadDropzone = () => {
-  const [files, setFiles] = useState<File[] | null>([]);
- 
+
+const FileUploadDropzone = ({ field }: { field: any }) => {
+  const files = field.value || [];
+
   const dropzone = {
     accept: {
       "image/*": [".jpg", ".jpeg", ".png"],
@@ -21,23 +17,21 @@ const FileUploadDropzone = () => {
     multiple: true,
     maxFiles: 4,
     maxSize: 1 * 1024 * 1024,
-  } satisfies DropzoneOptions;
- 
+  };
+
   return (
-    <FileUploader
-      value={files}
-      onValueChange={setFiles}
-      dropzoneOptions={dropzone}
-    >
+    <FileUploader value={files} onValueChange={field.onChange} dropzoneOptions={dropzone}>
       <FileInput>
         <div className="flex flex-col items-center justify-center  border-primary border-dashed h-32 w-full border bg-background rounded-md">
-          <ImageUp className='text-primary' />
+          <ImageUp className="text-primary" />
           <h1 className="dark:text-gray-100">Add cover image</h1>
-          <div className='text-xs text-gray-500 dark:text-gray-400'>".jpg", ".jpeg", ".png", ".gif" are accepted</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            ".jpg", ".jpeg", ".png", ".gif" are accepted
+          </div>
         </div>
       </FileInput>
       <FileUploaderContent className="flex items-center flex-row gap-2">
-        {files?.map((file, i) => (
+        {files.map((file: File, i: number) => (
           <FileUploaderItem
             key={i}
             index={i}
@@ -57,5 +51,5 @@ const FileUploadDropzone = () => {
     </FileUploader>
   );
 };
- 
+
 export default FileUploadDropzone;
