@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslations } from "next-intl";
 import FileUploadDropzone from "./file-uplaod-zone";
 import MultipleSelector from "./ui/multiple-selector";
@@ -30,8 +29,10 @@ export function AddType({ className, ...props }: React.ComponentProps<"div">) {
       <Card className="w-1/2 ">
         <CardContent className="">
           <form className="">
-            <div className="flex flex-col gap-6">
-              <FileUploadDropzone />
+            <div className="flex flex-col gap-6 overflow-scroll">
+
+              {/* <FileUploadDropzone /> */}
+
               <div className="grid gap-3">
                 <Label htmlFor="type">{t("type")}</Label>
                 <Input id="type" placeholder={t("typePlaceholder")} />
@@ -50,7 +51,7 @@ export function AddType({ className, ...props }: React.ComponentProps<"div">) {
                 />
               </div>
 
-              <div className="flex place-content-start gap-8">
+              <div className="flex flex-col  md:flex-row place-content-around  gap-8">
                 <Button type="submit">{t("addNewType")}</Button>
                 <Button variant="outline" type="submit">
                   {t("cancel")}
