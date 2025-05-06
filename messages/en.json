@@ -24,5 +24,46 @@
   "FileUploadDropzone": {
     "addCoverImage": "Add cover image",
     "acceptedFormats": "\".jpg\", \".jpeg\", \".png\", \".gif\" are accepted"
+  },
+  "addEvent": {
+    "eventCoverImages": "Event cover Images",
+    "eventTitle": "Event Title",
+    "eventTitlePlaceholder": "Summer offers",
+    "eventDescription": "Event Description",
+    "addDescription": "Add description for this event",
+    "expirationDate": "Expiration Date",
+    "maxPerProvider": "Maximum number for each provider",
+    "maxPerProviderPlaceholder": "2",
+    "maxPerProviderDescription": "How many coupons can a provider add into this event",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "validation": {
+      "minImage": "At least one image is required",
+      "formError": "Failed to submit the form. Please try again."
+    }
+  },
+"addCoupon": {
+    "coverImages": "Cover Images",
+    "title": "Title",
+    "titlePlaceholder": "Eastern Breakfast",
+    "description": "Description",
+    "addDescription": "Add description for this coupon",
+    "expirationDate": "Expiration Date",
+    "expirationDescription": "The time this coupon becomes unavailable for customers",
+    "customersRequired": "Number of customers",
+    "customersPlaceholder": "2",
+    "customersDescription": "How many customers are required to buy this coupon",
+    "providersRequired": "Number of providers",
+    "providersPlaceholder": "2",
+    "providersDescription": "How many providers are involved in this coupon",
+    "selectProviders": "Select partner providers",
+    "assignCriteria": "Assign criteria",
+    "noResults": "No results found",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "validation": {
+      "minImage": "At least one image is required",
+      "formError": "Failed to submit the form. Please try again."
+    }
   }
   }
