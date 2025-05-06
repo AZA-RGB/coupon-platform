@@ -24,5 +24,46 @@
   "FileUploadDropzone": {
     "addCoverImage": "إضافة صورة غلاف",
     "acceptedFormats": "يتم قبول \".jpg\" و \".jpeg\" و \".png\" و \".gif\""
+  },
+  "addEvent": {
+    "eventCoverImages": "صور غلاف الحدث",
+    "eventTitle": "عنوان الحدث",
+    "eventTitlePlaceholder": "عروض الصيف",
+    "eventDescription": "وصف الحدث",
+    "addDescription": "أضف وصفًا لهذا الحدث",
+    "expirationDate": "تاريخ الانتهاء",
+    "maxPerProvider": "العدد الأقصى لكل مزود",
+    "maxPerProviderPlaceholder": "2",
+    "maxPerProviderDescription": "كم عدد القسائم التي يمكن للمزود إضافتها إلى هذا الحدث",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "validation": {
+      "minImage": "يجب إضافة صورة واحدة على الأقل",
+      "formError": "فشل في إرسال النموذج. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "addCoupon": {
+    "coverImages": "صور الغلاف",
+    "title": "العنوان",
+    "titlePlaceholder": "إفطار شرقي",
+    "description": "الوصف",
+    "addDescription": "أضف وصفًا لهذه القسيمة",
+    "expirationDate": "تاريخ الانتهاء",
+    "expirationDescription": "الوقت الذي تصبح فيه هذه القسيمة غير متاحة للعملاء",
+    "customersRequired": "عدد العملاء المطلوب",
+    "customersPlaceholder": "2",
+    "customersDescription": "كم عدد العملاء المطلوبين لشراء هذه القسيمة",
+    "providersRequired": "عدد المزودين",
+    "providersPlaceholder": "2",
+    "providersDescription": "كم عدد المزودين المشاركين في هذه القسيمة",
+    "selectProviders": "اختر المزودين الشركاء",
+    "assignCriteria": "تعيين المعايير",
+    "noResults": "لا توجد نتائج",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "validation": {
+      "minImage": "يجب إضافة صورة واحدة على الأقل",
+      "formError": "فشل في إرسال النموذج. يرجى المحاولة مرة أخرى."
+    }
   }
   }
