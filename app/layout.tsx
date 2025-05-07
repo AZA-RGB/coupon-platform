@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { getLocale } from "next-intl/server";
 import { getLangDir } from "rtl-detect";
-import { NextIntlClientProvider, useLocale } from "next-intl";
+import { useLocale } from "next-intl";
+import NextTopLoader from "nextjs-toploader";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -38,27 +38,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-clip`}
       >
-
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider>
-
           <SidebarProvider>
-              <AppSidebar />
+            <AppSidebar />
             <SidebarInset>
               <main>
-              <SidebarTrigger className="fixed bg-teal-400 text-white m-1" />
-                
-                {children}</main>
+                <SidebarTrigger className="fixed bg-teal-400 text-white m-1" />
+                <NextTopLoader color="#00CBC1" height={4} crawl={false} />
+                {children}
+              </main>
             </SidebarInset>
           </SidebarProvider>
-          </NextIntlClientProvider>
-
-
         </ThemeProvider>
       </body>
     </html>
