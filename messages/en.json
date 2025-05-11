@@ -1,9 +1,9 @@
 {
-    "HomePage": {
-      "title": "Hello world!"
-    },
-    "search":"Search",
-    "RequestReviewForm": {
+  "HomePage": {
+    "title": "Hello world!"
+  },
+  "search": "Search",
+  "RequestReviewForm": {
     "providerName": "Provider Name",
     "emailLabel": "Email",
     "emailPlaceholder": "m@example.com",
@@ -42,7 +42,7 @@
       "formError": "Failed to submit the form. Please try again."
     }
   },
-"addCoupon": {
+  "addCoupon": {
     "coverImages": "Cover Images",
     "title": "Title",
     "titlePlaceholder": "Eastern Breakfast",
@@ -65,5 +65,30 @@
       "minImage": "At least one image is required",
       "formError": "Failed to submit the form. Please try again."
     }
+  },
+  "Types": {
+    "title": "All Coupon Types",
+    "description": "Manage your coupon types",
+    "filter": "Filter",
+    "search": "Search types...",
+    "generateReport": "Generate Reports",
+    "selectType": "Select coupon type",
+    "selectDate": "Select Date Range",
+    "pickDate": "Pick a date range",
+    "topCoupons": "Top 5 Coupons Types This Month",
+    "next": "Next",
+    "previous": "Previous",
+    "couponType": "Type",
+    "coupons": "Coupons",
+    "rank": "Rank",
+    "sales": "Sales",
+    "added": "Added",
+    "details": "Details",
+    "addCoupon": "Add Coupon",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "active": "Active",
+    "expired": "Expired",
+    "pending": "Pending"
   }
-  }
+}

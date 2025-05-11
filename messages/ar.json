@@ -1,9 +1,9 @@
 {
-    "HomePage": {
-      "title": "Hello world!"
-    },
-    "search":"بحث",
-    "RequestReviewForm": {
+  "HomePage": {
+    "title": "Hello world!"
+  },
+  "search": "بحث",
+  "RequestReviewForm": {
     "providerName": "اسم المزود",
     "emailLabel": "البريد الإلكتروني",
     "emailPlaceholder": "example@example.com",
@@ -65,5 +65,30 @@
       "minImage": "يجب إضافة صورة واحدة على الأقل",
       "formError": "فشل في إرسال النموذج. يرجى المحاولة مرة أخرى."
     }
+  },
+  "Types": {
+    "title": "كل أنواع الكوبونات",
+    "description": "إدارة أنواع الكوبونات",
+    "filter": "تصفية",
+    "search": "ابحث عن الأنواع...",
+    "generateReport": "إنشاء التقارير",
+    "selectType": "اختر نوع الكوبون",
+    "selectDate": "اختر نطاق التاريخ",
+    "pickDate": "اختر نطاق زمني",
+    "topCoupons": "أفضل 5 أنواع كوبونات هذا الشهر",
+    "couponType": "النوع",
+    "coupons": "كوبونات",
+    "next": "التالي",
+    "previous": "السابق",
+    "rank": "الترتيب",
+    "sales": "المبيعات",
+    "added": "تم الإضافة",
+    "details": "التفاصيل",
+    "addCoupon": "إضافة كوبون",
+    "newest": "الأحدث",
+    "oldest": "الأقدم",
+    "active": "نشط",
+    "expired": "منتهي",
+    "pending": "قيد الانتظار"
   }
-  }
+}

@@ -9,7 +9,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getLangDir } from "rtl-detect";
-import { useLocale } from "next-intl";
+import { NextIntlClientProvider, useLocale } from "next-intl";
 import NextTopLoader from "nextjs-toploader";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,8 +36,9 @@ export default function RootLayout({
   return (
     <html lang={locale} dir={dir}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-clip`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* overflow-clip */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -47,15 +48,34 @@ export default function RootLayout({
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-              <main>
-                <SidebarTrigger className="fixed bg-teal-400 text-white m-1" />
-                <NextTopLoader color="#00CBC1" height={4} crawl={false} />
-                {children}
-              </main>
+              <NextIntlClientProvider>
+                <main>
+                  <SidebarTrigger className=" bg-teal-400 text-white m-1" />
+                  <NextTopLoader color="#00CBC1" height={4} crawl={false} />
+                  {children}
+                </main>
+              </NextIntlClientProvider>
             </SidebarInset>
           </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
   );
+}
+
+{
+  /* <ThemeProvider
+attribute="class"
+defaultTheme="system"
+enableSystem
+disableTransitionOnChange
+>
+<SidebarProvider>
+<AppSidebar />
+<div className="flex-1 overflow-auto">
+<SidebarTrigger />
+<main className="w-full">{children}</main>
+</div>
+</SidebarProvider>
+</ThemeProvider> */
 }
