@@ -29,7 +29,7 @@ export function AddType({ className, ...props }: React.ComponentProps<"div">) {
       <Card className="w-1/2 ">
         <CardContent className="">
           <form className="">
-            <div className="flex flex-col gap-6 overflow-scroll">
+            <div className="flex flex-col gap-6">
 
               {/* <FileUploadDropzone /> */}
 
