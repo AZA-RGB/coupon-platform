@@ -33,8 +33,8 @@ const formSchema = z.object({
 });
 
 export default function AddCoupon() {
-  const t = useTranslations('addCoupon');
-  
+  const t = useTranslations("addCoupon");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,44 +52,31 @@ export default function AddCoupon() {
       );
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error(t('validation.formError'));
+      toast.error(t("validation.formError"));
     }
   }
 
   return (
-    <div className="flex flex-col items-center max-h-svh overflow-clip justify-center md:p-10 pt-10 p-2">
+    <div className="flex flex-col items-center max-h-svh  justify-center  pt-10 p-2">
       <div className="w-full md:max-w-2/3">
         <div>
-          <Card className="p-0">
-            <CardContent className="grid grid-col-1 lg:grid-cols-2 p-0">
+          <Card className=" p-0">
+            <CardContent className="p-0">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-10 p-10 w-full max-w-3xl mx-auto my-auto max-h-[calc(100dvh-5rem)] overflow-scroll"
+                  className="space-y-5 p-5 w-full max-w-3xl mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-36 gap-y-1"
                 >
-                  <FormField
-                    control={form.control}
-                    name="images"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('coverImages')}</FormLabel>
-                        <FormControl>
-                          <FileUploadDropzone field={field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   
                   <FormField
                     control={form.control}
                     name="coupon_title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('title')}</FormLabel>
+                        <FormLabel>{t("title")}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t('titlePlaceholder')}
+                            placeholder={t("titlePlaceholder")}
                             type="text"
                             {...field}
                           />
@@ -98,19 +85,17 @@ export default function AddCoupon() {
                       </FormItem>
                     )}
                   />
-
+                  
                   <FormField
                     control={form.control}
                     name="coupon_description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('description')}</FormLabel>
+                        <FormLabel>{t("description")}</FormLabel>
                         <FormControl>
                           <Textarea placeholder="" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          {t('addDescription')}
-                        </FormDescription>
+                        <FormDescription>{t("addDescription")}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -121,7 +106,7 @@ export default function AddCoupon() {
                     name="coupon_expiration_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>{t('expirationDate')}</FormLabel>
+                        <FormLabel>{t("expirationDate")}</FormLabel>
                         <DatetimePicker
                           {...field}
                           format={[
@@ -130,7 +115,7 @@ export default function AddCoupon() {
                           ]}
                         />
                         <FormDescription>
-                          {t('expirationDescription')}
+                          {t("expirationDescription")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -142,16 +127,16 @@ export default function AddCoupon() {
                     name="name_7184091515"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('customersRequired')}</FormLabel>
+                        <FormLabel>{t("customersRequired")}</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder={t('customersPlaceholder')} 
-                            type="number" 
-                            {...field} 
+                          <Input
+                            placeholder={t("customersPlaceholder")}
+                            type="number"
+                            {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('customersDescription')}
+                          {t("customersDescription")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -163,36 +148,48 @@ export default function AddCoupon() {
                     name="name_0863847771"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('providersRequired')}</FormLabel>
+                        <FormLabel>{t("providersRequired")}</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder={t('providersPlaceholder')} 
-                            type="number" 
-                            {...field} 
+                          <Input
+                            placeholder={t("providersPlaceholder")}
+                            type="number"
+                            {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('providersDescription')}
+                          {t("providersDescription")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
+<FormField
+                    control={form.control}
+                    name="images"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("coverImages")}</FormLabel>
+                        <FormControl>
+                          <FileUploadDropzone field={field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="partner_providers"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('selectProviders')}</FormLabel>
+                        <FormLabel>{t("selectProviders")}</FormLabel>
                         <FormControl>
                           <MultipleSelector
                             className="max-h-60 overflow-y-hidden"
                             hidePlaceholderWhenSelected
-                            placeholder={t('assignCriteria')}
+                            placeholder={t("assignCriteria")}
                             emptyIndicator={
                               <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                                {t('noResults')}
+                                {t("noResults")}
                               </p>
                             }
                           />
@@ -201,21 +198,15 @@ export default function AddCoupon() {
                       </FormItem>
                     )}
                   />
+                  
                   <div className="flex flex-1 place-content-around">
-                    <Button type="submit">{t('submit')}</Button>
+                    <Button type="submit">{t("submit")}</Button>
                     <Link href="/dashboard">
-                      <Button variant="outline">{t('cancel')}</Button>
+                      <Button variant="outline">{t("cancel")}</Button>
                     </Link>
                   </div>
                 </form>
               </Form>
-              <div className="bg-primary relative">
-                <img
-                  src="../addCoupon.jpeg"
-                  alt="imageAlt"
-                  className="absolute h-full object-cover brightness-[1.1]"
-                />
-              </div>
             </CardContent>
           </Card>
         </div>
