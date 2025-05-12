@@ -50,7 +50,7 @@ export default function RootLayout({
             <SidebarInset>
               <NextIntlClientProvider>
                 <main>
-                  <SidebarTrigger className=" bg-teal-400 text-white m-1" />
+                  <SidebarTrigger className=" bg-teal-400 text-white m-1 sticky top-1" />
                   <NextTopLoader color="#00CBC1" height={4} crawl={false} />
                   {children}
                 </main>
