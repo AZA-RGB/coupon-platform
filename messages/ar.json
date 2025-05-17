@@ -74,6 +74,8 @@
     "generateReport": "إنشاء التقارير",
     "selectType": "اختر نوع الكوبون",
     "selectDate": "اختر نطاق التاريخ",
+    "selectDateError": "You have to select proper date first",
+    "selectTypeError":"You have to select coupon type first",
     "pickDate": "اختر نطاق زمني",
     "topCoupons": "أفضل 5 أنواع كوبونات هذا الشهر",
     "couponType": "النوع",
