@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const ReportPage = () => {
   return (
-    <main className="overflow-auto  h-screen p-6">
+<div className="px-6 mb-6" >
       <div className="min-h-[60vh] grid grid-cols-1 md:grid-rows-2 gap-4">
         <div className="bg-primary relative rounded-2xl ">
           <Image
@@ -49,7 +49,7 @@ const ReportPage = () => {
       
        <Card className="h-[60vh] mt-4 dark:border-1 border-0 dark:shadow-none shadow-emerald-100 shadow-2xl"> </Card>
       
-    </main>
+    </div>
   );
 };
 

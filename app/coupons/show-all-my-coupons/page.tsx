@@ -177,7 +177,7 @@ export default function AllCouponsPage() {
               </div>
             </div>
             <Button asChild size="sm">
-              <Link href="/dashboard/coupons/new">
+              <Link href="/coupons/AddCoupon">
                 <Plus className="mr-2 h-4 w-4" />
                 New Coupon
               </Link>

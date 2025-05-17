@@ -74,6 +74,8 @@
     "generateReport": "Generate Reports",
     "selectType": "Select coupon type",
     "selectDate": "Select Date Range",
+    "selectDateError": "You have to select proper date first",
+    "selectTypeError":"You have to select coupon type first",
     "pickDate": "Pick a date range",
     "topCoupons": "Top 5 Coupons Types This Month",
     "next": "Next",

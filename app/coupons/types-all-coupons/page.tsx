@@ -16,6 +16,7 @@ import { DashboardHeader } from "@/components/types-coupons/header-dashboard";
 import { CouponManagementHeader, filterCoupons } from "@/components/types-coupons/manage-type";
 import { CouponGrid } from "@/components/types-coupons/grid-types-coupon";
 import { CouponPagination, paginateCoupons } from "@/components/types-coupons/footer-types";
+import { useRouter } from "next/navigation";
 
 
 // Types
@@ -51,6 +52,7 @@ export default function CouponManagementPage() {
     currentPage,
     couponsPerPage
   );
+  const router = useRouter()
 
   // Handlers
   const handleGenerateReport = () => {
@@ -58,13 +60,18 @@ export default function CouponManagementPage() {
       toast.error(t("selectDateError"));
       return;
     }
+    if (!couponType || couponType=='') {
+      toast.error(t("selectTypeError"));
+      return;
+    }
 
-    const requestData = {
-      couponType,
-      dateFrom: format(dateRange.from, "yyyy-MM-dd"),
-      dateTo: format(dateRange.to, "yyyy-MM-dd"),
-    };
-    console.log("Generating report:", requestData);
+    
+      const dateFrom=format(dateRange.from, "yyyy-MM-dd")
+      const dateTo= format(dateRange.to, "yyyy-MM-dd")
+  
+
+    // console.log("Generating report:", requestData);
+    router.push(`/report-page/${couponType}/${dateFrom}/${dateTo}`)
   };
 
   return (
