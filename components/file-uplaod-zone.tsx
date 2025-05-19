@@ -21,8 +21,8 @@ const FileUploadDropzone = ({ field }: { field: any }) => {
 
   return (
     <FileUploader value={files} onValueChange={field.onChange} dropzoneOptions={dropzone}>
-      <FileInput>
-        <div className="flex flex-col items-center justify-center  border-primary border-dashed h-32 w-full border bg-background rounded-md">
+      <FileInput className="h-full">
+        <div className="flex flex-col items-center justify-center  border-primary border-dashed h-[200px] w-full border bg-background rounded-md">
           <ImageUp className="text-primary" />
           <h1 className="dark:text-gray-100">Add cover image</h1>
           <div className="text-xs text-gray-500 dark:text-gray-400">
