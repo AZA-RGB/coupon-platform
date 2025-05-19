@@ -58,16 +58,19 @@ export default function AddCoupon() {
 
   return (
     <div className="flex flex-col items-center max-h-svh  justify-center  pt-10 p-2">
-      <div className="w-full md:max-w-2/3">
+      <div className="w-full ">
         <div>
           <Card className=" p-0">
             <CardContent className="p-0">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-5 p-5 w-full max-w-3xl mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-36 gap-y-1"
+                  className="space-y-5 p-5 w-full mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-36 gap-y-1"
                 >
+                  <div className="col-span-1 space-y-10">
+
                   
+
                   <FormField
                     control={form.control}
                     name="coupon_title"
@@ -85,7 +88,7 @@ export default function AddCoupon() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="coupon_description"
@@ -163,19 +166,7 @@ export default function AddCoupon() {
                       </FormItem>
                     )}
                   />
-<FormField
-                    control={form.control}
-                    name="images"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("coverImages")}</FormLabel>
-                        <FormControl>
-                          <FileUploadDropzone field={field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
                   <FormField
                     control={form.control}
                     name="partner_providers"
@@ -198,12 +189,31 @@ export default function AddCoupon() {
                       </FormItem>
                     )}
                   />
-                  
-                  <div className="flex flex-1 place-content-around">
-                    <Button type="submit">{t("submit")}</Button>
-                    <Link href="/dashboard">
-                      <Button variant="outline">{t("cancel")}</Button>
-                    </Link>
+                  </div>
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("coverImages")}</FormLabel>
+                          <FormControl>
+                            <div className="h-full">
+
+                            <FileUploadDropzone field={field}  />
+                            </div>
+
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex flex-1 place-content-around">
+                      <Button type="submit">{t("submit")}</Button>
+                      <Link href="/dashboard">
+                        <Button variant="outline">{t("cancel")}</Button>
+                      </Link>
+                    </div>
                   </div>
                 </form>
               </Form>
