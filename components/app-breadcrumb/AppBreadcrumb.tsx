@@ -24,8 +24,8 @@ export function AppBreadcrumb({ className }: { className?: string }) {
 
   // Customize these names as needed
   const pathNames: Record<string, string> = {
-    'docs': 'Documentation',
-    'components': 'Components',
+
+    // 'coupons':"dddddddddddddddddd"
     // Add more mappings as needed
   }
 

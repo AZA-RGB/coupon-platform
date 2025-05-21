@@ -69,7 +69,7 @@ export function AppSidebar() {
     },
     {
       title: "Coupons",
-      url: "/coupons/show-all-my-coupons",
+      url: "/coupons",
       icon: TicketX,
     },
     {
