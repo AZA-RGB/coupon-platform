@@ -52,11 +52,9 @@ export default function RootLayout({
               <NextIntlClientProvider>
                 <main>
                   <div className="flex  gap-5 sticky top-0  items-center backdrop-blur-xl z-50">
-                  <SidebarTrigger className=" bg-primary z-10 text-white m-1 " />
-                  <AppBreadcrumb className="" />
-                    
-                  </div>
-
+                    <SidebarTrigger className=" bg-primary z-10 text-white m-1 " />
+                    <AppBreadcrumb className="" />
+                  </div>{" "}
                   <NextTopLoader color="#00CBC1" height={5} crawl={false} />
                   {children}
                 </main>
