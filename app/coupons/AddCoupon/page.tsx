@@ -57,15 +57,15 @@ export default function AddCoupon() {
   }
 
   return (
-    <div className="flex flex-col items-center max-h-svh  justify-center  pt-10 p-2">
+    <div className="flex flex-col items-center max-h-svh  justify-center   px-15">
       <div className="w-full ">
         <div>
-          <Card className=" p-0">
-            <CardContent className="p-0">
+          <div className=" p-0">
+            <div className="p-0">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-5 p-5 w-full mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-36 gap-y-1"
+                  className="space-y-5 p-5 w-full mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-50 gap-y-1"
                 >
                   <div className="col-span-1 space-y-10">
 
@@ -177,7 +177,6 @@ export default function AddCoupon() {
                           <MultipleSelector
                             className="max-h-60 overflow-y-hidden"
                             hidePlaceholderWhenSelected
-                            placeholder={t("assignCriteria")}
                             emptyIndicator={
                               <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
                                 {t("noResults")}
@@ -208,7 +207,7 @@ export default function AddCoupon() {
                         </FormItem>
                       )}
                     />
-                    <div className="flex flex-1 place-content-around">
+                    <div className=" mt-10 flex flex-1 place-content-around">
                       <Button type="submit">{t("submit")}</Button>
                       <Link href="/dashboard">
                         <Button variant="outline">{t("cancel")}</Button>
@@ -217,8 +216,8 @@ export default function AddCoupon() {
                   </div>
                 </form>
               </Form>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
