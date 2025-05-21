@@ -74,7 +74,7 @@ export function AppSidebar() {
     },
     {
       title: "Coupon types",
-      url: "/",
+      url: "/coupons/types-all-coupons",
       icon: Tickets,
     },
     {
