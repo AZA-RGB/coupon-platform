@@ -11,14 +11,9 @@ export type FormFieldType = typeof formFieldTypes[number]; // "input" | "checkbo
 export interface FormField {
   name: string;
   type: FormFieldType;
-  placeholder?: string;
+  isGeneral:boolean,id:string
 }
 
-export const formFields: FormField[] = [
-  { name: "Username", type: "input", placeholder: "Enter username" },
-  { name: "Add description", type: "textarea" },
-  { name: "Agree to terms", type: "checkbox" },
-];
 
 // Dynamic imports with loading states
 const DynamicInput = dynamic(

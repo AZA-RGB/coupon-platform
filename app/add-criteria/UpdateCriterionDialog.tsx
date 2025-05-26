@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formSchema, FormValues } from "./schemas";
+import { FormFieldType, formSchema, FormValues } from "./schemas";
 import { Form, FormDescription, FormField } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,34 +30,40 @@ import { Input } from "@/components/ui/input";
 import { formFieldTypes } from "./FormFeildTypes";
 import { Checkbox } from "@/components/ui/checkbox";
 import api from "@/lib/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoadingButton } from "@/components/ui/loading-buuton";
+import { PencilLine } from "lucide-react";
 import { toast } from "sonner";
 
-interface AddCriterionDialogProps {
+interface UpdateCriterionDialogProps {
   refresh?: () => void;
+  criterion:{
+    name:string,
+    type:FormFieldType,
+    isGeneral:boolean,id:string
+  }
 }
-export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
+export function UpdateCriterionDialog({ refresh ,criterion}: UpdateCriterionDialogProps) {
   const [isOpen, setIsOpen] = useState(false); // State to control dialog
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      type: "input", // default type
-      isGeneral: false,
+      name: criterion.name,
+      type: criterion.type, // default type
+      isGeneral: criterion.isGeneral,
     },
   });
 
   async function onSubmit(values: FormValues) {
     try {
       setLoading(true);
-      const response = await api.post("/criterias/create", values);
+      const response = await api.put(`/criterias/${criterion.id}`, values);
       if (refresh) refresh();
-      toast.success(response.data.message)
-      setIsOpen(false);
 
+      setIsOpen(false);
+    toast.success(response.data.message)
       form.reset();
     } catch (error) {
       console.error("Submission failed:", error);
@@ -65,18 +71,22 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
       setLoading(false);
     }
   }
+    useEffect(() => {
+    form.reset({
+      name: criterion.name,
+      type: criterion.type,
+      isGeneral: criterion.isGeneral,
+    });
+  }, [criterion, form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="-mb-1 p-2">+ New criterion</Button>
+      <DialogTrigger asChild >
+        <PencilLine className="text-ring" />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Criterion</DialogTitle>
-          <DialogDescription>
-            Define a new evaluation criterion for your assessment.
-          </DialogDescription>
+          <DialogTitle>Update Criterion</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -150,7 +160,7 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
                 <LoadingButton disabled>Adding...</LoadingButton>
               ) : (
                 <Button type="submit" hidden={loading}>
-                  Add new criterion
+                  Update criterion
                 </Button>
               )}
             </DialogFooter>

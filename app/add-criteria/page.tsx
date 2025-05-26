@@ -9,18 +9,23 @@ import { FormFieldType } from "./schemas";
 import { FormField } from "./FormFeildTypes";
 import { Divide } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { DeleteCriterionDialog } from "./DeleteCriterionDialob";
+import { UpdateCriterionDialog } from "./UpdateCriterionDialog";
 
 export default function CriteriaPage() {
   const { isLoading, error, data, mutate } = useSWR("/criterias/index?page=1");
   return (
-    <div className="px-10">
-      <div className="text-4xl">Criteria preview</div>
+    <div className="px-10 mt-2">
+      <div className="flex place-content-between ">
+        <div className="text-4xl">Criteria preview</div>
+        <AddCriterionDialog refresh={mutate} />
+      </div>
       <div className="grid md:grid-cols-2 grid-cols-1 gap-10 md:px-10 mt-10">
         <div className="col-span-1 space-y-5">
-          <div className="flex place-content-between">
+
             <div className="text-2xl text-primary">General criteria</div>
-          </div>
-          <Separator className="-mt-3" />
+
+          <Separator className="-mt-3 " />
           {error && <div>failed to load criteria</div>}
           {isLoading && <Spinner />}
           {data &&
@@ -30,16 +35,30 @@ export default function CriteriaPage() {
                   criterion.isGeneral === true
               )
               .map((criterion: FormField) => (
-                <FormFieldRenderer field={criterion} />
+                <div className="flex place-content-between items-center ">
+                  <div className="flex-1">
+                    <FormFieldRenderer field={criterion} />
+                  </div>
+                  <div className="mt-4 mx-4">
+                    <UpdateCriterionDialog
+                      refresh={() => mutate()}
+                      criterion={criterion}
+                    />
+                  </div>
+                  <div className="mt-4 mx-4">
+                    <DeleteCriterionDialog
+                      refresh={() => mutate()}
+                      criterion={criterion}
+                    />
+                  </div>
+                </div>
               ))}
         </div>
 
         <div className="col-span-1 space-y-5">
-          <div className="flex place-content-between">
+
             <div className="text-2xl text-primary">Additional criteria</div>
-            <AddCriterionDialog refresh={()=>mutate()} />
-          </div>
-          <Separator className="-mt-3" />
+          <Separator className="-mt-3 mb-7" />
           {isLoading && <Spinner />}
           {data &&
             data.data.data
@@ -48,7 +67,25 @@ export default function CriteriaPage() {
                   criterion.isGeneral === false
               )
               .map((criterion: FormField) => (
-                <FormFieldRenderer field={criterion} />
+                <div className="flex place-content-between items-center ">
+                  <div className="flex-1">
+                    <FormFieldRenderer field={criterion} />
+                  </div>
+                  <div className="mt-4 mx-4">
+                    <UpdateCriterionDialog
+                      key={criterion.id}
+                      refresh={() => mutate()}
+                      criterion={criterion}
+                    />
+                  </div>
+                  <div className="mt-4 mx-4">
+                    <DeleteCriterionDialog
+                      key={criterion.id}
+                      refresh={() => mutate()}
+                      criterion={criterion}
+                    />
+                  </div>
+                </div>
               ))}
         </div>
       </div>
