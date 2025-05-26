@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "./schemas";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormDescription, FormField } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,30 +20,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {formFieldTypes} from './FormFeildTypes'
+import { formFieldTypes } from "./FormFeildTypes";
+import { Checkbox } from "@/components/ui/checkbox";
+import api from "@/lib/api";
+import { useState } from "react";
+import { Loader } from "lucide-react";
+import { LoadingButton } from "@/components/ui/loading-buuton";
 
-export type FormFieldType = "input" | "checkbox" | "textarea";
+interface AddCriterionDialogProps {
+  refresh?: () => void;
+}
+export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
+  const [isOpen, setIsOpen] = useState(false); // State to control dialog
+  const [loading, setLoading] = useState(false);
 
-export function AddCriterionDialog() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       type: "input", // default type
+      isGeneral: false,
     },
   });
 
-  function onSubmit(values: FormValues) {
-    console.log("New criterion:", values);
-    // Here you would typically add the new criterion to your state
+  async function onSubmit(values: FormValues) {
+    try {
+      setLoading(true);
+      const response = await api.post("/criterias/create", values);
+      if (refresh) refresh();
+
+      setIsOpen(false);
+
+      form.reset();
+    } catch (error) {
+      console.error("Submission failed:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-
-
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="-mb-1 p-2">+ New criterion</Button>
       </DialogTrigger>
@@ -77,7 +101,10 @@ export function AddCriterionDialog() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
-                  <Select  onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-full max-h-20 overflow-auto">
                         <SelectValue placeholder="Select a field type" />
@@ -96,8 +123,36 @@ export function AddCriterionDialog() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="isGeneral"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>General criterion</FormLabel>
+                    <FormDescription>
+                      The criterion will be assigned to all coupon types
+                    </FormDescription>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+
             <DialogFooter>
-              <Button type="submit">Add Criterion</Button>
+              {loading ? (
+                <LoadingButton disabled>Adding...</LoadingButton>
+              ) : (
+                <Button type="submit" hidden={loading}>
+                  Add new criterion
+                </Button>
+              )}
             </DialogFooter>
           </form>
         </Form>
