@@ -13,12 +13,10 @@ import { Label } from "@/components/ui/label";
 
 interface FormFieldRendererProps {
   field: FormFieldType;
-  name: string;
 }
 
 export function FormFieldRenderer({ 
-  field, 
-  name
+field
 }: FormFieldRendererProps) {
   // const form = useFormContext();
     const Component = componentMap[field.type];
@@ -28,14 +26,12 @@ export function FormFieldRenderer({
             {field.type === "checkbox" ? (
               <div className="flex items-center space-x-2">
                 <Component
-                  id={name}
+                  id={field.name}
                 />
-                <label htmlFor={name}>{field.name}</label>
+                <label htmlFor={field.name}>{field.name}</label>
               </div>
             ) : (
-              <Component
-                placeholder={field.placeholder}
-              />
+              <Component/>
             )}
 
         </>

@@ -24,7 +24,7 @@ export const formFields: FormField[] = [
 const DynamicInput = dynamic(
   () => import("@/components/ui/input").then((mod) => mod.Input),
   { 
-    loading: () => <div className="w-full h-10 bg-gray-100 rounded-md animate-pulse" />,
+    loading: () => <div className="w-full h-10 bg-gray-100 dark:bg-gray-800 rounded-md animate-pulse" />,
     ssr: false 
   }
 );
@@ -32,7 +32,7 @@ const DynamicInput = dynamic(
 const DynamicCheckbox = dynamic(
   () => import("@/components/ui/checkbox").then((mod) => mod.Checkbox),
   { 
-    loading: () => <div className="w-5 h-5 bg-gray-100 rounded-md animate-pulse" />,
+    loading: () => <div className="w-5 h-5 bg-gray-100 dark:bg-gray-800  rounded-md animate-pulse" />,
     ssr: false 
   }
 );
@@ -40,7 +40,7 @@ const DynamicCheckbox = dynamic(
 const DynamicTextarea = dynamic(
   () => import("@/components/ui/textarea").then((mod) => mod.Textarea),
   { 
-    loading: () => <div className="w-full h-20 bg-gray-100 rounded-md animate-pulse" />,
+    loading: () => <div className="w-full h-20 bg-gray-100 dark:bg-gray-800 rounded-md animate-pulse" />,
     ssr: false 
   }
 );
