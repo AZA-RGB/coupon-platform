@@ -12,6 +12,9 @@ import { getLangDir } from "rtl-detect";
 import { NextIntlClientProvider, useLocale } from "next-intl";
 import NextTopLoader from "nextjs-toploader";
 import { AppBreadcrumb } from "@/components/app-breadcrumb/AppBreadcrumb";
+import { SWRConfig } from 'swr'
+import { SWR_CONFIG } from '../lib/swr-config';
+import { SWRProvider } from "@/components/ui/swrProvier";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -50,6 +53,7 @@ export default function RootLayout({
             <AppSidebar />
             <SidebarInset>
               <NextIntlClientProvider>
+                <SWRProvider>
                 <main>
                   <div className="flex  gap-5 sticky top-0  items-center backdrop-blur-xl z-50">
                     <SidebarTrigger className=" bg-primary z-10 text-white m-1 " />
@@ -58,6 +62,7 @@ export default function RootLayout({
                   <NextTopLoader color="#00CBC1" height={5} crawl={false} />
                   {children}
                 </main>
+                </SWRProvider>
               </NextIntlClientProvider>
             </SidebarInset>
           </SidebarProvider>
