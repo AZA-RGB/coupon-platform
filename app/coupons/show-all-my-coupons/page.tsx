@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
-import { allCouponsData } from "./constants";
+import { allCouponsData } from "../constants";
 
 const COUPONS_PER_PAGE = 10;
 
@@ -246,7 +246,7 @@ export default function AllCouponsPage() {
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
       {/* Section 1: Summary and Navigation */}
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 w-full">
         <SummaryCards t={t} />
         <NavigationCards t={t} />
         <MobileSummaryCards t={t} />

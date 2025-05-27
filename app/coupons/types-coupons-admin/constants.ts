@@ -60,8 +60,8 @@ export const couponTypeOptions = [
   { label: "New Customer Coupon", value: "new_customer" },
 ];
 
-export const topCouponsData = [
-   {
+export const topCategoriesData = [
+  {
     rank: 1,
     category: "Electronics",
     sales: 1200,

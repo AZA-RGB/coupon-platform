@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -46,161 +46,64 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 import debounce from "lodash/debounce";
-import {
-  couponTypesData,
-  couponTypeOptions,
-  topCouponsData,
-} from "./constants";
+import { couponTypesData, couponTypeOptions, topCategoriesData } from "./constants";
 
 const COUPONS_PER_PAGE = 10;
 
-const TopCouponsCard = ({ t, topCouponsData }) => {
-  return (
-    <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
-      <CardTitle className="text-lg text-primary mb-1">
-        {t("topCoupons")}
-      </CardTitle>
-      <div className="space-y-4">
-        <Table className="min-w-full text-sm">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="py-2 px-4 text-start">
-                {t("rank")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("category")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("sales")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("popularity")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {topCouponsData.map((row, index) => (
-              <TableRow key={index} className="hover:bg-secondary">
-                <TableCell className="py-2 px-4">{row.rank}</TableCell>
-                <TableCell className="py-2 px-4">{row.category}</TableCell>
-                <TableCell className="py-2 px-4">{row.sales}</TableCell>
-                <TableCell className="py-2 px-4">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-primary h-2.5 rounded-full"
-                      style={{ width: `${row.popularity}%` }}
-                    ></div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Card>
-  );
-};
+const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPages }) => {
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [filteredCouponTypes, setFilteredCouponTypes] = useState(couponTypes);
 
-const ReportGeneratorCard = ({
-  t,
-  couponType,
-  setCouponType,
-  dateRange,
-  setDateRange,
-  handleGenerateReport,
-}) => {
-  return (
-    <Card className="w-full lg:w-2/5 p-4">
-      <CardTitle className="text-lg text-primary mb-1">
-        {t("generateReport")}
-      </CardTitle>
-      <div className="space-y-4">
-        <div className="space-y-4 w-full">
-          <Label htmlFor="couponType">{t("couponType")}</Label>
-          <Select onValueChange={setCouponType} value={couponType}>
-            <SelectTrigger className="w-full" id="couponType">
-              <SelectValue placeholder={t("selectType")} />
-            </SelectTrigger>
-            <SelectContent>
-              {couponTypeOptions.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-4">
-          <Label>{t("selectDate")}</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 opacity-70 shrink-0" />
-                {dateRange?.from ? (
-                  dateRange?.to ? (
-                    <>
-                      {format(dateRange.from, "MMM dd, yyyy")} -{" "}
-                      {format(dateRange.to, "MMM dd, yyyy")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "MMM dd, yyyy")
-                  )
-                ) : (
-                  <span className="text-muted-foreground">
-                    {t("selectDate")}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={dateRange}
-                onSelect={(range) =>
-                  range && setDateRange({ from: range.from, to: range.to })
-                }
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <Button className="w-full mt-2" onClick={handleGenerateReport}>
-          {t("generateReport")}
-        </Button>
-      </div>
-    </Card>
-  );
-};
+  useEffect(() => {
+    setFilteredCouponTypes(couponTypes);
+  }, [couponTypes]);
 
-const CouponTypesGrid = ({
-  t,
-  couponTypes,
-  currentPage,
-  setCurrentPage,
-  totalPages,
-  locale,
-}) => {
+  const handleSelectType = (id) => {
+    setSelectedTypes((prev) =>
+      {
+            return prev.includes(id) ? prev.filter((typeId) => typeId !== id) : [...prev, id];
+        }
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    const allSelected = filteredCouponTypes.every((type) => selectedTypes.includes(type.id));
+    setSelectedTypes(allSelected ? [] : filteredCouponTypes.map((type) => type.id));
+  };
+
+  const handleDeleteSelected = () => {
+    const updatedCouponTypes = couponTypes.filter((type) => !selectedTypes.includes(type.id));
+    setFilteredCouponTypes(updatedCouponTypes);
+    setSelectedTypes([]);
+    console.log("Deleted types:", selectedTypes);
+  };
+
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent>
+        <div className="flex justify-end gap-2 mb-4">
+          <Button
+            variant="outline"
+            onClick={handleToggleSelectAll}
+            disabled={filteredCouponTypes.length === 0}
+          >
+            {t(selectedTypes.length === filteredCouponTypes.length && filteredCouponTypes.length > 0 ? "deselectAll" : "selectAll")}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDeleteSelected}
+            disabled={selectedTypes.length === 0}
+          >
+            {t("deleteSelected")}
+          </Button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {couponTypes.map((type) => (
-            <Card
-              key={type.id}
-              className="overflow-hidden hover:shadow-md transition-shadow p-0"
-            >
+          {filteredCouponTypes.map((type) => (
+            <Card key={type.id} className="overflow-hidden hover:shadow-md transition-shadow p-0">
               <div className="relative w-full h-32">
-                <Image
-                  src={type.image}
-                  alt={type.name}
-                  fill
-                  className="object-cover"
-                />
+                <Image src={type.image} alt={type.name} fill className="object-cover" />
                 <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
                   <span className="text-primary font-bold">
                     {type.couponsCount} {t("coupons")}
@@ -208,11 +111,15 @@ const CouponTypesGrid = ({
                 </div>
               </div>
               <CardHeader className="py-0 px-3">
-                <CardTitle className="text-lg">{type.name}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={selectedTypes.includes(type.id)}
+                    onCheckedChange={() => handleSelectType(type.id)}
+                  />
+                  <CardTitle className="text-lg">{type.name}</CardTitle>
+                </div>
                 <CardDescription className="flex justify-between items-center text-xs">
-                  <span className="line-clamp-1 text-ellipsis overflow-hidden">
-                    {type.description}
-                  </span>
+                  <span className="line-clamp-1 text-ellipsis overflow-hidden">{type.description}</span>
                   <span
                     className={`px-2 py-0.5 rounded-full ${
                       type.status === "active"
@@ -228,22 +135,12 @@ const CouponTypesGrid = ({
               </CardHeader>
               <CardContent className="py-1 px-3">
                 <div className="flex justify-between text-xs">
-                  <span>
-                    {t("added")}:{" "}
-                    {format(new Date(type.addDate), "MMM dd, yyyy")}
-                  </span>
+                  <span>{t("added")}: {format(new Date(type.addDate), "MMM dd, yyyy")}</span>
                 </div>
               </CardContent>
               <CardFooter className="px-3 pb-3 flex justify-center gap-2">
-                <Button variant="outline" className="w-1/2 h-8 text-xs" asChild>
-                  <Link href={`/dashboard/coupons/types/${type.id}`}>
-                    {t("details")}
-                  </Link>
-                </Button>
-                <Button className="w-1/2 h-8 text-xs" asChild>
-                  <Link href={`/dashboard/coupons/new?type=${type.id}`}>
-                    {t("addCoupon")}
-                  </Link>
+                <Button variant="outline" className="w-full h-8 text-xs" asChild>
+                  <Link href={`/dashboard/coupons/types/${type.id}`}>{t("details")}</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -252,7 +149,7 @@ const CouponTypesGrid = ({
       </CardContent>
       <CardFooter className="flex justify-center">
         <Pagination>
-          <PaginationContent dir={locale === "ar" ? "rtl" : "ltr"}>
+          <PaginationContent >
             <PaginationItem>
               <PaginationPrevious
                 href="#"
@@ -297,23 +194,110 @@ const CouponTypesGrid = ({
   );
 };
 
+const TopCategoriesCard = ({ t, topCategoriesData }) => {
+  return (
+    <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
+      <CardTitle className="text-lg text-primary mb-1">{t("topCategories")}</CardTitle>
+      <div className="space-y-4">
+        <Table className="min-w-full text-sm">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {topCategoriesData.slice(0, 5).map((row, index) => (
+              <TableRow key={index} className="hover:bg-secondary">
+                <TableCell className="py-2 px-4">{row.rank}</TableCell>
+                <TableCell className="py-2 px-4">{row.category}</TableCell>
+                <TableCell className="py-2 px-4">{row.sales}</TableCell>
+                <TableCell className="py-2 px-4">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className="bg-primary h-2.5 rounded-full"
+                      style={{ width: `${row.popularity}%` }}
+                    ></div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </Card>
+  );
+};
+
+const ReportGeneratorCard = ({ t, couponType, setCouponType, dateRange, setDateRange, handleGenerateReport }) => {
+  return (
+    <Card className="w-full lg:w-2/5 p-4">
+      <CardTitle className="text-lg text-primary mb-1">{t("generateReport")}</CardTitle>
+      <div className="space-y-4">
+        <div className="space-y-4 w-full">
+          <Label htmlFor="couponType">{t("couponType")}</Label>
+          <Select onValueChange={setCouponType} value={couponType}>
+            <SelectTrigger className="w-full" id="couponType">
+              <SelectValue placeholder={t("selectType")} />
+            </SelectTrigger>
+            <SelectContent>
+              {couponTypeOptions.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-4">
+          <Label>{t("selectDate")}</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left font-normal">
+                <CalendarIcon className="mr-2 h-4 w-4 opacity-70 shrink-0" />
+                {dateRange?.from ? (
+                  dateRange?.to ? (
+                    <>
+                      {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "MMM dd, yyyy")
+                  )
+                ) : (
+                  <span className="text-muted-foreground">{t("selectDate")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={(range) => range && setDateRange({ from: range.from, to: range.to })}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <Button className="w-full mt-2" onClick={handleGenerateReport}>
+          {t("generateReport")}
+        </Button>
+      </div>
+    </Card>
+  );
+};
+
 export default function TypesAllCouponsPage() {
   const t = useTranslations("Types");
-  const { locale } = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [couponType, setCouponType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
-    from: undefined,
-    to: undefined,
-  });
+  const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value: string) => setSearchTerm(value), 300),
+    () => debounce((value) => setSearchTerm(value), 300),
     []
   );
 
@@ -378,7 +362,7 @@ export default function TypesAllCouponsPage() {
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
       <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <TopCouponsCard t={t} topCouponsData={topCouponsData} />
+        <TopCategoriesCard t={t} topCategoriesData={topCategoriesData} />
         <ReportGeneratorCard
           t={t}
           couponType={couponType}
@@ -454,7 +438,6 @@ export default function TypesAllCouponsPage() {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
-        locale={locale}
       />
     </div>
   );
