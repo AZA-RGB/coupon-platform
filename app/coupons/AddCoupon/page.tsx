@@ -57,7 +57,6 @@ export default function AddCoupon() {
   }
 
   return (
-<<<<<<< Updated upstream:app/coupons/AddCoupon/page.tsx
     <div className="flex flex-col items-center max-h-svh  justify-center   px-15">
       <div className="w-full ">
         <div>
@@ -69,155 +68,137 @@ export default function AddCoupon() {
                   className="space-y-5 p-5 w-full mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-50 gap-y-1"
                 >
                   <div className="col-span-1 space-y-10">
+                    <FormField
+                      control={form.control}
+                      name="coupon_title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("title")}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("titlePlaceholder")}
+                              type="text"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-=======
-    <div className="flex flex-col items-center max-h-svh  justify-center  pt-10 p-2">
-      <div className="w-full md:max-w-2/3">
-        <div>
-          <Card className=" p-0">
-            <CardContent className="p-0">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-5 p-5 w-full max-w-3xl mx-auto grid  grid-col-1 lg:grid-cols-2 gap-x-36 gap-y-1"
-                >
->>>>>>> Stashed changes:app/AddCoupon/page.tsx
-                  
+                    <FormField
+                      control={form.control}
+                      name="coupon_description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("description")}</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            {t("addDescription")}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="coupon_title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("title")}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t("titlePlaceholder")}
-                            type="text"
+                    <FormField
+                      control={form.control}
+                      name="coupon_expiration_date"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>{t("expirationDate")}</FormLabel>
+                          <DatetimePicker
                             {...field}
+                            format={[
+                              ["months", "days", "years"],
+                              ["hours", "minutes", "am/pm"],
+                            ]}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="coupon_description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("description")}</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="" {...field} />
-                        </FormControl>
-                        <FormDescription>{t("addDescription")}</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormDescription>
+                            {t("expirationDescription")}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="coupon_expiration_date"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>{t("expirationDate")}</FormLabel>
-                        <DatetimePicker
-                          {...field}
-                          format={[
-                            ["months", "days", "years"],
-                            ["hours", "minutes", "am/pm"],
-                          ]}
-                        />
-                        <FormDescription>
-                          {t("expirationDescription")}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="name_7184091515"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("customersRequired")}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("customersPlaceholder")}
+                              type="number"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t("customersDescription")}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="name_7184091515"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("customersRequired")}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t("customersPlaceholder")}
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          {t("customersDescription")}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="name_0863847771"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("providersRequired")}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t("providersPlaceholder")}
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          {t("providersDescription")}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-<FormField
-                    control={form.control}
-                    name="images"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("coverImages")}</FormLabel>
-                        <FormControl>
-                          <FileUploadDropzone field={field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="partner_providers"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("selectProviders")}</FormLabel>
-                        <FormControl>
-                          <MultipleSelector
-                            className="max-h-60 overflow-y-hidden"
-                            hidePlaceholderWhenSelected
-<<<<<<< Updated upstream:app/coupons/AddCoupon/page.tsx
-=======
-                            placeholder={t("assignCriteria")}
->>>>>>> Stashed changes:app/AddCoupon/page.tsx
-                            emptyIndicator={
-                              <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                                {t("noResults")}
-                              </p>
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-<<<<<<< Updated upstream:app/coupons/AddCoupon/page.tsx
+                    <FormField
+                      control={form.control}
+                      name="name_0863847771"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("providersRequired")}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("providersPlaceholder")}
+                              type="number"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t("providersDescription")}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("coverImages")}</FormLabel>
+                          <FormControl>
+                            <FileUploadDropzone field={field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="partner_providers"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("selectProviders")}</FormLabel>
+                          <FormControl>
+                            <MultipleSelector
+                              className="max-h-60 overflow-y-hidden"
+                              hidePlaceholderWhenSelected
+                              emptyIndicator={
+                                <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                  {t("noResults")}
+                                </p>
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="">
                     <FormField
@@ -228,10 +209,8 @@ export default function AddCoupon() {
                           <FormLabel>{t("coverImages")}</FormLabel>
                           <FormControl>
                             <div className="h-full">
-
-                            <FileUploadDropzone field={field}  />
+                              <FileUploadDropzone field={field} />
                             </div>
-
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -248,19 +227,6 @@ export default function AddCoupon() {
               </Form>
             </div>
           </div>
-=======
-                  
-                  <div className="flex flex-1 place-content-around">
-                    <Button type="submit">{t("submit")}</Button>
-                    <Link href="/dashboard">
-                      <Button variant="outline">{t("cancel")}</Button>
-                    </Link>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
->>>>>>> Stashed changes:app/AddCoupon/page.tsx
         </div>
       </div>
     </div>
