@@ -66,7 +66,7 @@
       "formError": "Failed to submit the form. Please try again."
     }
   },
- "Types": {
+  "Types": {
     "title": "All Coupon Types",
     "description": "Manage Coupon Types",
     "filter": "Filter",
@@ -149,11 +149,14 @@
     "expired": "Expired",
     "pending": "Pending",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "deleteSelected": "Delete Selected"
   },
   "Providers": {
     "topCategories": "Top Categories",
-    "view_all":"View All",
+    "view_all": "View All",
     "rank": "Rank",
     "category": "Category",
     "sales": "Sales",
@@ -176,7 +179,7 @@
     "actions": "Actions",
     "packages": "Packages",
     "title": "All Providers",
-    "request_date":"Request Date",
+    "request_date": "Request Date",
     "description": "Manage and view all providers in one place",
     "filter": "Filter",
     "search": "Search",
@@ -185,8 +188,8 @@
     "active": "Active",
     "expired": "Expired",
     "pending": "Pending"
-  }, 
-   "Customers": {
+  },
+  "Customers": {
     "title": "Customers Dashboard",
     "description": "View and manage all customer information and orders",
     "totalCustomers": "Total Customers",
@@ -211,6 +214,31 @@
     "filter": "Filter",
     "search": "Search...",
     "viewDetails": "View Details"
+  },
+  "Reels":{
+    "title": "All Reels",
+    "description": "Browse and manage all your reels",
+    "activeReels": "Active Reels",
+    "monthlyViews": "Monthly Views",
+    "totalReels": "Total Reels",
+    "seeTopReels": "See Top Reels",
+    "seeTopReelsDesc": "View the most popular reels",
+    "seeTopViews": "See Top Views",
+    "seeTopViewsDesc": "Explore reels with the highest views",
+    "newReel": "New Reel",
+    "views": "Views",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "deleteSelected": "Delete Selected",
+    "filter": "Filter",
+    "search": "Search",
+    "previous": "Previous",
+    "next": "Next",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "active": "Active",
+    "expired": "Expired",
+    "pending": "Pending",
+    "viewDetails": "View Details"
   }
-
 }

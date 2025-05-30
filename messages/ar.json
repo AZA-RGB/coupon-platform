@@ -128,6 +128,9 @@
     "actions": "الإجراءات"
   },
   "Coupons": {
+    "selectAll": "تحديد الكل",
+    "deselectAll": "إلغاء تحديد الكل",
+    "deleteSelected": "حذف المحدد",
     "title": "جميع الكوبونات",
     "description": "إدارة حملات الكوبونات الخاصة بك",
     "filter": "تصفية",
@@ -186,7 +189,7 @@
     "expired": "منتهي الصلاحية",
     "pending": "معلق"
   },
-   "Customers": {
+  "Customers": {
     "title": "لوحة تحكم العملاء",
     "description": "عرض وإدارة جميع معلومات العملاء والطلبات",
     "totalCustomers": "إجمالي العملاء",
@@ -210,6 +213,32 @@
     "oldest": "الأقدم",
     "filter": "تصفية",
     "search": "بحث...",
+    "viewDetails": "عرض التفاصيل"
+  },
+  "Reels": {
+    "title": "جميع الريلزات",
+    "description": "تصفح وإدارة جميع الريلزات الخاصة بك",
+    "activeReels": "الريلزات النشطة",
+    "monthlyViews": "المشاهدات الشهرية",
+    "totalReels": "إجمالي الريلزات",
+    "seeTopReels": "عرض أفضل الريلزات",
+    "seeTopReelsDesc": "عرض الريلزات الأكثر شعبية",
+    "seeTopViews": "عرض أعلى المشاهدات",
+    "seeTopViewsDesc": "استكشاف الريلزات ذات أعلى المشاهدات",
+    "newReel": "ريل جديد",
+    "views": "مشاهدات",
+    "selectAll": "تحديد الكل",
+    "deselectAll": "إلغاء تحديد الكل",
+    "deleteSelected": "حذف المحدد",
+    "filter": "تصفية",
+    "search": "بحث",
+    "previous": "السابق",
+    "next": "التالي",
+    "newest": "الأحدث",
+    "oldest": "الأقدم",
+    "active": "نشط",
+    "expired": "منتهي الصلاحية",
+    "pending": "معلق",
     "viewDetails": "عرض التفاصيل"
   }
 }

@@ -18,21 +18,23 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Filter, Plus, Search } from "lucide-react";
+import { Filter, Plus, Search, Play } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
-import { allCouponsData } from "./constants";
+import { allReelsData } from "./constants";
 
-const COUPONS_PER_PAGE = 10;
+
+
+const REELS_PER_PAGE = 10;
 
 const SummaryCards = ({ t }) => {
   const summaries = [
-    { title: t("activeCoupons"), value: "$24,560", change: "+8% from last month" },
-    { title: t("monthlyReturn"), value: "$24,560", change: "+8% from last month" },
-    { title: t("totalCoupons"), value: "$24,560", change: "+8% from last month" },
+    { title: t("activeReels"), value: "24,560", change: "+8% from last month" },
+    { title: t("monthlyViews"), value: "24,560", change: "+8% from last month" },
+    { title: t("totalReels"), value: "24,560", change: "+8% from last month" },
   ];
 
   return (
@@ -54,9 +56,9 @@ const SummaryCards = ({ t }) => {
 
 const MobileSummaryCards = ({ t }) => {
   const summaries = [
-    { title: t("activeCoupons"), value: "$24,560", change: "+8% from last month" },
-    { title: t("monthlyReturn"), value: "$24,560", change: "+8% from last month" },
-    { title: t("totalCoupons"), value: "$24,560", change: "+8% from last month" },
+    { title: t("activeReels"), value: "24,560", change: "+8% from last month" },
+    { title: t("monthlyViews"), value: "24,560", change: "+8% from last month" },
+    { title: t("totalReels"), value: "24,560", change: "+8% from last month" },
   ];
 
   return (
@@ -77,67 +79,118 @@ const MobileSummaryCards = ({ t }) => {
 const NavigationCards = ({ t }) => {
   return (
     <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-2 md:grid-cols-1 gap-4">
-      <Link href="/dashboard/top-coupons" className="block">
+      <Link href="/dashboard/top-reels" className="block">
         <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-          <CardTitle className="text-lg text-primary mb-1">{t("seeTopCoupons")}</CardTitle>
-          <CardDescription>{t("seeTopCouponsDesc")}</CardDescription>
+          <CardTitle className="text-lg text-primarylisten-primary mb-1">{t("seeTopReels")}</CardTitle>
+          <CardDescription>{t("seeTopReelsDesc")}</CardDescription>
         </Card>
       </Link>
-      <Link href="/dashboard/top-sales" className="block">
+      <Link href="/dashboard/top-views" className="block">
         <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-          <CardTitle className="text-lg text-primary mb-1">{t("seeTopSales")}</CardTitle>
-          <CardDescription>{t("seeTopSalesDesc")}</CardDescription>
+          <CardTitle className="text-lg text-primary mb-1">{t("seeTopViews")}</CardTitle>
+          <CardDescription>{t("seeTopViewsDesc")}</CardDescription>
         </Card>
       </Link>
     </div>
   );
 };
 
-const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages }) => {
+const ReelsGrid = ({ t, reels, currentPage, setCurrentPage, totalPages, selectedReels, setSelectedReels }) => {
+  const [playingVideos, setPlayingVideos] = useState({}); // Track which videos are playing
+
+  const handleSelectReel = (id) => {
+    setSelectedReels((prev) =>
+      prev.includes(id) ? prev.filter((reelId) => reelId !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    const allSelected = reels.every((reel) => selectedReels.includes(reel.id));
+    setSelectedReels(allSelected ? [] : reels.map((reel) => reel.id));
+  };
+
+  const handleDeleteSelected = () => {
+    console.log("Deleted reels:", selectedReels);
+    setSelectedReels([]);
+  };
+
+  const getVideoThumbnail = (mediaUrl) => {
+    if (mediaUrl.includes("youtube.com")) {
+      const videoId = mediaUrl.split("embed/")[1]?.split("?")[0];
+      return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    } else if (mediaUrl.includes("vimeo.com")) {
+      // Note: Vimeo thumbnail requires API call; using placeholder for simplicity
+      return "https://via.placeholder.com/480x270?text=Vimeo+Thumbnail";
+    }
+    return null;
+  };
+
+  const handlePlayVideo = (reelId) => {
+    setPlayingVideos((prev) => ({ ...prev, [reelId]: true }));
+  };
+
   return (
     <Card>
       <CardContent className="pt-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {coupons.map((coupon) => (
-            <Card
-              key={coupon.id}
-              className="overflow-hidden hover:shadow-md transition-shadow p-0"
+        <div className="flex justify-end gap-2 mb-4">
+          <Button
+            variant="outline"
+            onClick={handleToggleSelectAll}
+            disabled={reels.length === 0}
+          >
+            {t(selectedReels.length === reels.length && reels.length > 0 ? "deselectAll" : "selectAll")}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDeleteSelected}
+            disabled={selectedReels.length === 0}
+          >
+            {t("deleteSelected")}
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
+          {reels.map((reel) => (
+            <div
+              key={reel.id}
+              className="overflow-hidden transition-shadow p-0 m-0.5 border-0 rounded-none bg-gray-100"
             >
-              <div className="relative w-full h-32">
-                <Image src={coupon.image} alt={coupon.name} fill className="object-cover" />
-                <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
-                  <span className="text-primary font-bold">{coupon.discount}</span>
-                </div>
+              <div className="relative w-full h-50">
+                {typeof reel.media === "string" ? (
+                  playingVideos[reel.id] ? (
+                    <iframe
+                      src={`${reel.media}?autoplay=1`}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      title={reel.name}
+                    />
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={getVideoThumbnail(reel.media)!}
+                        alt={reel.name}
+                        fill
+                        className="object-cover"
+                      />
+                      <button
+                        onClick={() => handlePlayVideo(reel.id)}
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
+                      >
+                        <Play className="h-12 w-12 text-white" />
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  <Image
+                    src={reel.media[0]}
+                    alt={reel.name}
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
-              <CardHeader className="py-0 px-3">
-                <CardTitle className="text-lg">{coupon.name}</CardTitle>
-                <CardDescription className="flex justify-between items-center text-xs">
-                  <span>{coupon.type}</span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full ${
-                      coupon.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : coupon.status === "expired"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {t(coupon.status)}
-                  </span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-1 px-3">
-                <div className="flex justify-between text-xs">
-                  <span>{t("uses")}: {coupon.uses}</span>
-                  <span>{t("code")}: {coupon.code}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="px-3 pb-3">
-                <Button variant="outline" className="w-full h-8 text-xs" asChild>
-                  <Link href={`/dashboard/coupons/${coupon.id}`}>{t("viewDetails")}</Link>
-                </Button>
-              </CardFooter>
-            </Card>
+            </div>
           ))}
         </div>
       </CardContent>
@@ -187,35 +240,36 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages }) =>
   );
 };
 
-export default function AllCouponsPage() {
-  const t = useTranslations("Coupons");
+export default function AllReelsPage() {
+  const t = useTranslations("Reels");
   const { locale } = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [selectedReels, setSelectedReels] = useState([]);
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value: string) => setSearchTerm(value), 300),
     []
   );
 
-  const filteredCoupons = useMemo(() => {
-    return allCouponsData
-      .filter((coupon) => {
+  const filteredReels = useMemo(() => {
+    return allReelsData
+      .filter((reel) => {
         if (searchTerm) {
           const lowerSearch = searchTerm.toLowerCase();
           return (
-            coupon.name.toLowerCase().includes(lowerSearch) ||
-            coupon.code.toLowerCase().includes(lowerSearch) ||
-            coupon.type.toLowerCase().includes(lowerSearch)
+            reel.name.toLowerCase().includes(lowerSearch) ||
+            reel.code.toLowerCase().includes(lowerSearch) ||
+            reel.type.toLowerCase().includes(lowerSearch)
           );
         }
         return true;
       })
-      .filter((coupon) => {
+      .filter((reel) => {
         if (["active", "expired", "pending"].includes(filterType)) {
-          return coupon.status === filterType;
+          return reel.status === filterType;
         }
         return true;
       })
@@ -229,10 +283,10 @@ export default function AllCouponsPage() {
       });
   }, [searchTerm, filterType]);
 
-  const totalPages = Math.ceil(filteredCoupons.length / COUPONS_PER_PAGE);
-  const currentCoupons = filteredCoupons.slice(
-    (currentPage - 1) * COUPONS_PER_PAGE,
-    currentPage * COUPONS_PER_PAGE
+  const totalPages = Math.ceil(filteredReels.length / REELS_PER_PAGE);
+  const currentReels = filteredReels.slice(
+    (currentPage - 1) * REELS_PER_PAGE,
+    currentPage * REELS_PER_PAGE
   );
 
   const filterOptions = [
@@ -246,13 +300,13 @@ export default function AllCouponsPage() {
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
       {/* Section 1: Summary and Navigation */}
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 w-full">
         <SummaryCards t={t} />
         <NavigationCards t={t} />
         <MobileSummaryCards t={t} />
       </div>
 
-      {/* Section 2: Header with Filter and New Coupon */}
+      {/* Section 2: Header with Filter and New Reel */}
       <Card>
         <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <div>
@@ -300,22 +354,24 @@ export default function AllCouponsPage() {
               <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
             </div>
             <Button asChild size="sm">
-              <Link href="/dashboard/coupons/new">
+              <Link href="/dashboard/reels/new">
                 <Plus className="mr-2 h-4 w-4" />
-                {t("newCoupon")}
+                {t("newReel")}
               </Link>
             </Button>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Section 3: Coupons Grid */}
-      <CouponsGrid
+      {/* Section 3: Reels Grid */}
+      <ReelsGrid
         t={t}
-        coupons={currentCoupons}
+        reels={currentReels}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
+        selectedReels={selectedReels}
+        setSelectedReels={setSelectedReels}
       />
     </div>
   );

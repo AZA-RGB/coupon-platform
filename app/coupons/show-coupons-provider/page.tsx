@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
+import { Checkbox } from "@/components/ui/checkbox"; // Import Checkbox
 import { allCouponsData } from "../constants";
 
 const COUPONS_PER_PAGE = 10;
@@ -93,10 +94,46 @@ const NavigationCards = ({ t }) => {
   );
 };
 
-const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages }) => {
+const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, selectedCoupons, setSelectedCoupons }: any) => {
+  const handleSelectCoupon = (id) => {
+    setSelectedCoupons((prev) =>
+      prev.includes(id) ? prev.filter((couponId) => couponId !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    const allSelected = coupons.every((coupon) => selectedCoupons.includes(coupon.id));
+    setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
+  };
+
+  const handleDeleteSelected = () => {
+    // This assumes allCouponsData is mutable or you have a way to update it
+    // For a real app, you would likely make an API call to delete the coupons
+    console.log("Deleted coupons:", selectedCoupons);
+    setSelectedCoupons([]); // Clear selection after deletion
+  };
+
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent className="pt-2">
+        <div className="flex justify-end gap-2 mb-4">
+          <Button
+            variant="outline"
+            onClick={handleToggleSelectAll}
+            disabled={coupons.length === 0}
+            className="cursor-pointer"
+          >
+            {t(selectedCoupons.length === coupons.length && coupons.length > 0 ? "deselectAll" : "selectAll")}
+          </Button>
+          <Button
+            variant="destructive"
+            className="cursor-pointer"
+            onClick={handleDeleteSelected}
+            disabled={selectedCoupons.length === 0}
+          >
+            {t("deleteSelected")}
+          </Button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {coupons.map((coupon) => (
             <Card
@@ -110,7 +147,13 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages }) =>
                 </div>
               </div>
               <CardHeader className="py-0 px-3">
-                <CardTitle className="text-lg">{coupon.name}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={selectedCoupons.includes(coupon.id)}
+                    onCheckedChange={() => handleSelectCoupon(coupon.id)}
+                  />
+                  <CardTitle className="text-lg">{coupon.name}</CardTitle>
+                </div>
                 <CardDescription className="flex justify-between items-center text-xs">
                   <span>{coupon.type}</span>
                   <span
@@ -194,6 +237,7 @@ export default function AllCouponsPage() {
   const [filterType, setFilterType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [selectedCoupons, setSelectedCoupons] = useState([]); // New state for selected coupons
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value: string) => setSearchTerm(value), 300),
@@ -313,9 +357,11 @@ export default function AllCouponsPage() {
       <CouponsGrid
         t={t}
         coupons={currentCoupons}
-        currentPage={currentPage}
+        currentPage={currentPage }
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
+        selectedCoupons={selectedCoupons}
+        setSelectedCoupons={setSelectedCoupons}
       />
     </div>
   );
