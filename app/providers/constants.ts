@@ -1,5 +1,5 @@
 // constants.js
-export const allOrdersData = [
+export const allProvidersData = [
   {
     id: "1",
     image:
@@ -7,12 +7,10 @@ export const allOrdersData = [
     name: "John Doe",
     email: "john@example.com",
     phone: "+963912345678",
-    startDate: "2025-05-15",
-    endDate: "2025-06-15",
+    requestDate: "2025-05-15",
     status: "active",
     totalCoupons: 10,
-    restCoupons: 3,
-    addDate: "2025-05-01",
+    totalPackages: 3,
   },
   {
     id: "2",
@@ -21,53 +19,11 @@ export const allOrdersData = [
     name: "Jane Smith",
     email: "jane@example.com",
     phone: "+963923456789",
-    startDate: "2025-04-10",
-    endDate: "2025-05-10",
+    requestDate: "2025-04-10",
     status: "expired",
     totalCoupons: 5,
-    restCoupons: 0,
-    addDate: "2025-04-01",
-  },
-  {
-    id: "3",
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+963923456789",
-    startDate: "2025-04-10",
-    endDate: "2025-05-10",
-    status: "expired",
-    totalCoupons: 5,
-    restCoupons: 0,
-    addDate: "2025-04-01",
-  },{
-    id: "4",
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+963923456789",
-    startDate: "2025-04-10",
-    endDate: "2025-05-10",
-    status: "expired",
-    totalCoupons: 5,
-    restCoupons: 0,
-    addDate: "2025-04-01",
-  },{
-    id: "5",
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+963923456789",
-    startDate: "2025-04-10",
-    endDate: "2025-05-10",
-    status: "expired",
-    totalCoupons: 5,
-    restCoupons: 0,
-    addDate: "2025-04-01",
-  },
+    totalPackages: 0,
+  }
 ];
 
 
