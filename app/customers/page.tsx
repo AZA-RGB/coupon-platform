@@ -32,31 +32,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { allOrdersData } from "./constants";
+import { allCustomersData } from "./constants";
 
-const ORDERS_PER_PAGE = 10;
+const CUSTOMERS_PER_PAGE = 10;
 
 const SummaryCards = ({ t }) => {
   const summaries = [
     {
-      title: t("activeOrders"),
+      title: t("totalCustomers"),
       value: "$24,560",
       change: "+8% from last month",
     },
     {
-      title: t("monthlyReturn"),
+      title: t("newCustomers"),
       value: "$24,560",
       change: "+8% from last month",
     },
     {
-      title: t("totalOrders"),
+      title: t("activeCustomers"),
       value: "$24,560",
       change: "+8% from last month",
     },
   ];
 
   return (
-    <Card className="w-full lg:w-3/5 p-4 hidden md:flex flex-col gap-4">
+    <Card className="w-full lg:w-3/4 p-4 hidden md:flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row gap-4 w-full">
         {summaries.map((summary, index) => (
           <div key={index} className="flex-1 p-4 flex flex-col justify-between">
@@ -77,17 +77,17 @@ const SummaryCards = ({ t }) => {
 const MobileSummaryCards = ({ t }) => {
   const summaries = [
     {
-      title: t("activeOrders"),
+      title: t("totalCustomers"),
       value: "$24,560",
       change: "+8% from last month",
     },
     {
-      title: t("monthlyReturn"),
+      title: t("newCustomers"),
       value: "$24,560",
       change: "+8% from last month",
     },
     {
-      title: t("totalOrders"),
+      title: t("activeCustomers"),
       value: "$24,560",
       change: "+8% from last month",
     },
@@ -110,28 +110,20 @@ const MobileSummaryCards = ({ t }) => {
 
 const NavigationCards = ({ t }) => {
   return (
-    <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-2 md:grid-cols-1 gap-4">
-      <Link href="/dashboard/top-orders" className="block">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
+    <div className="w-full lg:w-1/4">
+      <Link href="/dashboard/top-customers" className="block h-full">
+        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-4">
           <CardTitle className="text-lg text-primary mb-1">
-            {t("seeTopOrders")}
+            {t("seeTopCustomers")}
           </CardTitle>
-          <CardDescription>{t("seeTopOrdersDesc")}</CardDescription>
-        </Card>
-      </Link>
-      <Link href="/dashboard/top-sales" className="block">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-          <CardTitle className="text-lg text-primary mb-1">
-            {t("seeTopSales")}
-          </CardTitle>
-          <CardDescription>{t("seeTopSalesDesc")}</CardDescription>
+          <CardDescription>{t("seeTopCustomersDesc")}</CardDescription>
         </Card>
       </Link>
     </div>
   );
 };
 
-const OrdersTable = ({
+const CustomersTable = ({
   t,
   coupons,
   currentPage,
@@ -146,10 +138,10 @@ const OrdersTable = ({
     () => [
       { key: "userInfo", label: t("userInfo") || "User Info" },
       { key: "phone", label: t("phone") || "Phone" },
-      { key: "startDate", label: t("startDate") || "Start Date" },
-      { key: "endDate", label: t("endDate") || "End Date" },
+      { key: "subscribeDate", label: t("subscribeDate") || "Subscribe Date" },
       { key: "status", label: t("status") || "Status" },
       { key: "coupons", label: t("coupons") || "Coupons" },
+      { key: "banned", label: t("banned") || "Banned" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
     [t]
@@ -190,20 +182,20 @@ const OrdersTable = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {displayedData.map((order) => (
+                {displayedData.map((customer) => (
                   <TableRow
-                    key={order.id}
+                    key={customer.id}
                     className="hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     {columns.map((column) => (
                       <TableCell
-                        key={`${order.id}-${column.key}`}
+                        key={`${customer.id}-${column.key}`}
                         className={`px-4 py-3 ${
                           isRTL ? "text-right" : "text-left"
                         }`}
                       >
                         {renderTableCellContent(
-                          order,
+                          customer,
                           column.key,
                           isRTL,
                           t,
@@ -261,23 +253,23 @@ const OrdersTable = ({
 };
 
 // Helper component to render table cell content
-function renderTableCellContent(order, key, isRTL, t, formatDate) {
+function renderTableCellContent(customer, key, isRTL, t, formatDate) {
   switch (key) {
     case "userInfo":
       return (
         <div className={`flex items-center ${"flex-row"} gap-2`}>
           <div className="relative w-9 h-10">
             <Image
-              src={order.image}
-              alt={order.name}
+              src={customer.image}
+              alt={customer.name}
               fill
               className="rounded-[10px] object-cover"
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-medium">{order.name}</span>
+            <span className="font-medium">{customer.name}</span>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              {order.email}
+              {customer.email}
             </span>
           </div>
         </div>
@@ -293,40 +285,55 @@ function renderTableCellContent(order, key, isRTL, t, formatDate) {
             textAlign: isRTL ? "right" : "left",
           }}
         >
-          {order.phone}
+          {customer.phone}
         </span>
       );
 
-    case "startDate":
-      return formatDate(order.startDate);
-
-    case "endDate":
-      return formatDate(order.endDate);
+    case "subscribeDate":
+      return formatDate(customer.subscribeDate);
 
     case "status":
       return (
         <span
           className={`px-2 py-0.5 rounded-full text-xs ${
-            order.status === "active"
+            customer.status === "active"
               ? "bg-green-100 text-green-800"
-              : order.status === "expired"
+              : customer.status === "unBanned"
+              ? "bg-blue-100 text-blue-800"
+              : customer.status === "banned"
               ? "bg-red-100 text-red-800"
               : "bg-yellow-100 text-yellow-800"
           }`}
         >
-          {t(order.status)}
+          {t(customer.status)}
         </span>
       );
 
     case "coupons":
-      return isRTL
-        ? `${order.restCoupons}/${order.totalCoupons}`
-        : `${order.totalCoupons}/${order.restCoupons}`;
+      return `${customer.totalCoupons}`;
+
+    case "banned":
+      return (
+        <Link href={`/dashboard/customers/${customer.status === "active" ? "banned" : "unbanned"}/${customer.id}`}>
+          <Button
+            variant="default"
+            size="sm"
+            className={ "cursor-pointer " +`${
+             
+              customer.status === "active"
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }` }
+          >
+            {t(customer.status === "active" ? "ban" : "unBan")}
+          </Button>
+        </Link>
+      );
 
     case "actions":
       return (
         <Link
-          href={`/dashboard/orders/${order.id}`}
+          href={`/dashboard/customers/${customer.id}`}
           className="text-sm text-primary underline hover:text-primary/80"
         >
           {t("viewDetails")}
@@ -338,8 +345,8 @@ function renderTableCellContent(order, key, isRTL, t, formatDate) {
   }
 }
 
-export default function AllOrdersDashboard() {
-  const t = useTranslations("Orders");
+export default function AllCustomersDashboard() {
+  const t = useTranslations("Customers");
   const { locale } = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
@@ -356,28 +363,28 @@ export default function AllOrdersDashboard() {
     setCurrentPage(1);
   }, [searchTerm, filterType]);
 
-  const filteredOrders = useMemo(() => {
-    // Ensure allOrdersData is an array
-    const orders = Array.isArray(allOrdersData) ? allOrdersData : [];
+  const filteredCustomers = useMemo(() => {
+    // Ensure allCustomersData is an array
+    const customers = Array.isArray(allCustomersData) ? allCustomersData : [];
 
-    return orders
-      .filter((order) => {
+    return customers
+      .filter((customer) => {
         if (!searchTerm) return true;
         const lowerSearch = searchTerm.toLowerCase();
         return (
-          (typeof order.name === "string" &&
-            order.name.toLowerCase().includes(lowerSearch)) ||
-          (typeof order.email === "string" &&
-            order.email.toLowerCase().includes(lowerSearch)) ||
-          (typeof order.phone === "string" &&
-            order.phone.toLowerCase().includes(lowerSearch))
+          (typeof customer.name === "string" &&
+            customer.name.toLowerCase().includes(lowerSearch)) ||
+          (typeof customer.email === "string" &&
+            customer.email.toLowerCase().includes(lowerSearch)) ||
+          (typeof customer.phone === "string" &&
+            customer.phone.toLowerCase().includes(lowerSearch))
         );
       })
-      .filter((order) => {
-        if (["active", "expired", "pending"].includes(filterType)) {
+      .filter((customer) => {
+        if (["active", "unBanned", "banned"].includes(filterType)) {
           return (
-            typeof order.status === "string" &&
-            order.status.toLowerCase() === filterType.toLowerCase()
+            typeof customer.status === "string" &&
+            customer.status.toLowerCase() === filterType.toLowerCase()
           );
         }
         return true;
@@ -396,18 +403,18 @@ export default function AllOrdersDashboard() {
       });
   }, [searchTerm, filterType]);
 
-  const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE) || 1;
-  const currentOrders = filteredOrders.slice(
-    (currentPage - 1) * ORDERS_PER_PAGE,
-    currentPage * ORDERS_PER_PAGE
+  const totalPages = Math.ceil(filteredCustomers.length / CUSTOMERS_PER_PAGE) || 1;
+  const currentCustomers = filteredCustomers.slice(
+    (currentPage - 1) * CUSTOMERS_PER_PAGE,
+    currentPage * CUSTOMERS_PER_PAGE
   );
 
   const filterOptions = [
     { label: t("newest"), value: "newest" },
     { label: t("oldest"), value: "oldest" },
     { label: t("active"), value: "active" },
-    { label: t("expired"), value: "expired" },
-    { label: t("pending"), value: "pending" },
+    { label: t("unBanned"), value: "unBanned" },
+    { label: t("banned"), value: "banned" },
   ];
 
   return (
@@ -471,10 +478,10 @@ export default function AllOrdersDashboard() {
         </CardHeader>
       </Card>
 
-      {/* Section 3: Orders Table */}
-      <OrdersTable
+      {/* Section 3: Customers Table */}
+      <CustomersTable
         t={t}
-        coupons={currentOrders}
+        coupons={currentCustomers}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
