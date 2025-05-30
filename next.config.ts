@@ -3,7 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["images.immediate.co.uk"],
+    domains: ["images.immediate.co.uk","img.youtube.com","via.placeholder.com"],
   },
   locales: ["en", "ar"],
   defaultLocale: "en",
