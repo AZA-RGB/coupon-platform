@@ -185,6 +185,32 @@
     "active": "Active",
     "expired": "Expired",
     "pending": "Pending"
+  }, 
+   "Customers": {
+    "title": "Customers Dashboard",
+    "description": "View and manage all customer information and orders",
+    "totalCustomers": "Total Customers",
+    "newCustomers": "New Customers",
+    "activeCustomers": "Active Customers",
+    "seeTopCustomers": "See Top Customers",
+    "seeTopCustomersDesc": "View the list of top-performing customers",
+    "userInfo": "User Info",
+    "phone": "Phone",
+    "subscribeDate": "Subscribe Date",
+    "status": "Status",
+    "coupons": "Coupons",
+    "banned": "banned",
+    "actions": "Actions",
+    "active": "Active",
+    "unBanned": "Unbanned",
+    "ban": "Ban",
+    "unBan": "Unban",
+    "pending": "Pending",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "filter": "Filter",
+    "search": "Search...",
+    "viewDetails": "View Details"
   }
 
 }

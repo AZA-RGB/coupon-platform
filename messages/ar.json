@@ -185,5 +185,31 @@
     "active": "نشط",
     "expired": "منتهي الصلاحية",
     "pending": "معلق"
+  },
+   "Customers": {
+    "title": "لوحة تحكم العملاء",
+    "description": "عرض وإدارة جميع معلومات العملاء والطلبات",
+    "totalCustomers": "إجمالي العملاء",
+    "newCustomers": "العملاء الجدد",
+    "activeCustomers": "العملاء النشطون",
+    "seeTopCustomers": "عرض أفضل العملاء",
+    "seeTopCustomersDesc": "عرض قائمة العملاء ذوي الأداء الأفضل",
+    "userInfo": "معلومات المستخدم",
+    "phone": "الهاتف",
+    "subscribeDate": "تاريخ الاشتراك",
+    "status": "الحالة",
+    "coupons": "الكوبونات",
+    "banned": "محظور",
+    "actions": "الإجراءات",
+    "active": "نشط",
+    "unBanned": "غير محظور",
+    "ban": "حظر",
+    "unBan": "الغاء الحظر",
+    "pending": "قيد الانتظار",
+    "newest": "الأحدث",
+    "oldest": "الأقدم",
+    "filter": "تصفية",
+    "search": "بحث...",
+    "viewDetails": "عرض التفاصيل"
   }
 }
