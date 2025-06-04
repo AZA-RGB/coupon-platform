@@ -30,20 +30,18 @@ const FileUploadDropzone = ({ field }: { field: any }) => {
           </div>
         </div>
       </FileInput>
-      <FileUploaderContent className="flex items-center flex-row gap-2">
+      <FileUploaderContent className="flex items-center flex-row gap-2 overflow-auto">
         {files.map((file: File, i: number) => (
           <FileUploaderItem
             key={i}
             index={i}
-            className="size-20 p-0 rounded-md overflow-hidden"
-            aria-roledescription={`file ${i + 1} containing ${file.name}`}
+            className="size-3/4  max-h-96 p-0 rounded-md "
+            aria-roledescription={`file ${i + 1}  ${file.name}`}
           >
-            <Image
+            <img
               src={URL.createObjectURL(file)}
               alt={file.name}
-              height={80}
-              width={80}
-              className="size-20 p-0"
+              className="max-size-full object-cover  p-0"
             />
           </FileUploaderItem>
         ))}
