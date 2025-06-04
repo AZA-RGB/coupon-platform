@@ -57,8 +57,8 @@ export default function AddEvent() {
     
     <>
     <title>Add Event</title>
-    <div className="flex  flex-col   w-full ">
-      <Card className="max-w-xl self-center  p-0">
+    <div className="flex  flex-col   w-full  pb-5">
+      <Card className="md:w-xl max-w-lg self-center  p-0 ">
         <CardContent className="p-10">
           <Form {...form}>
             <form
