@@ -215,7 +215,7 @@
     "search": "Search...",
     "viewDetails": "View Details"
   },
-  "Reels":{
+  "Reels": {
     "title": "All Reels",
     "description": "Browse and manage all your reels",
     "activeReels": "Active Reels",
@@ -240,5 +240,22 @@
     "expired": "Expired",
     "pending": "Pending",
     "viewDetails": "View Details"
-  }
+  },
+  "AdminDashboard": {
+    "totalSales": "Total Sales",
+    "newUsers": "New Users",
+    "orders": "Orders",
+    "revenue": "Revenue",
+    "visitors": "Visitors",
+    "salesOverview": "Sales Overview",
+    "providers": "Providers"
+  },
+  "CouponsTable": {
+    "topCoupons": "Top Coupons",
+    "billID": "Bill ID",
+    "coupon": "Coupon",
+    "date": "Date",
+    "customers": "Customers"
+  },
+  "Topcustomers": "Top Customers"
 }

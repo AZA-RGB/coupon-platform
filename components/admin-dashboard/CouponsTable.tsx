@@ -1,4 +1,4 @@
-import { Button } from "../ui/button";
+import { useLocale, useTranslations } from "next-intl";
 import { Card } from "../ui/card";
 import {
   Table,
@@ -102,29 +102,45 @@ const testData = [
     customers: ["Youssef Ali", "Mona Hassan"],
   },
 ];
-export default function TopProvidersTable() {
+
+export default function CouponsTable() {
+  const locale = useLocale(); // Get the current locale
+  const t = useTranslations();
+  const isArabic = locale === "ar";
+
   return (
     <Card className="col-span-2 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-3xl text-primary">Top providers</div>
-        <Button variant="outline" className=" dark:">
-          Export
-        </Button>
+        <div>
+          <div className="text-3xl text-primary">
+            {t("CouponsTable.topCoupons")}
+          </div>
+        </div>
       </div>
       <div className="row-span-5 overflow-auto">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead className="w-[100px]">Bill ID</TableHead>
-              <TableHead>Coupon</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Customers</TableHead>
+              <TableHead
+                className={`w-[100px] ${isArabic ? "text-right" : ""}`}
+              >
+                {t("CouponsTable.billID")}
+              </TableHead>
+              <TableHead className={isArabic ? "text-right" : ""}>
+                {t("CouponsTable.coupon")}
+              </TableHead>
+              <TableHead className={isArabic ? "text-right" : ""}>
+                {t("CouponsTable.date")}
+              </TableHead>
+              <TableHead className={isArabic ? "text-right" : ""}>
+                {t("CouponsTable.customers")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {testData.map((bill, index) => (
-              <TableRow key={index} className="hover:bg-muted">
-                <TableCell className="font-medium ">{bill.billID}</TableCell>
+              <TableRow key={index}>
+                <TableCell className="font-medium">{bill.billID}</TableCell>
                 <TableCell>{bill.coupon}</TableCell>
                 <TableCell>{bill.date}</TableCell>
                 <TableCell>
