@@ -46,6 +46,8 @@
     "react-hook-form": "^7.56.3",
     "react-icons": "^5.5.0",
     "react-qr-code": "^2.0.15",
+    "react-smooth": "^4.0.4",
+    "recharts": "^2.15.3",
     "rtl-detect": "^1.1.2",
     "sonner": "^2.0.3",
     "swr": "^2.3.3",

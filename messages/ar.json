@@ -240,5 +240,23 @@
     "expired": "منتهي الصلاحية",
     "pending": "معلق",
     "viewDetails": "عرض التفاصيل"
-  }
+  },
+  "AdminDashboard": {
+    "totalSales": "إجمالي المبيعات",
+    "newUsers": "مستخدمون جدد",
+    "orders": "الطلبات",
+    "revenue": "الإيرادات",
+    "visitors": "الزوار",
+    "salesOverview": "لمحة عن المبيعات",
+    "providers": "المزودون"
+  },
+  "CouponsTable": {
+    "topCoupons": "أفضل الكوبونات",
+    "billID": "معرف الفاتورة",
+    "coupon": "كوبون",
+    "date": "تاريخ",
+    "customers": "العملاء"
+  },
+
+  "Topcustomers": "أفضل الزبائن"
 }
