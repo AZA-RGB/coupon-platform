@@ -41,6 +41,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CalendarIcon, Filter, Search } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -48,108 +59,122 @@ import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import debounce from "lodash/debounce";
-import { couponTypesData, couponTypeOptions, topCategoriesData } from "./constants";
+import { couponTypeOptions, topCategoriesData, fetchCouponTypes, deleteCouponType } from "./constants";
+import MyImage from "@/components/my-image";
 
 const COUPONS_PER_PAGE = 10;
+const FALLBACK_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
 
-const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPages }) => {
-  const [selectedTypes, setSelectedTypes] = useState([]);
-  const [filteredCouponTypes, setFilteredCouponTypes] = useState(couponTypes);
-
-  useEffect(() => {
-    setFilteredCouponTypes(couponTypes);
-  }, [couponTypes]);
-
+const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPages, selectedTypes, setSelectedTypes, handleDeleteSelected }) => {
   const handleSelectType = (id) => {
     setSelectedTypes((prev) =>
-      {
-            return prev.includes(id) ? prev.filter((typeId) => typeId !== id) : [...prev, id];
-        }
+      prev.includes(id) ? prev.filter((typeId) => typeId !== id) : [...prev, id]
     );
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = filteredCouponTypes.every((type) => selectedTypes.includes(type.id));
-    setSelectedTypes(allSelected ? [] : filteredCouponTypes.map((type) => type.id));
+    const allSelected = couponTypes.every((type) => selectedTypes.includes(type.id));
+    setSelectedTypes(allSelected ? [] : couponTypes.map((type) => type.id));
   };
 
-  const handleDeleteSelected = () => {
-    const updatedCouponTypes = couponTypes.filter((type) => !selectedTypes.includes(type.id));
-    setFilteredCouponTypes(updatedCouponTypes);
-    setSelectedTypes([]);
-    console.log("Deleted types:", selectedTypes);
-  };
+  if (!Array.isArray(couponTypes)) {
+    console.error("CouponTypes is not an array:", couponTypes);
+    return (
+      <Card>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">
+            {t("noTypesFound")}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
       <CardContent>
-        <div className="flex justify-end gap-2 mb-4">
-          <Button
-            variant="outline"
-            onClick={handleToggleSelectAll}
-            disabled={filteredCouponTypes.length === 0}
-          >
-            {t(selectedTypes.length === filteredCouponTypes.length && filteredCouponTypes.length > 0 ? "deselectAll" : "selectAll")}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDeleteSelected}
-            disabled={selectedTypes.length === 0}
-          >
-            {t("deleteSelected")}
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredCouponTypes.map((type) => (
-            <Card key={type.id} className="overflow-hidden hover:shadow-md transition-shadow p-0">
-              <div className="relative w-full h-32">
-                <Image src={type.image} alt={type.name} fill className="object-cover" />
-                <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
-                  <span className="text-primary font-bold">
-                    {type.couponsCount} {t("coupons")}
-                  </span>
-                </div>
-              </div>
-              <CardHeader className="py-0 px-3">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={selectedTypes.includes(type.id)}
-                    onCheckedChange={() => handleSelectType(type.id)}
-                  />
-                  <CardTitle className="text-lg">{type.name}</CardTitle>
-                </div>
-                <CardDescription className="flex justify-between items-center text-xs">
-                  <span className="line-clamp-1 text-ellipsis overflow-hidden">{type.description}</span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full ${
-                      type.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : type.status === "expired"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
+        {couponTypes.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            {t("noTypesFound")}
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-end gap-2 mb-4">
+              <Button
+                variant="outline"
+                onClick={handleToggleSelectAll}
+                disabled={couponTypes.length === 0}
+              >
+                {t(selectedTypes.length === couponTypes.length && couponTypes.length > 0 ? "deselectAll" : "selectAll")}
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="cursor-pointer"
+                    disabled={selectedTypes.length === 0}
                   >
-                    {t(type.status)}
-                  </span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-1 px-3">
-                <div className="flex justify-between text-xs">
-                  <span>{t("added")}: {format(new Date(type.addDate), "MMM dd, yyyy")}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="px-3 pb-3 flex justify-center gap-2">
-                <Button variant="outline" className="w-full h-8 text-xs" asChild>
-                  <Link href={`/dashboard/coupons/types/${type.id}`}>{t("details")}</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                    {t("deleteSelected")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t("confirmDeleteDesc", { count: selectedTypes.length })}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSelected}>
+                      {t("confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {couponTypes.map((type) => (
+                <Card key={type.id} className="overflow-hidden hover:shadow-md transition-shadow p-0">
+                  <div className="relative w-full h-32">
+                   <MyImage src={''} alt={type.name} />
+                  </div>
+                  <CardHeader className="py-0 px-3">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={selectedTypes.includes(type.id)}
+                        onCheckedChange={() => handleSelectType(type.id)}
+                      />
+                      <CardTitle className="text-lg">{type.name}</CardTitle>
+                    </div>
+                    <CardDescription className="flex justify-between items-center text-xs">
+                      <span
+                        className={`px-2 py-0.5 rounded-full ${
+                          type.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : type.status === "expired"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {t(type.status)}
+                      </span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardFooter className="px-3 pb-3 flex justify-center gap-2">
+                    <Button variant="outline" className="w-full h-8 text-xs" asChild>
+                      <Link href={`/dashboard/coupons/types/${type.id}`}>{t("details")}</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
       </CardContent>
       <CardFooter className="flex justify-center">
         <Pagination>
-          <PaginationContent >
+          <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 href="#"
@@ -157,6 +182,7 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                   e.preventDefault();
                   if (currentPage > 1) setCurrentPage(currentPage - 1);
                 }}
+                className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
               >
                 {t("previous")}
               </PaginationPrevious>
@@ -182,7 +208,7 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                   e.preventDefault();
                   if (currentPage < totalPages) setCurrentPage(currentPage + 1);
                 }}
-                aria-label={t("next")}
+                className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''}
               >
                 {t("next")}
               </PaginationNext>
@@ -295,52 +321,113 @@ export default function TypesAllCouponsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
   const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
+  const [couponTypes, setCouponTypes] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value) => setSearchTerm(value), 300),
     []
   );
 
+  const fetchCouponTypesData = async () => {
+    setIsLoading(true);
+    try {
+      const { couponTypes, totalPages, currentPage: apiCurrentPage } = await fetchCouponTypes(currentPage, COUPONS_PER_PAGE);
+      console.log("Setting couponTypes:", couponTypes);
+      setCouponTypes(couponTypes);
+      setTotalPages(totalPages);
+      if (apiCurrentPage !== currentPage) {
+        setCurrentPage(apiCurrentPage);
+      }
+    } catch (error) {
+      console.error('Error fetching coupon types:', error);
+      toast.error(t("fetchErrorDesc"), {
+        description: t("fetchError"),
+        duration: 5000,
+      });
+      setCouponTypes([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCouponTypesData();
+  }, [currentPage]);
+
+  const handleDeleteSelected = async () => {
+    console.log('Selected Coupon Types:', selectedTypes);
+    setIsLoading(true);
+    try {
+      const deletePromises = selectedTypes.map((id) => deleteCouponType(id));
+      const results = await Promise.all(deletePromises);
+      const failedDeletions = results.filter((result) => !result.success);
+      if (failedDeletions.length > 0) {
+        console.error('Failed to delete some coupon types:', failedDeletions);
+        const errorMessages = failedDeletions.map((result) => {
+          const error = result.error;
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          return `Coupon Type ID ${result.id}: ${status ? `Status ${status} - ` : ''}${message}`;
+        });
+        toast.error(t("deleteFailedDesc"), {
+          description: errorMessages.join("; ") || t("deleteFailed"),
+          duration: 7000,
+        });
+      } else {
+        toast.success(t("deleteSuccessDesc", { count: selectedTypes.length }), {
+          description: t("deleteSuccess"),
+          duration: 3000,
+        });
+        setSelectedTypes([]);
+        setCurrentPage(1);
+        await fetchCouponTypesData();
+      }
+    } catch (error) {
+      console.error('Error during deletion:', error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || error.message;
+      toast.error(`${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ''}: ${message}`, {
+        description: t("deleteError"),
+        duration: 7000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const filteredCouponTypes = useMemo(() => {
-    return couponTypesData
+    if (!Array.isArray(couponTypes)) {
+      console.error("filteredCouponTypes: couponTypes is not an array:", couponTypes);
+      return [];
+    }
+
+    return couponTypes
       .filter((type) => {
-        // Search filter
         if (searchTerm) {
           const lowerSearch = searchTerm.toLowerCase();
-          return (
-            type.name.toLowerCase().includes(lowerSearch) ||
-            type.description.toLowerCase().includes(lowerSearch)
-          );
+          return type.name.toLowerCase().includes(lowerSearch);
         }
         return true;
       })
       .filter((type) => {
-        // Date range filter
-        if (dateRange.from && dateRange.to) {
-          const addDate = new Date(type.addDate);
-          return addDate >= dateRange.from && addDate <= dateRange.to;
-        }
-        return true;
-      })
-      .filter((type) => {
-        // Status filter
         if (["active", "expired", "pending"].includes(filterType)) {
           return type.status === filterType;
         }
         return true;
       })
       .sort((a, b) => {
-        // Sort filter
         if (filterType === "newest") {
-          return new Date(b.addDate).getTime() - new Date(a.addDate).getTime();
+          return b.id - a.id; // Simulate newest by ID (no addDate)
         } else if (filterType === "oldest") {
-          return new Date(a.addDate).getTime() - new Date(b.addDate).getTime();
+          return a.id - b.id; // Simulate oldest by ID (no addDate)
         }
         return 0;
       });
-  }, [searchTerm, dateRange, filterType]);
+  }, [couponTypes, searchTerm, filterType]);
 
-  const totalPages = Math.ceil(filteredCouponTypes.length / COUPONS_PER_PAGE);
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
     currentPage * COUPONS_PER_PAGE
@@ -361,84 +448,95 @@ export default function TypesAllCouponsPage() {
 
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <TopCategoriesCard t={t} topCategoriesData={topCategoriesData} />
-        <ReportGeneratorCard
-          t={t}
-          couponType={couponType}
-          setCouponType={setCouponType}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          handleGenerateReport={handleGenerateReport}
-        />
-      </div>
-      <Card>
-        <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <div>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col lg:flex-row gap-4 w-full">
+            <TopCategoriesCard t={t} topCategoriesData={topCategoriesData} />
+            <ReportGeneratorCard
+              t={t}
+              couponType={couponType}
+              setCouponType={setCouponType}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              handleGenerateReport={handleGenerateReport}
+            />
           </div>
-          <div className="flex space-x-2">
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer text-muted-foreground"
-                onClick={() => {
-                  const el = document.getElementById("filter-menu");
-                  if (el) el.classList.toggle("hidden");
-                }}
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                {t("filter")}
-              </Button>
-              <div
-                id="filter-menu"
-                className="cursor-pointer absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
-              >
-                {[
-                  { label: t("newest"), value: "newest" },
-                  { label: t("oldest"), value: "oldest" },
-                  { label: t("active"), value: "active" },
-                  { label: t("expired"), value: "expired" },
-                  { label: t("pending"), value: "pending" },
-                ].map((item) => (
-                  <button
-                    key={item.value}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 ${
-                      filterType === item.value ? "bg-gray-200" : ""
-                    }`}
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+              <div>
+                <CardTitle>{t("title")}</CardTitle>
+                <CardDescription>{t("description")}</CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="cursor-pointer text-muted-foreground"
                     onClick={() => {
-                      setFilterType(item.value);
-                      setCurrentPage(1);
                       const el = document.getElementById("filter-menu");
-                      if (el) el.classList.add("hidden");
+                      if (el) el.classList.toggle("hidden");
                     }}
                   >
-                    {item.label}
-                  </button>
-                ))}
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t("filter")}
+                  </Button>
+                  <div
+                    id="filter-menu"
+                    className="cursor-pointer absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
+                  >
+                    {[
+                      { label: t("newest"), value: "newest" },
+                      { label: t("oldest"), value: "oldest" },
+                      { label: t("active"), value: "active" },
+                      { label: t("expired"), value: "expired" },
+                      { label: t("pending"), value: "pending" },
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 ${
+                          filterType === item.value ? "bg-gray-200" : ""
+                        }`}
+                        onClick={() => {
+                          setFilterType(item.value);
+                          setCurrentPage(1);
+                          const el = document.getElementById("filter-menu");
+                          if (el) el.classList.add("hidden");
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder={t("search")}
+                    className="h-8 max-w-[200px]"
+                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+                  />
+                  <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
+                </div>
               </div>
-            </div>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder={t("search")}
-                className="h-8 max-w-[200px]"
-                onChange={(e) => debouncedSetSearchTerm(e.target.value)}
-              />
-              <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-      <CouponTypesGrid
-        t={t}
-        couponTypes={currentCouponTypes}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPages={totalPages}
-      />
+            </CardHeader>
+          </Card>
+          <CouponTypesGrid
+            t={t}
+            couponTypes={currentCouponTypes}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+            selectedTypes={selectedTypes}
+            setSelectedTypes={setSelectedTypes}
+            handleDeleteSelected={handleDeleteSelected}
+          />
+        </>
+      )}
     </div>
   );
 }
