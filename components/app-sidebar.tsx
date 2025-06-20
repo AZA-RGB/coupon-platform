@@ -78,22 +78,22 @@ export function AppSidebar() {
       icon: Tickets,
     },
     {
-      title: 'Providers',
+      title: "Providers",
       url: "/",
       icon: UsersRound,
     },
     {
-      title: 'Customers',
+      title: "Customers",
       url: "/",
       icon: Users,
     },
     {
-      title: 'Complains',
+      title: "Complains",
       url: "/",
       icon: MessageSquareWarning,
     },
     {
-      title: 'Requests',
+      title: "Requests",
       url: "/requests",
       icon: GitPullRequestArrow,
     },
@@ -109,17 +109,18 @@ export function AppSidebar() {
     <Sidebar
       side={getLangDir(useLocale()) == "rtl" ? "right" : "left"}
       collapsible="icon"
+      variant="sidebar"
     >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="flex place-content-between">
-              <User/>
+              <User />
               Mangae Profile
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <SidebarSeparator/>
+        <SidebarSeparator />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -128,8 +129,8 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="flex justify-between">
-                    <Link  href={item.url}>
-                      <item.icon className="text-primary h-5 w-5"/>
+                    <Link href={item.url}>
+                      <item.icon className="text-primary h-5 w-5" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -155,7 +156,7 @@ export function AppSidebar() {
                 <DropdownMenuSubTrigger className="flex place-content-between">
                   <ModeToggle />
                 </DropdownMenuSubTrigger>
-            <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
                 <DropdownMenuSubTrigger className="flex place-content-between">
                   <LangToggler />
                 </DropdownMenuSubTrigger>
