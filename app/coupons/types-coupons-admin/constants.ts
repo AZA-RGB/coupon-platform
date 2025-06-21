@@ -1,55 +1,37 @@
-export const couponTypesData = [
-  {
-    id: 1,
-    name: "Discount Coupon",
-    description: "Percentage or fixed amount discounts",
-    status: "active",
-    addDate: "2023-05-15",
-    couponsCount: 12,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 2,
-    name: "BOGO",
-    description: "Buy One Get One offers",
-    status: "active",
-    addDate: "2023-06-20",
-    couponsCount: 8,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 3,
-    name: "Free Shipping",
-    description: "Free delivery offers",
-    status: "active",
-    addDate: "2023-07-10",
-    couponsCount: 15,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 4,
-    name: "Seasonal Offer",
-    description: "Seasonal promotions",
-    status: "pending",
-    addDate: "2023-08-05",
-    couponsCount: 5,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 5,
-    name: "Referral Coupon",
-    description: "Referral rewards",
-    status: "expired",
-    addDate: "2023-04-12",
-    couponsCount: 7,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-];
+import axios from "axios";
+
+export const fetchCouponTypes = async (page = 1, limit = 10) => {
+  try {
+    const response = await axios.get("http://164.92.67.78:3002/api/coupon-types/index", {
+      params: { page, per_page: limit },
+    });
+    console.log("Raw fetch coupon types response:", response.data);
+    const couponTypes = Array.isArray(response.data.data.data) ? response.data.data.data : [];
+    return {
+      couponTypes,
+      totalPages: response.data.data.last_page || 1,
+      currentPage: response.data.data.current_page || page,
+    };
+  } catch (error) {
+    console.error("Error fetching coupon types:", error);
+    return {
+      couponTypes: [],
+      totalPages: 1,
+      currentPage: page,
+    };
+  }
+};
+
+export const deleteCouponType = async (id) => {
+  try {
+    const response = await axios.delete(`http://164.92.67.78:3002/api/coupon-types/${id}`);
+    console.log(`Delete response for coupon type ${id}:`, response);
+    return { success: true, response };
+  } catch (error) {
+    console.error(`Error deleting coupon type ${id}:`, error);
+    return { success: false, error, id };
+  }
+};
 
 export const couponTypeOptions = [
   { label: "Discount Coupon", value: "discount" },
