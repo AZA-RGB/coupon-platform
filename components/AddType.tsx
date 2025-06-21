@@ -24,12 +24,19 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from "@/components/ui/multi-select";
-import { Card, CardContent } from "./ui/card";
-import useSWR from "swr";
-import { LucideClock, LucideClockFading, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { LucideClock, LucideClockFading, Loader2, Plus } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import api from "@/lib/api";
 import axios from "axios";
+import useSWR from "swr";
 
 const formSchema = z.object({
   type_name: z.string().min(1),
@@ -39,7 +46,7 @@ const formSchema = z.object({
     .optional(),
 });
 
-export default function AddType() {
+export default function AddTypeDialog({ refreshTypes }) {
   const { data, isLoading, error, mutate } = useSWR(
     "/criterias/index?page=1&isGeneral=false",
     {
@@ -73,6 +80,7 @@ export default function AddType() {
 
       toast.success("Coupon type created successfully!");
       console.log("Response:", response.data);
+      refreshTypes();
       form.reset();
     } catch (error) {
       console.error("Form submission error", error);
@@ -98,19 +106,28 @@ export default function AddType() {
   }
 
   return (
-    <Card className="">
-      <CardContent>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Plus className="mr-2 h-4 w-4" />
+          Add New Type
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create New Coupon Type</DialogTitle>
+          <DialogDescription>
+            Add a new coupon type and assign criteria to it.
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8 max-w-3xl"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="type_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>Type Name</FormLabel>
                   <FormControl>
                     <Input placeholder="eg, collaborative" {...field} />
                   </FormControl>
@@ -152,7 +169,6 @@ export default function AddType() {
                         values={field.value}
                         onValuesChange={field.onChange}
                         loop
-                        className="max-w-xs"
                       >
                         <MultiSelectorTrigger>
                           <MultiSelectorInput
@@ -179,29 +195,34 @@ export default function AddType() {
                     )}
                   </FormControl>
                   <FormDescription>
-                    Select criteria to assign it to this type
+                    Select criteria to assign to this type
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button
-              type="submit"
-              disabled={isLoading || form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit"
-              )}
-            </Button>
+            <div className="flex justify-end gap-2">
+              <DialogTrigger asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogTrigger>
+              <Button
+                type="submit"
+                disabled={isLoading || form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Type"
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
