@@ -62,6 +62,7 @@ export default function RootLayout({
                     </div>{" "}
                     <NextTopLoader color="#00CBC1" height={5} crawl={false} />
                     {children}
+                    {/* <Toaster /> */}
                   </main>
                   <Toaster richColors position="top-center" />
                 </SWRProvider>
