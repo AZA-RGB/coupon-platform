@@ -25,6 +25,7 @@ export default function CriteriaPage() {
           <div className="text-2xl text-primary">General criteria</div>
 
           <Separator className="-mt-3 " />
+          <div className="mt-7"></div>
           {error && <div>failed to load criteria</div>}
           {isLoading && <Spinner />}
           {data &&
