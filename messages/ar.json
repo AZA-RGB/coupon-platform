@@ -43,6 +43,9 @@
     }
   },
   "addCoupon": {
+    "Type": "النوع",
+    "TypePlaceholder": "مثلا, تشاركي",
+    "typeDescription": "اختر نوع هذا الكوبون",
     "coverImages": "صور الغلاف",
     "title": "العنوان",
     "titlePlaceholder": "إفطار شرقي",
@@ -60,6 +63,7 @@
     "assignCriteria": "تعيين المعايير",
     "noResults": "لا توجد نتائج",
     "submit": "إرسال",
+    "addNewCoupon": "إضافة كوبون جديد",
     "cancel": "إلغاء",
     "validation": {
       "minImage": "يجب إضافة صورة واحدة على الأقل",
@@ -281,6 +285,7 @@
     "date": "تاريخ",
     "customers": "العملاء"
   },
-
+  "addCoverImage": "إضافة صورة غلاف",
+  "pickDate": "اختر تاريخ",
   "Topcustomers": "أفضل الزبائن"
 }
