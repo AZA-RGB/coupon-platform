@@ -22,20 +22,23 @@ export default function CriteriaPage() {
       </div>
       <div className="grid md:grid-cols-2 grid-cols-1 gap-10 md:px-10 mt-10">
         <div className="col-span-1 space-y-5">
-
-            <div className="text-2xl text-primary">General criteria</div>
+          <div className="text-2xl text-primary">General criteria</div>
 
           <Separator className="-mt-3 " />
+          <div className="mt-7"></div>
           {error && <div>failed to load criteria</div>}
           {isLoading && <Spinner />}
           {data &&
             data.data.data
               .filter(
                 (criterion: { isGeneral: boolean }) =>
-                  criterion.isGeneral === true
+                  criterion.isGeneral === true,
               )
               .map((criterion: FormField) => (
-                <div className="flex place-content-between items-center ">
+                <div
+                  key={criterion.id}
+                  className="flex place-content-between items-center "
+                >
                   <div className="flex-1">
                     <FormFieldRenderer field={criterion} />
                   </div>
@@ -56,18 +59,20 @@ export default function CriteriaPage() {
         </div>
 
         <div className="col-span-1 space-y-5">
-
-            <div className="text-2xl text-primary">Additional criteria</div>
+          <div className="text-2xl text-primary">Additional criteria</div>
           <Separator className="-mt-3 mb-7" />
           {isLoading && <Spinner />}
           {data &&
             data.data.data
               .filter(
                 (criterion: { isGeneral: boolean }) =>
-                  criterion.isGeneral === false
+                  criterion.isGeneral === false,
               )
               .map((criterion: FormField) => (
-                <div className="flex place-content-between items-center ">
+                <div
+                  key={criterion.id}
+                  className="flex place-content-between items-center "
+                >
                   <div className="flex-1">
                     <FormFieldRenderer field={criterion} />
                   </div>

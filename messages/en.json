@@ -43,6 +43,9 @@
     }
   },
   "addCoupon": {
+    "Type": "Type",
+    "TypePlaceholder": "eg, collaborative",
+    "typeDescription": "Select the Type of this coupon",
     "coverImages": "Cover Images",
     "title": "Title",
     "titlePlaceholder": "Eastern Breakfast",
@@ -61,6 +64,7 @@
     "noResults": "No results found",
     "submit": "Submit",
     "cancel": "Cancel",
+    "addNewCoupon": "Add new coupon",
     "validation": {
       "minImage": "At least one image is required",
       "formError": "Failed to submit the form. Please try again."
@@ -281,5 +285,7 @@
     "date": "Date",
     "customers": "Customers"
   },
+  "addCoverImage": "Add cover image",
+  "pickDate": "pick a date",
   "Topcustomers": "Top Customers"
 }

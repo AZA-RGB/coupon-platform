@@ -2,7 +2,15 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "./schemas";
-import { Form, FormDescription, FormField } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,25 +28,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+
 import { formFieldTypes } from "./FormFeildTypes";
 import { Checkbox } from "@/components/ui/checkbox";
 import api from "@/lib/api";
-import { useState } from "react";
 import { LoadingButton } from "@/components/ui/loading-buuton";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 interface AddCriterionDialogProps {
   refresh?: () => void;
 }
 export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
-  const [isOpen, setIsOpen] = useState(false); // State to control dialog
+  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
@@ -53,9 +56,14 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
   async function onSubmit(values: FormValues) {
     try {
       setLoading(true);
-      const response = await api.post("/criterias/create", values);
+
+      const response = await api.post("/criterias/create", {
+        ...values,
+        isGeneral: values.isGeneral ? 1 : 0,
+        criteria_type: "coupon_type",
+      });
       if (refresh) refresh();
-      toast.success(response.data.message)
+      toast.success(response.data.message);
       setIsOpen(false);
 
       form.reset();

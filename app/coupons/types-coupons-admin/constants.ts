@@ -1,12 +1,15 @@
+import api from "@/lib/api";
 import axios from "axios";
 
 export const fetchCouponTypes = async (page = 1, limit = 10) => {
   try {
-    const response = await axios.get("http://164.92.67.78:3002/api/coupon-types/index", {
+    const response = await api.get("/coupon-types/index", {
       params: { page, per_page: limit },
     });
     console.log("Raw fetch coupon types response:", response.data);
-    const couponTypes = Array.isArray(response.data.data.data) ? response.data.data.data : [];
+    const couponTypes = Array.isArray(response.data.data.data)
+      ? response.data.data.data
+      : [];
     return {
       couponTypes,
       totalPages: response.data.data.last_page || 1,
@@ -24,7 +27,9 @@ export const fetchCouponTypes = async (page = 1, limit = 10) => {
 
 export const deleteCouponType = async (id) => {
   try {
-    const response = await axios.delete(`http://164.92.67.78:3002/api/coupon-types/${id}`);
+    const response = await axios.delete(
+      `http://164.92.67.78:3002/api/coupon-types/${id}`,
+    );
     console.log(`Delete response for coupon type ${id}:`, response);
     return { success: true, response };
   } catch (error) {
