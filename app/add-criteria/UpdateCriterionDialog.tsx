@@ -37,13 +37,17 @@ import { toast } from "sonner";
 
 interface UpdateCriterionDialogProps {
   refresh?: () => void;
-  criterion:{
-    name:string,
-    type:FormFieldType,
-    isGeneral:boolean,id:string
-  }
+  criterion: {
+    name: string;
+    type: FormFieldType;
+    isGeneral: boolean;
+    id: string;
+  };
 }
-export function UpdateCriterionDialog({ refresh ,criterion}: UpdateCriterionDialogProps) {
+export function UpdateCriterionDialog({
+  refresh,
+  criterion,
+}: UpdateCriterionDialogProps) {
   const [isOpen, setIsOpen] = useState(false); // State to control dialog
   const [loading, setLoading] = useState(false);
 
@@ -59,11 +63,14 @@ export function UpdateCriterionDialog({ refresh ,criterion}: UpdateCriterionDial
   async function onSubmit(values: FormValues) {
     try {
       setLoading(true);
-      const response = await api.put(`/criterias/${criterion.id}`, values);
+      const response = await api.put(`/criterias/${criterion.id}`, {
+        ...values,
+        isGeneral: values.isGeneral ? 1 : 0,
+      });
       if (refresh) refresh();
 
       setIsOpen(false);
-    toast.success(response.data.message)
+      toast.success(response.data.message);
       form.reset();
     } catch (error) {
       console.error("Submission failed:", error);
@@ -71,7 +78,7 @@ export function UpdateCriterionDialog({ refresh ,criterion}: UpdateCriterionDial
       setLoading(false);
     }
   }
-    useEffect(() => {
+  useEffect(() => {
     form.reset({
       name: criterion.name,
       type: criterion.type,
@@ -81,7 +88,7 @@ export function UpdateCriterionDialog({ refresh ,criterion}: UpdateCriterionDial
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild >
+      <DialogTrigger asChild>
         <PencilLine className="text-ring" />
       </DialogTrigger>
       <DialogContent>
