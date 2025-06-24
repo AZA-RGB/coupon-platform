@@ -59,7 +59,7 @@ const SummaryCards = ({ t, coupons }) => {
   ];
 
   return (
-    <Card className="w-full lg:w-3/5 p-4 hidden md:flex flex-col gap-4">
+    <Card className="w-full shadow-none  lg:w-3/5 p-4 hidden md:flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row gap-4 w-full">
         {summaries.map((summary, index) => (
           <div key={index} className="flex-1 p-4 flex flex-col justify-between">
@@ -107,7 +107,7 @@ const MobileSummaryCards = ({ t, coupons }) => {
   return (
     <div className="flex flex-col gap-4 md:hidden">
       {summaries.map((summary, index) => (
-        <Card key={index} className="w-full p-4 flex flex-col justify-between">
+        <Card key={index} className="w-full shadow-none  p-4 flex flex-col justify-between">
           <div>
             <h2>{summary.title}</h2>
             <h4 className="text-2xl">{summary.value}</h4>
@@ -123,7 +123,7 @@ const NavigationCards = ({ t }) => {
   return (
     <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-2 md:grid-cols-1 gap-4">
       <Link href="/dashboard/top-coupons" className="block">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
+        <Card className="w-full hover:shadow-sm shadow-none transition-shadow h-full cursor-pointer p-6">
           <CardTitle className="text-lg text-primary mb-1">
             {t("seeTopCoupons")}
           </CardTitle>
@@ -131,7 +131,7 @@ const NavigationCards = ({ t }) => {
         </Card>
       </Link>
       <Link href="/dashboard/top-sales" className="block">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
+        <Card className="w-full hover:shadow-sm shadow-none transition-shadow h-full cursor-pointer p-6">
           <CardTitle className="text-lg text-primary mb-1">
             {t("seeTopSales")}
           </CardTitle>
@@ -150,7 +150,7 @@ const CouponsGrid = ({
   totalPages,
 }) => {
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardContent className="pt-2">
         {coupons.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
@@ -161,7 +161,7 @@ const CouponsGrid = ({
             {coupons.map((coupon) => (
               <Card
                 key={coupon.id}
-                className="overflow-hidden hover:shadow-md transition-shadow p-0"
+                className="overflow-hidden shadow-none transition-shadow p-0"
               >
                 <div className="relative w-full h-32">
                   <MyImage src={coupon.image} alt={coupon.name} />
@@ -361,7 +361,7 @@ export default function AllCouponsPage() {
           </div>
 
           {/* Section 2: Header with Filter and New Coupon */}
-          <Card>
+          <Card className="shadow-none">
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>
                 <CardTitle>{t("title")}</CardTitle>

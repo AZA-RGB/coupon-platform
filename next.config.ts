@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   locales: ["en", "ar"],
   defaultLocale: "en",
   localeDetection: true,
+  // experimental: {
+  //   turbo: false, // Disable Turbopack
+  // },
 };
 
 const withNextIntl = createNextIntlPlugin();
