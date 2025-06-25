@@ -1,6 +1,6 @@
 import {
   Calendar,
-  ChartNoAxesCombined,
+  ChartBar,
   ChevronUp,
   Film,
   GitPullRequest,
@@ -16,13 +16,12 @@ import {
   Search,
   Settings,
   Tickets,
-  TicketX,
+  Ticket,
   User,
   User2,
   UserPlus,
   Users,
   Users2,
-  UsersRound,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -39,98 +38,115 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggler";
-
 import LangToggler from "./langToggler";
 import { getLangDir } from "rtl-detect";
 import {
   DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import {
-  DropdownMenuContent,
   DropdownMenuSubTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Button } from "./ui/button";
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export function AppSidebar() {
-  const t = useTranslations();
-  const items = [
+  const t = useTranslations("Sidebar");
+  const locale = useLocale();
+  const dir = getLangDir(locale);
+
+  const menuItems = [
     {
-      title: "Dashboard",
+      title: t("dashboard"),
       url: "/dashboard",
-      icon: ChartNoAxesCombined,
+      icon: ChartBar,
     },
     {
-      title: "Coupons",
+      title: t("coupons"),
       url: "/coupons",
-      icon: TicketX,
+      icon: Ticket,
     },
     {
-      title: "Coupon types",
+      title: t("couponTypes"),
       url: "/coupons/types-all-coupons",
       icon: Tickets,
     },
     {
-      title: "Providers",
-      url: "/",
-      icon: UsersRound,
+      title: t("providers"),
+      url: "/providers",
+      icon: Users2,
     },
     {
-      title: "Customers",
-      url: "/",
+      title: t("customers"),
+      url: "/customers",
       icon: Users,
     },
     {
-      title: "Complains",
-      url: "/",
+      title: t("complaints"),
+      url: "/complaints",
       icon: MessageSquareWarning,
     },
     {
-      title: "Requests",
+      title: t("requests"),
       url: "/requests",
       icon: GitPullRequestArrow,
     },
     {
-      title: "Reels",
-      url: "/",
+      title: t("reels"),
+      url: "/reels",
       icon: Film,
     },
   ];
-  const locale = useLocale();
-  const dir = getLangDir(locale);
+
   return (
     <Sidebar
-      side={getLangDir(useLocale()) == "rtl" ? "right" : "left"}
+      side={dir === "rtl" ? "right" : "left"}
       collapsible="icon"
-      variant="sidebar"
+      variant="default"
+      className="border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="flex place-content-between">
-              <User />
-              Mangae Profile
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarSeparator />
+      <SidebarHeader className="p-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold">{t("title")}</h1>
+        </div>
+        <SidebarSeparator className="my-2" />
       </SidebarHeader>
-      <SidebarContent>
+
+      <SidebarContent className="px-2">
         <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
+                >
+                  <User className="h-5 w-5 text-primary" />
+                  <span>{t("profile")}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <SidebarSeparator className="my-2" />
+          
+          <SidebarGroupLabel className="px-2 text-xs font-medium text-muted-foreground">
+            {t("navigation")}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="flex justify-between">
-                    <Link href={item.url}>
-                      <item.icon className="text-primary h-5 w-5" />
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href={item.url}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
+                    >
+                      <item.icon className="h-5 w-5 text-muted-foreground" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -140,25 +156,28 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+
+      <SidebarFooter className="p-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton asChild className="flex justify-between">
-              <div>
-                <Settings />
-                <span>Settings</span>
-              </div>
-            </SidebarMenuButton>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 px-2"
+            >
+              <Settings className="h-5 w-5" />
+              <span>{t("settings")}</span>
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className="w-56" align={dir === "rtl" ? "end" : "start"}>
             <DropdownMenuGroup>
+              {/* <DropdownMenuLabel>{t("appearance")}</DropdownMenuLabel> */}
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="flex place-content-between">
-                  <ModeToggle />
+                <DropdownMenuSubTrigger>
+                    <ModeToggle />
                 </DropdownMenuSubTrigger>
-                <DropdownMenuSeparator />
-                <DropdownMenuSubTrigger className="flex place-content-between">
-                  <LangToggler />
+            
+                <DropdownMenuSubTrigger>
+                    <LangToggler />
                 </DropdownMenuSubTrigger>
               </DropdownMenuSub>
             </DropdownMenuGroup>

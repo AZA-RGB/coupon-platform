@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import axios from "axios";
 
 export const fetchCouponTypes = async (page = 1, limit = 10) => {
   try {
@@ -27,11 +26,9 @@ export const fetchCouponTypes = async (page = 1, limit = 10) => {
 
 export const deleteCouponType = async (id) => {
   try {
-    const response = await axios.delete(
-      `http://164.92.67.78:3002/api/coupon-types/${id}`,
-    );
-    console.log(`Delete response for coupon type ${id}:`, response);
-    return { success: true, response };
+    const response = await api.delete(`/coupon-types/${id}`);
+    console.log(`Delete response for coupon type ${id}:`, response.data);
+    return { success: true, response: response.data };
   } catch (error) {
     console.error(`Error deleting coupon type ${id}:`, error);
     return { success: false, error, id };

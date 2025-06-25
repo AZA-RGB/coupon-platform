@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "../public/fonts/fonts.css";
 import {
   SidebarInset,
   SidebarProvider,
@@ -12,19 +12,8 @@ import { getLangDir } from "rtl-detect";
 import { NextIntlClientProvider, useLocale } from "next-intl";
 import NextTopLoader from "nextjs-toploader";
 import { AppBreadcrumb } from "@/components/app-breadcrumb/AppBreadcrumb";
-import { SWRConfig } from "swr";
-import { SWR_CONFIG } from "../lib/swr-config";
 import { SWRProvider } from "@/components/ui/swrProvier";
 import { Toaster } from "sonner";
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -38,12 +27,19 @@ export default function RootLayout({
 }>) {
   const locale = useLocale();
   const dir = getLangDir(locale);
+
   return (
     <html lang={locale} dir={dir}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* overflow-clip */}
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/Cairo-Regular.ttf"
+          as="font"
+          type="font/truetype"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className="font-cairo antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -56,13 +52,12 @@ export default function RootLayout({
               <NextIntlClientProvider>
                 <SWRProvider>
                   <main>
-                    <div className="flex  gap-5 sticky top-0  items-center backdrop-blur-xl z-50">
-                      <SidebarTrigger className=" bg-primary z-10 text-white m-1 " />
-                      <AppBreadcrumb className="" />
-                    </div>{" "}
+                    <div className="flex gap-5 sticky top-0 items-center backdrop-blur-xl z-50">
+                      <SidebarTrigger className="bg-primary z-10 text-white m-1" />
+                      <AppBreadcrumb />
+                    </div>
                     <NextTopLoader color="#00CBC1" height={5} crawl={false} />
                     {children}
-                    {/* <Toaster /> */}
                   </main>
                   <Toaster richColors position="top-center" />
                 </SWRProvider>
@@ -73,21 +68,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
-
-{
-  /* <ThemeProvider
-attribute="class"
-defaultTheme="system"
-enableSystem
-disableTransitionOnChange
->
-<SidebarProvider>
-<AppSidebar />
-<div className="flex-1 overflow-auto">
-<SidebarTrigger />
-<main className="w-full">{children}</main>
-</div>
-</SidebarProvider>
-</ThemeProvider> */
 }
