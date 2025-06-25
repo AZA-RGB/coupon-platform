@@ -410,7 +410,7 @@ export default function AllCouponsPage() {
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
                 </div>
                 <Button asChild size="sm">
-                  <Link href="/dashboard/coupons/new">
+                  <Link href="/coupons/AddCoupon">
                     <Plus className="mr-2 h-4 w-4" />
                     {t("newCoupon")}
                   </Link>

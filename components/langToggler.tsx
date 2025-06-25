@@ -19,7 +19,7 @@ export default function LangToggler() {
         className="flex place-content-between w-full"
       >
         <Button variant="outline">
-        Languages
+          Languages
           <Languages />
         </Button>
       </DropdownMenuTrigger>
@@ -29,7 +29,7 @@ export default function LangToggler() {
           English
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setUserLocale("ar")}>
-          ara
+          Arabic
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
