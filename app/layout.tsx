@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "../public/fonts/fonts.css";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
 import { getLangDir } from "rtl-detect";
 import { NextIntlClientProvider, useLocale } from "next-intl";
-import NextTopLoader from "nextjs-toploader";
-import { AppBreadcrumb } from "@/components/app-breadcrumb/AppBreadcrumb";
-import { SWRProvider } from "@/components/ui/swrProvier";
-import { Toaster } from "sonner";
+import ClientLayout from "./ClientLayout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -40,31 +30,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-cairo antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <NextIntlClientProvider>
-                <SWRProvider>
-                  <main>
-                    <div className="flex gap-5 sticky top-0 items-center backdrop-blur-xl z-50">
-                      <SidebarTrigger className="bg-primary z-10 text-white m-1" />
-                      <AppBreadcrumb />
-                    </div>
-                    <NextTopLoader color="#00CBC1" height={5} crawl={false} />
-                    {children}
-                  </main>
-                  <Toaster richColors position="top-center" />
-                </SWRProvider>
-              </NextIntlClientProvider>
-            </SidebarInset>
-          </SidebarProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

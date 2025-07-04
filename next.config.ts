@@ -1,17 +1,24 @@
-import { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
-    domains: ["images.immediate.co.uk","img.youtube.com","via.placeholder.com","ecoupon-files.sfo3.cdn.digitaloceanspaces.com"],
+    domains: [
+      "images.immediate.co.uk",
+      "img.youtube.com",
+      "via.placeholder.com",
+      "ecoupon-files.sfo3.cdn.digitaloceanspaces.com",
+    ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://164.92.67.78:3000/api/:path*",
+      },
+    ];
   },
   locales: ["en", "ar"],
   defaultLocale: "en",
   localeDetection: true,
-  // experimental: {
-  //   turbo: false, // Disable Turbopack
-  // },
 };
 
-const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(nextConfig);
+const withNextIntl = require("next-intl/plugin")();
+module.exports = withNextIntl(nextConfig);

@@ -51,11 +51,189 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import AddPackageDialog from "@/components/AddPackage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2, Plus } from "lucide-react";
+import axios from "axios";
 
 const PACKAGES_PER_PAGE = 10;
 
+const editFormSchema = z.object({
+  title: z.string().min(1, { message: "titleRequired" }),
+  description: z.string().min(1, { message: "descriptionRequired" }),
+  from_date: z.string().min(1, { message: "startDateRequired" }),
+  to_date: z.string().min(1, { message: "endDateRequired" }),
+  file: z
+    .any()
+    .optional()
+    .refine((file) => !file || file instanceof File, { message: "invalidFile" }),
+});
 
+const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
+  const form = useForm<z.infer<typeof editFormSchema>>({
+    resolver: zodResolver(editFormSchema),
+    defaultValues: {
+      title: pkg?.title || "",
+      description: pkg?.description || "",
+      from_date: pkg?.fromDate ? new Date(pkg.fromDate).toISOString().split('T')[0] : "",
+      to_date: pkg?.toDate ? new Date(pkg.toDate).toISOString().split('T')[0] : "",
+      file: null,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof editFormSchema>) {
+    try {
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("from_date", values.from_date);
+      formData.append("to_date", values.to_date);
+      if (values.file) {
+        formData.append("file", values.file);
+      }
+
+      await axios.put(`http://164.92.67.78:3002/api/packages/${pkg.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success(t("editSuccessDesc"), {
+        description: t("editSuccess"),
+      });
+      refreshPackages();
+      form.reset();
+    } catch (error) {
+      console.error("Form submission error", error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          toast.error(
+            `${t("editErrorDesc")}: ${error.response.data.message || t("editError")}`,
+          );
+        } else if (error.request) {
+          toast.error(t("networkError"));
+        } else {
+          toast.error(t("requestError"));
+        }
+      } else {
+        toast.error(t("unexpectedError"));
+      }
+    }
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="link" className="text-primary underline hover:text-primary/80 p-0 h-auto">
+          {t("editPackage")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{t("editPackage")}</DialogTitle>
+          <DialogDescription>{t("editPackageDesc")}</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("title")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("titlePlaceholder")} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("description")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="from_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("startDate")}</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="to_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("endDate")}</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("file")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                    />
+                  </FormControl>
+                  <div className="h-2"/>
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end gap-2">
+              <DialogTrigger asChild>
+                <Button variant="outline">{t("cancel")}</Button>
+              </DialogTrigger>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("submitting")}
+                  </>
+                ) : (
+                  t("updatePackage")
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>);
+};
 
 const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
   if (!pkg) return null;
@@ -124,6 +302,7 @@ const PackagesTable = ({
   setSelectedPackages,
   handleDeleteSelected,
   handleSelectPackage,
+  refreshPackages,
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -261,7 +440,8 @@ const PackagesTable = ({
                               t,
                               formatDate,
                               handleSelectPackage,
-                              setSelectedPackage
+                              setSelectedPackage,
+                              refreshPackages
                             )}
                           </TableCell>
                         ))}
@@ -322,13 +502,14 @@ function renderTableCellContent(
   t,
   formatDate,
   handleSelectPackage,
-  setSelectedPackage
+  setSelectedPackage,
+  refreshPackages
 ) {
   switch (key) {
     case "select":
       return (
         <Checkbox
-        className="mx-6"
+          className="mx-6"
           checked={pkg.isSelected}
           onCheckedChange={() => handleSelectPackage(pkg.id)}
         />
@@ -372,13 +553,16 @@ function renderTableCellContent(
       return <span>{pkg.couponsCount}</span>;
     case "actions":
       return (
-        <Button
-          variant="link"
-          className="text-primary underline hover:text-primary/80 p-0 h-auto"
-          onClick={() => setSelectedPackage(pkg)}
-        >
-          {t("viewDetails")}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="link"
+            className="text-primary underline hover:text-primary/80 p-0 h-auto"
+            onClick={() => setSelectedPackage(pkg)}
+          >
+            {t("viewDetails")}
+          </Button>
+          <EditPackageDialog pkg={pkg} refreshPackages={refreshPackages} t={t} />
+        </div>
       );
     default:
       return null;
@@ -518,7 +702,8 @@ export default function PackagesAllPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2">
-                <AddTypeDialog refreshTypes={fetchPackagesData} />
+                <AddPackageDialog refreshPackages={fetchPackagesData} />
+                
                 <div className="relative">
                   <Button
                     variant="outline"
@@ -582,6 +767,7 @@ export default function PackagesAllPage() {
             setSelectedPackages={setSelectedPackages}
             handleDeleteSelected={handleDeleteSelected}
             handleSelectPackage={handleSelectPackage}
+            refreshPackages={fetchPackagesData}
           />
         </>
       )}
