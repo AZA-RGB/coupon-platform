@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -32,36 +32,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { allCustomersData } from "./constants";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import { fetchCustomers, deleteCustomer, fetchCustomerDetails, summaryData } from "./constants";
 
 const CUSTOMERS_PER_PAGE = 10;
 
-const SummaryCards = ({ t }) => {
-  const summaries = [
-    {
-      title: t("totalCustomers"),
-      value: "$24,560",
-      change: "+8% from last month",
-    },
-    {
-      title: t("newCustomers"),
-      value: "$24,560",
-      change: "+8% from last month",
-    },
-    {
-      title: t("activeCustomers"),
-      value: "$24,560",
-      change: "+8% from last month",
-    },
-  ];
-
+const SummaryCards = ({ t, summaries }) => {
   return (
     <Card className="w-full lg:w-3/4 p-4 hidden md:flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row gap-4 w-full">
         {summaries.map((summary, index) => (
           <div key={index} className="flex-1 p-4 flex flex-col justify-between">
             <div>
-              <h2>{summary.title}</h2>
+              <h2>{t(summary.title)}</h2>
               <h4 className="text-2xl">{summary.value}</h4>
             </div>
             <span className="text-sm text-green-500 mt-2">
@@ -74,31 +76,13 @@ const SummaryCards = ({ t }) => {
   );
 };
 
-const MobileSummaryCards = ({ t }) => {
-  const summaries = [
-    {
-      title: t("totalCustomers"),
-      value: "$24,560",
-      change: "+8% from last month",
-    },
-    {
-      title: t("newCustomers"),
-      value: "$24,560",
-      change: "+8% from last month",
-    },
-    {
-      title: t("activeCustomers"),
-      value: "$24,560",
-      change: "+8% from last month",
-    },
-  ];
-
+const MobileSummaryCards = ({ t, summaries }) => {
   return (
     <div className="flex flex-col gap-4 md:hidden">
       {summaries.map((summary, index) => (
         <Card key={index} className="w-full p-4 flex flex-col justify-between">
           <div>
-            <h2>{summary.title}</h2>
+            <h2>{t(summary.title)}</h2>
             <h4 className="text-2xl">{summary.value}</h4>
           </div>
           <span className="text-sm text-green-500 mt-2">{summary.change}</span>
@@ -123,19 +107,70 @@ const NavigationCards = ({ t }) => {
   );
 };
 
+const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
+  if (!customer) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[625px]">
+        <DialogHeader>
+          <div className="relative w-full h-64 mt-4">
+            <Image
+              src={customer.image}
+              alt={customer.name}
+              fill
+              className="object-cover rounded-md"
+            />
+          </div>
+          <DialogTitle>{customer.name}</DialogTitle>
+          <DialogDescription>{customer.location}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("email")}</h4>
+              <p className="text-sm text-muted-foreground">{customer.email}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("phone")}</h4>
+              <p className="text-sm text-muted-foreground">{customer.phone}</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("birthDate")}</h4>
+            <p className="text-sm text-muted-foreground">
+              {new Date(customer.birthDate).toLocaleDateString()}
+            </p>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("purchasesCount")}</h4>
+            <p className="text-sm text-muted-foreground">{customer.purchasesCount}</p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const CustomersTable = ({
   t,
-  coupons,
+  customers,
   currentPage,
   setCurrentPage,
   totalPages,
+  selectedCustomers,
+  setSelectedCustomers,
+  handleDeleteSelected,
+  handleSelectCustomer,
+  refreshCustomers,
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-  // Define columns in natural LTR order
   const columns = useMemo(
     () => [
+      { key: "select", label: t("select") || "Select" },
       { key: "userInfo", label: t("userInfo") || "User Info" },
       { key: "phone", label: t("phone") || "Phone" },
       { key: "subscribeDate", label: t("subscribeDate") || "Subscribe Date" },
@@ -147,10 +182,9 @@ const CustomersTable = ({
     [t]
   );
 
-  // Reverse data for RTL display
   const displayedData = useMemo(
-    () => (isRTL ? [...coupons].reverse() : coupons),
-    [coupons, isRTL]
+    () => (isRTL ? [...customers].reverse() : customers),
+    [customers, isRTL]
   );
 
   const formatDate = (date) => {
@@ -161,100 +195,182 @@ const CustomersTable = ({
     });
   };
 
+  const handleToggleSelectAll = () => {
+    const allSelected = customers.every((customer) =>
+      selectedCustomers.includes(customer.id),
+    );
+    setSelectedCustomers(allSelected ? [] : customers.map((customer) => customer.id));
+  };
+
   return (
-    <Card className="shadow-sm">
-      <CardContent className="p-x-2">
-        <div className="overflow-x-auto">
-          <div className="rounded-md border" dir={isRTL ? "rtl" : "ltr"}>
-            <Table>
-              <TableHeader className="bg-gray-100 dark:bg-gray-800">
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableHead
-                      key={column.key}
-                      className={`px-4 py-3 font-medium ${
-                        isRTL ? "text-right" : "text-left"
-                      }`}
-                    >
-                      {column.label}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {displayedData.map((customer) => (
-                  <TableRow
-                    key={customer.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                  >
+    <>
+      <CustomerDetailsModal
+        customer={selectedCustomer}
+        t={t}
+        open={!!selectedCustomer}
+        onOpenChange={(open) => !open && setSelectedCustomer(null)}
+      />
+      <Card className="shadow-sm">
+        <CardContent className="p-x-2">
+          <div className="flex justify-end gap-2 mb-4">
+            <Button
+              variant="outline"
+              onClick={handleToggleSelectAll}
+              disabled={customers.length === 0}
+            >
+              {t(
+                selectedCustomers.length === customers.length && customers.length > 0
+                  ? "deselectAll"
+                  : "selectAll",
+              )}
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="cursor-pointer"
+                  disabled={selectedCustomers.length === 0}
+                >
+                  {t("deleteSelected")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("confirmDeleteDesc", { count: selectedCustomers.length })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteSelected}>
+                    {t("confirm")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <div className="overflow-x-auto">
+            <div className="rounded-md border" dir={isRTL ? "rtl" : "ltr"}>
+              <Table>
+                <TableHeader className="bg-gray-100 dark:bg-gray-800">
+                  <TableRow>
                     {columns.map((column) => (
-                      <TableCell
-                        key={`${customer.id}-${column.key}`}
-                        className={`px-4 py-3 ${
+                      <TableHead
+                        key={column.key}
+                        className={`px-4 py-3 font-medium ${
                           isRTL ? "text-right" : "text-left"
                         }`}
                       >
-                        {renderTableCellContent(
-                          customer,
-                          column.key,
-                          isRTL,
-                          t,
-                          formatDate
-                        )}
-                      </TableCell>
+                        {column.label}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {displayedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="text-center py-8 text-muted-foreground"
+                      >
+                        {t("noCustomersFound")}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    displayedData.map((customer) => (
+                      <TableRow
+                        key={customer.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
+                        {columns.map((column) => (
+                          <TableCell
+                            key={`${customer.id}-${column.key}`}
+                            className={`px-4 py-3 ${
+                              isRTL ? "text-right" : "text-left"
+                            }`}
+                          >
+                            {renderTableCellContent(
+                              customer,
+                              column.key,
+                              isRTL,
+                              t,
+                              formatDate,
+                              handleSelectCustomer,
+                              setSelectedCustomer,
+                              refreshCustomers
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-        </div>
-      </CardContent>
-
-      <CardFooter className="pt-4">
-        <Pagination className="w-full">
-          <PaginationContent
-            className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}
-          >
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() =>
-                  currentPage > 1 && setCurrentPage(currentPage - 1)
-                }
-                className="cursor-pointer"
-              />
-            </PaginationItem>
-
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  onClick={() => setCurrentPage(index + 1)}
-                  isActive={currentPage === index + 1}
+        </CardContent>
+        <CardFooter className="pt-4">
+          <Pagination className="w-full">
+            <PaginationContent
+              className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}
+            >
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    currentPage > 1 && setCurrentPage(currentPage - 1)
+                  }
                   className="cursor-pointer"
-                >
-                  {index + 1}
-                </PaginationLink>
+                  disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  currentPage < totalPages && setCurrentPage(currentPage + 1)
-                }
-                className="cursor-pointer"
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </CardFooter>
-    </Card>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(index + 1)}
+                    isActive={currentPage === index + 1}
+                    className="cursor-pointer"
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    currentPage < totalPages && setCurrentPage(currentPage + 1)
+                  }
+                  className="cursor-pointer"
+                  disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </CardFooter>
+      </Card>
+    </>
   );
 };
 
-// Helper component to render table cell content
-function renderTableCellContent(customer, key, isRTL, t, formatDate) {
+function renderTableCellContent(
+  customer,
+  key,
+  isRTL,
+  t,
+  formatDate,
+  handleSelectCustomer,
+  setSelectedCustomer,
+  refreshCustomers
+) {
   switch (key) {
+    case "select":
+      return (
+        <Checkbox
+          className="mx-6"
+          checked={customer.isSelected}
+          onCheckedChange={() => handleSelectCustomer(customer.id)}
+        />
+      );
     case "userInfo":
       return (
         <div className={`flex items-center ${"flex-row"} gap-2`}>
@@ -274,7 +390,6 @@ function renderTableCellContent(customer, key, isRTL, t, formatDate) {
           </div>
         </div>
       );
-
     case "phone":
       return (
         <span
@@ -288,58 +403,52 @@ function renderTableCellContent(customer, key, isRTL, t, formatDate) {
           {customer.phone}
         </span>
       );
-
     case "subscribeDate":
       return formatDate(customer.subscribeDate);
-
     case "status":
       return (
         <span
           className={`px-2 py-0.5 rounded-full text-xs ${
             customer.status === "active"
               ? "bg-green-100 text-green-800"
-              : customer.status === "unBanned"
-              ? "bg-blue-100 text-blue-800"
               : customer.status === "banned"
               ? "bg-red-100 text-red-800"
-              : "bg-yellow-100 text-yellow-800"
+              : "bg-blue-100 text-blue-800"
           }`}
         >
-          {t(customer.status)}
+          {t(`Status.${customer.status}`)}
         </span>
       );
-
     case "coupons":
       return `${customer.totalCoupons}`;
-
     case "banned":
       return (
         <Link href={`/dashboard/customers/${customer.status === "active" ? "banned" : "unbanned"}/${customer.id}`}>
           <Button
             variant="default"
             size="sm"
-            className={ "cursor-pointer " +`${
-             
+            className={`cursor-pointer ${
               customer.status === "active"
                 ? "bg-red-500 text-white hover:bg-red-600"
                 : "bg-blue-500 text-white hover:bg-blue-600"
-            }` }
+            }`}
           >
             {t(customer.status === "active" ? "ban" : "unBan")}
           </Button>
         </Link>
       );
-
     case "actions":
       return (
-        <Link
-          href={`/dashboard/customers/${customer.id}`}
-          className="text-sm text-primary underline hover:text-primary/80"
-        >
-          {t("viewDetails")}
-        </Link>
+        <div className="flex gap-2">
+          <Button
+            variant="link"
+            className="text-primary underline hover:text-primary/80 p-0 h-auto"
+            onClick={() => setSelectedCustomer(customer)}
+          >
+            {t("viewDetails")}
+          </Button>
+        </div>
       );
-
     default:
       return null;
   }
@@ -352,21 +461,117 @@ export default function AllCustomersDashboard() {
   const [filterType, setFilterType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value) => setSearchTerm(value), 300),
+    () => debounce((value) => {
+      setSearchTerm(value);
+      setCurrentPage(1);
+    }, 300),
     []
   );
 
-  // Reset currentPage to 1 when searchTerm or filterType changes
+  const handleSelectCustomer = useCallback((id) => {
+    setSelectedCustomers((prev) =>
+      prev.includes(id)
+        ? prev.filter((customerId) => customerId !== id)
+        : [...prev, id]
+    );
+  }, []);
+
+  const fetchCustomersData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const {
+        customers,
+        totalPages,
+        currentPage: apiCurrentPage,
+      } = await fetchCustomers(currentPage, CUSTOMERS_PER_PAGE);
+      if (!Array.isArray(customers)) {
+        throw new Error("Customers data is not an array");
+      }
+      setCustomers(
+        customers.map((customer) => ({
+          ...customer,
+          isSelected: selectedCustomers.includes(customer.id),
+        }))
+      );
+      setTotalPages(totalPages || 1);
+      if (apiCurrentPage !== currentPage) {
+        setCurrentPage(apiCurrentPage || 1);
+      }
+    } catch (error) {
+      console.error("Error in fetchCustomersData:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      toast.error(
+        error.response?.status
+          ? `${t("fetchErrorDesc")} (Status ${error.response.status}: ${error.response.data?.message || error.message})`
+          : `${t("fetchErrorDesc")} (${error.message})`,
+        {
+          description: t("fetchError"),
+          duration: 5000,
+        }
+      );
+      setCustomers([]);
+      setTotalPages(1);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, selectedCustomers, t]);
+
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, filterType]);
+    fetchCustomersData();
+  }, [fetchCustomersData, currentPage]);
+
+  const handleDeleteSelected = async () => {
+    setIsLoading(true);
+    try {
+      const deletePromises = selectedCustomers.map((id) => deleteCustomer(id));
+      const results = await Promise.all(deletePromises);
+      const failedDeletions = results.filter((result) => !result.success);
+      if (failedDeletions.length > 0) {
+        const errorMessages = failedDeletions.map((result) => {
+          const error = result.error;
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          return `Customer ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
+        });
+        toast.error(t("deleteFailedDesc"), {
+          description: errorMessages.join("; ") || t("deleteFailed"),
+          duration: 7000,
+        });
+      } else {
+        toast.success(t("deleteSuccessDesc", { count: selectedCustomers.length }), {
+          description: t("deleteSuccess"),
+          duration: 3000,
+        });
+        setSelectedCustomers([]);
+        setCurrentPage(1);
+        await fetchCustomersData();
+      }
+    } catch (error) {
+      console.error("Error during deletion:", error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || error.message;
+      toast.error(
+        `${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+        {
+          description: t("deleteError"),
+          duration: 7000,
+        }
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredCustomers = useMemo(() => {
-    // Ensure allCustomersData is an array
-    const customers = Array.isArray(allCustomersData) ? allCustomersData : [];
-
     return customers
       .filter((customer) => {
         if (!searchTerm) return true;
@@ -381,7 +586,7 @@ export default function AllCustomersDashboard() {
         );
       })
       .filter((customer) => {
-        if (["active", "unBanned", "banned"].includes(filterType)) {
+        if (["active", "banned", "unBanned"].includes(filterType)) {
           return (
             typeof customer.status === "string" &&
             customer.status.toLowerCase() === filterType.toLowerCase()
@@ -391,9 +596,8 @@ export default function AllCustomersDashboard() {
       })
       .sort((a, b) => {
         if (filterType === "newest" || filterType === "oldest") {
-          const dateA = a.addDate ? new Date(a.addDate) : new Date(0);
-          const dateB = b.addDate ? new Date(b.addDate) : new Date(0);
-          // Check if dates are valid
+          const dateA = a.subscribeDate ? new Date(a.subscribeDate) : new Date(0);
+          const dateB = b.subscribeDate ? new Date(b.subscribeDate) : new Date(0);
           if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) return 0;
           return filterType === "newest"
             ? dateB.getTime() - dateA.getTime()
@@ -401,9 +605,8 @@ export default function AllCustomersDashboard() {
         }
         return 0;
       });
-  }, [searchTerm, filterType]);
+  }, [customers, searchTerm, filterType]);
 
-  const totalPages = Math.ceil(filteredCustomers.length / CUSTOMERS_PER_PAGE) || 1;
   const currentCustomers = filteredCustomers.slice(
     (currentPage - 1) * CUSTOMERS_PER_PAGE,
     currentPage * CUSTOMERS_PER_PAGE
@@ -413,79 +616,88 @@ export default function AllCustomersDashboard() {
     { label: t("newest"), value: "newest" },
     { label: t("oldest"), value: "oldest" },
     { label: t("active"), value: "active" },
-    { label: t("unBanned"), value: "unBanned" },
     { label: t("banned"), value: "banned" },
+    { label: t("unBanned"), value: "unBanned" },
   ];
 
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
-      {/* Section 1: Summary and Navigation */}
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <SummaryCards t={t} />
-        <MobileSummaryCards t={t} />
-        <NavigationCards t={t} />
-      </div>
-
-      {/* Section 2: Header with Filter and Search */}
-      <Card>
-        <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <div>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col lg:flex-row gap-4 w-full">
+            <SummaryCards t={t} summaries={summaryData} />
+            <MobileSummaryCards t={t} summaries={summaryData} />
+            <NavigationCards t={t} />
           </div>
-          <div className="flex space-x-2">
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-muted-foreground"
-                onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                {t("filter")}
-              </Button>
-              {isFilterMenuOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow">
-                  {filterOptions.map((item) => (
-                    <button
-                      key={item.value}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-100 ${
-                        filterType === item.value
-                          ? "bg-gray-200 dark:bg-gray-100"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        setFilterType(item.value);
-                        setIsFilterMenuOpen(false);
-                      }}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+              <div>
+                <CardTitle>{t("title")}</CardTitle>
+                <CardDescription>{t("description")}</CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-muted-foreground"
+                    onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t("filter")}
+                  </Button>
+                  {isFilterMenuOpen && (
+                    <div className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow">
+                      {filterOptions.map((item) => (
+                        <button
+                          key={item.value}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-100 ${
+                            filterType === item.value
+                              ? "bg-gray-200 dark:bg-gray-100"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            setFilterType(item.value);
+                            setIsFilterMenuOpen(false);
+                            setCurrentPage(1);
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder={t("search")}
-                className="h-8 max-w-[200px]"
-                onChange={(e) => debouncedSetSearchTerm(e.target.value)}
-              />
-              <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Section 3: Customers Table */}
-      <CustomersTable
-        t={t}
-        coupons={currentCustomers}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPages={totalPages}
-      />
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder={t("search")}
+                    className="h-8 max-w-[200px]"
+                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+                  />
+                  <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+          <CustomersTable
+            t={t}
+            customers={currentCustomers}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+            selectedCustomers={selectedCustomers}
+            setSelectedCustomers={setSelectedCustomers}
+            handleDeleteSelected={handleDeleteSelected}
+            handleSelectCustomer={handleSelectCustomer}
+            refreshCustomers={fetchCustomersData}
+          />
+        </>
+      )}
     </div>
   );
 }
