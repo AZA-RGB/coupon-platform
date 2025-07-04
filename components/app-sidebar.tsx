@@ -77,15 +77,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
 import {
   Calendar,
   ChartBar,
@@ -124,6 +115,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggler";
 import LangToggler from "./langToggler";
@@ -150,6 +142,8 @@ export function AppSidebar() {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
   const dir = getLangDir(locale);
+
+  const { open } = useSidebar();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -209,26 +203,29 @@ export function AppSidebar() {
     <Sidebar
       side={dir === "rtl" ? "right" : "left"}
       collapsible="icon"
-      variant="default"
       className="border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <SidebarHeader className="p-4">
+      <SidebarHeader
+        className={`p-4 transition-all duration-200 ease-in-out overflow-hidden ${
+          open ? "opacity-100 max-h-24" : "opacity-0 max-h-0 p-0"
+        }`}
+      >
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">{t("title")}</h1>
         </div>
-        <SidebarSeparator className="my-2" />
+        <SidebarSeparator className="mt-2" />
       </SidebarHeader>
 
-      <SidebarContent className="px-2">
+      <SidebarContent className={`${open ? "px-2 overflow-hidden" : ""}`}>
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild className="">
                 <Link
                   href="/profile"
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
+                  className="flex items-center gap-3  rounded-lg hover:bg-accent transition-colors"
                 >
-                  <User className="h-5 w-5 text-primary" />
+                  <User className=" text-primary" />
                   <span>{t("profile")}</span>
                 </Link>
               </SidebarMenuButton>
@@ -259,12 +256,15 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start gap-3 px-2">
+            <Button
+              variant="ghost"
+              className={`w-full ${open ? "justify-start gap-3 px-2" : ""}`}
+            >
               <Settings className="h-5 w-5" />
-              <span>{t("settings")}</span>
+              {open && <span>{t("settings")}</span>}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
