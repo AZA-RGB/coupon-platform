@@ -99,13 +99,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
 "use client";
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -160,7 +153,7 @@ export default function ClientLayout({
           <AppSidebar />
           <SidebarInset>
             <SWRProvider>
-              <main>
+              <main className="">
                 <div className="flex gap-5 sticky top-0 items-center backdrop-blur-xl z-50">
                   <SidebarTrigger className="bg-primary dark:bg-primary-dark text-white m-1 rounded-md p-2 hover:bg-primary/90 dark:hover:bg-primary-dark/90 transition-all" />
                   <AppBreadcrumb />

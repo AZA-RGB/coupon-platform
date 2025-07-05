@@ -1,6 +1,5 @@
 {
-
-    "Auth": {
+  "Auth": {
     "login": "تسجيل الدخول",
     "register": "التسجيل",
     "loginDescription": "سجل الدخول الآن كمزود لنشر خدماتك",
@@ -113,11 +112,13 @@
     "acceptedFormats": "يتم قبول \".jpg\" و \".jpeg\" و \".png\" و \".gif\""
   },
   "addEvent": {
+    "AddEvent": "إضافة حدث",
     "eventCoverImages": "صور غلاف الحدث",
     "eventTitle": "عنوان الحدث",
     "eventTitlePlaceholder": "عروض الصيف",
     "eventDescription": "وصف الحدث",
     "addDescription": "أضف وصفًا لهذا الحدث",
+    "startDate": "تاريخ البدء",
     "expirationDate": "تاريخ الانتهاء",
     "maxPerProvider": "العدد الأقصى لكل مزود",
     "maxPerProviderPlaceholder": "2",
@@ -156,6 +157,12 @@
       "minImage": "يجب إضافة صورة واحدة على الأقل",
       "formError": "فشل في إرسال النموذج. يرجى المحاولة مرة أخرى."
     }
+  },
+  "CriteriaPage": {
+    "title": "معاينة المعايير",
+    "generalCriteria": "المعايير العامة",
+    "additionalCriteria": "معايير إضافية",
+    "failedToLoadCriteria": "فشل تحميل المعايير"
   },
   "Types": {
     "noTypesFound": "لم يتم العثور على أنواع كوبونات لهذه الصفحة.",
@@ -269,7 +276,7 @@
     "previous": "السابق",
     "next": "التالي"
   },
- "Providers": {
+  "Providers": {
     "title": "جميع المزودين",
     "description": "إدارة المزودين وعرض تفاصيلهم",
     "topCategories": "أفضل الفئات",
@@ -317,7 +324,9 @@
     "deleteError": "خطأ أثناء الحذف",
     "deleteErrorDesc": "حدث خطأ أثناء محاولة الحذف",
     "email": "البريد الإلكتروني",
-    "location": "الموقع"
+    "location": "الموقع",
+    "topProviders": "أفضل المزودين",
+    "export": "تصدير"
   },
   "Customers": {
     "title": "جميع العملاء",
@@ -330,7 +339,7 @@
     "userInfo": "معلومات المستخدم",
     "phone": "رقم الهاتف",
     "subscribeDate": "تاريخ الاشتراك",
-    "status":"الحالة",
+    "status": "الحالة",
     "Status": {
       "active": "نشط",
       "banned": "محظور",
@@ -410,20 +419,23 @@
     "billID": "معرف الفاتورة",
     "coupon": "كوبون",
     "date": "تاريخ",
-    "customers": "العملاء"
+    "customers": "العملاء",
+    "top10Coupons": "أفضل 10 كوبونات",
+    "forMe": "لي",
+    "forAll": "للجميع"
   },
   "addCoverImage": "إضافة صورة غلاف",
   "pickDate": "اختر تاريخ",
   "Topcustomers": "أفضل الزبائن",
   "Packages": {
-    "edit":"تعديل",
+    "edit": "تعديل",
     "updatePackage": "تحديث الباقة",
     "editErrorDesc": "حدث خطاء في تحديث الباقة.",
     "editPackage": "تعديل الباقة",
     "editPackageDesc": "تحديث تفاصيل الباقة المختارة.",
     "title": "العنوان",
     "description": "الوصف",
-     "noPackagesFound": "لم يتم العثور على باقات.",
+    "noPackagesFound": "لم يتم العثور على باقات.",
     "fetchError": "فشل في جلب الباقات",
     "fetchErrorDesc": "حدث خطأ أثناء جلب الباقات",
     "deleteSuccess": "تم حذف الباقات بنجاح",
@@ -485,7 +497,7 @@
     "requestError": "خطأ في الطلب - حاول مرة أخرى",
     "unexpectedError": "حدث خطأ غير متوقع"
   },
-   "Categories": {
+  "Categories": {
     "title": "جميع الفئات",
     "description": "إدارة وعرض جميع الفئات المتاحة.",
     "noCategoriesFound": "لم يتم العثور على فئات.",
@@ -528,21 +540,33 @@
     "namePlaceholder": "أدخل اسم الفئة",
     "providersCount": "عدد المزودين"
   },
-  "Sidebar":{
-  "title": "لوحة التحكم",
-  "navigation": "التنقل",
-  "profile": "إدارة الملف الشخصي",
-  "settings": "الإعدادات",
-  "appearance": "المظهر",
-  "theme": "السمة",
-  "language": "اللغة",
-  "dashboard": "لوحة المعلومات",
-  "coupons": "الكوبونات",
-  "couponTypes": "أنواع الكوبونات",
-  "providers": "مقدمي الخدمة",
-  "customers": "العملاء",
-  "complaints": "الشكاوى",
-  "requests": "الطلبات",
-  "reels": "الريلز"
-}
+  "AddCriterionDialog": {
+    "addNewCriterion": "إضافة معيار جديد",
+    "addNewCriterionDescription": "أضف معيار ليتم اسناده إلى نوع كوبون فيما بعد.",
+    "nameLabel": "الاسم",
+    "namePlaceholder": "أدخل اسم المعيار",
+    "typeLabel": "النوع",
+    "typePlaceholder": "اختر نوع الحقل",
+    "generalCriterion": "معيار عام",
+    "generalCriterionDescription": "سيتم تعيين المعيار لجميع أنواع الكوبونات",
+    "addingButton": "جاري الإضافة...",
+    "addButton": "إضافة معيار جديد"
+  },
+  "Sidebar": {
+    "title": "لوحة التحكم",
+    "navigation": "التنقل",
+    "profile": "إدارة الملف الشخصي",
+    "settings": "الإعدادات",
+    "appearance": "المظهر",
+    "theme": "السمة",
+    "language": "اللغة",
+    "dashboard": "لوحة المعلومات",
+    "coupons": "الكوبونات",
+    "couponTypes": "أنواع الكوبونات",
+    "providers": "مقدمي الخدمة",
+    "customers": "العملاء",
+    "complaints": "الشكاوى",
+    "requests": "الطلبات",
+    "reels": "الريلز"
+  }
 }

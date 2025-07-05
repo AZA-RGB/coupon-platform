@@ -11,22 +11,24 @@ import { Divide } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DeleteCriterionDialog } from "./DeleteCriterionDialob";
 import { UpdateCriterionDialog } from "./UpdateCriterionDialog";
+import { useTranslations } from "next-intl";
 
 export default function CriteriaPage() {
   const { isLoading, error, data, mutate } = useSWR("/criterias/index?page=1");
+  const t = useTranslations("CriteriaPage");
   return (
     <div className="px-10 mt-2">
       <div className="flex place-content-between ">
-        <div className="text-4xl">Criteria preview</div>
-        <AddCriterionDialog refresh={mutate} />
+        <div className="text-4xl">{t("title")}</div>
+        <AddCriterionDialog refresh={() => mutate()} />
       </div>
       <div className="grid md:grid-cols-2 grid-cols-1 gap-10 md:px-10 mt-10">
         <div className="col-span-1 space-y-5">
-          <div className="text-2xl text-primary">General criteria</div>
+          <div className="text-2xl text-primary">{t("generalCriteria")}</div>
 
           <Separator className="-mt-3 " />
           <div className="mt-7"></div>
-          {error && <div>failed to load criteria</div>}
+          {error && <div>{t("failedToLoadCriteria")}</div>}
           {isLoading && <Spinner />}
           {data &&
             data.data.data
@@ -59,7 +61,7 @@ export default function CriteriaPage() {
         </div>
 
         <div className="col-span-1 space-y-5">
-          <div className="text-2xl text-primary">Additional criteria</div>
+          <div className="text-2xl text-primary">{t("additionalCriteria")}</div>
           <Separator className="-mt-3 mb-7" />
           {isLoading && <Spinner />}
           {data &&

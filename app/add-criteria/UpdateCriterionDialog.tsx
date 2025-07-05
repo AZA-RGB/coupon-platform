@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import { LoadingButton } from "@/components/ui/loading-buuton";
 import { PencilLine } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface UpdateCriterionDialogProps {
   refresh?: () => void;
@@ -50,6 +51,7 @@ export function UpdateCriterionDialog({
 }: UpdateCriterionDialogProps) {
   const [isOpen, setIsOpen] = useState(false); // State to control dialog
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("UpdateCriterionDialog");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -93,7 +95,7 @@ export function UpdateCriterionDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update Criterion</DialogTitle>
+          <DialogTitle>{t("updateCriterion")}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -103,9 +105,9 @@ export function UpdateCriterionDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("nameLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter criterion name" {...field} />
+                    <Input placeholder={t("namePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,14 +119,14 @@ export function UpdateCriterionDialog({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>{t("typeLabel")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full max-h-20 overflow-auto">
-                        <SelectValue placeholder="Select a field type" />
+                        <SelectValue placeholder={t("typePlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-50 overflow-scroll">
@@ -152,9 +154,9 @@ export function UpdateCriterionDialog({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>General criterion</FormLabel>
+                    <FormLabel>{t("generalCriterion")}</FormLabel>
                     <FormDescription>
-                      The criterion will be assigned to all coupon types
+                      {t("generalCriterionDescription")}
                     </FormDescription>
                     <FormMessage />
                   </div>
@@ -164,10 +166,10 @@ export function UpdateCriterionDialog({
 
             <DialogFooter>
               {loading ? (
-                <LoadingButton disabled>Adding...</LoadingButton>
+                <LoadingButton disabled>{t("updatingButton")}</LoadingButton>
               ) : (
                 <Button type="submit" hidden={loading}>
-                  Update criterion
+                  {t("updateButton")}
                 </Button>
               )}
             </DialogFooter>

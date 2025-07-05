@@ -26,7 +26,9 @@ interface RightAuthFormProps {
   defaultTab?: "login" | "register";
 }
 
-export default function RightAuthForm({ defaultTab = "login" }: RightAuthFormProps) {
+export default function RightAuthForm({
+  defaultTab = "login",
+}: RightAuthFormProps) {
   // State
   const [fileError, setFileError] = useState(false);
   const [showPasswords, setShowPasswords] = useState({
@@ -63,7 +65,7 @@ export default function RightAuthForm({ defaultTab = "login" }: RightAuthFormPro
 
   const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
-    
+
     if (e.target.type === "file" && files?.[0]) {
       setRegisterData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
@@ -99,8 +101,10 @@ export default function RightAuthForm({ defaultTab = "login" }: RightAuthFormPro
   };
 
   // Constants
-  const commonInputClasses = "bg-white rounded-[40px] border border-gray-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary";
-  const tabTriggerClasses = "rounded-[40px] h-7 data-[state=active]:bg-primary data-[state=active]:text-white bg-transparent transition-colors duration-200 cursor-pointer";
+  const commonInputClasses =
+    "bg-white rounded-[40px] border border-gray-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary";
+  const tabTriggerClasses =
+    "rounded-[40px] h-7 data-[state=active]:bg-primary data-[state=active]:text-white bg-transparent transition-colors duration-200 cursor-pointer";
 
   return (
     <div className="md:w-1/2 p-8 sm:px-16 flex flex-col justify-start">
@@ -159,20 +163,30 @@ export default function RightAuthForm({ defaultTab = "login" }: RightAuthFormPro
                   className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary"
                   onClick={() => togglePasswordVisibility("login")}
                 >
-                  {showPasswords.login ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPasswords.login ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </div>
 
             <div className="flex justify-end">
-              <Link href="/auth/forget-password" className="text-sm text-primary hover:underline">
+              <Link
+                href="/auth/forget-password"
+                className="text-sm text-primary hover:underline"
+              >
                 Forgot password?
               </Link>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div></div>
-              <Button type="submit" className="w-full rounded-[40px] shadow-none cursor-pointer">
+              <Button
+                type="submit"
+                className="w-full rounded-[40px] shadow-none cursor-pointer"
+              >
                 Login
               </Button>
             </div>
@@ -235,7 +249,11 @@ export default function RightAuthForm({ defaultTab = "login" }: RightAuthFormPro
                   className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary"
                   onClick={() => togglePasswordVisibility("register")}
                 >
-                  {showPasswords.register ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPasswords.register ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -292,7 +310,10 @@ export default function RightAuthForm({ defaultTab = "login" }: RightAuthFormPro
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div></div>
-              <Button type="submit" className="w-full rounded-[40px] shadow-none cursor-pointer">
+              <Button
+                type="submit"
+                className="w-full rounded-[40px] shadow-none cursor-pointer"
+              >
                 Register
               </Button>
             </div>

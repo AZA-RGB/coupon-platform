@@ -112,11 +112,13 @@
     "acceptedFormats": "\".jpg\", \".jpeg\", \".png\", \".gif\" are accepted"
   },
   "addEvent": {
+    "AddEvent": "Add Event",
     "eventCoverImages": "Event cover Images",
     "eventTitle": "Event Title",
     "eventTitlePlaceholder": "Summer offers",
     "eventDescription": "Event Description",
     "addDescription": "Add description for this event",
+    "startDate": "Starting Date",
     "expirationDate": "Expiration Date",
     "maxPerProvider": "Maximum number for each provider",
     "maxPerProviderPlaceholder": "2",
@@ -316,7 +318,9 @@
     "deleteError": "Error during deletion",
     "deleteErrorDesc": "An error occurred while attempting to delete",
     "email": "Email",
-    "location": "Location"
+    "location": "Location",
+    "topProviders": "Top Providers",
+    "export": "Export"
   },
   "Customers": {
     "title": "All Customers",
@@ -409,7 +413,10 @@
     "billID": "Bill ID",
     "coupon": "Coupon",
     "date": "Date",
-    "customers": "Customers"
+    "customers": "Customers",
+    "top10Coupons": "top 10 coupons",
+    "forMe": "For me",
+    "forAll": "For all"
   },
   "addCoverImage": "Add cover image",
   "pickDate": "pick a date",
@@ -525,7 +532,29 @@
     "editCategory": "Edit Category",
     "delete": "Delete",
     "namePlaceholder": "Enter category name",
-    "providersCount": "Providers"
+    "providersCount": "Providers",
+    "titleCriteria": "Criteria preview",
+    "generalCriteria": "General criteria",
+    "additionalCriteria": "Additional criteria",
+    "failedToLoadCriteria": "Failed to load criteria"
+  },
+  "AddCriterionDialog": {
+    "addNewCriterion": "Add New Criterion",
+    "addNewCriterionDescription": "Define a new evaluation criterion for your assessment.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Enter criterion name",
+    "typeLabel": "Type",
+    "typePlaceholder": "Select a field type",
+    "generalCriterion": "General criterion",
+    "generalCriterionDescription": "The criterion will be assigned to all coupon types",
+    "addingButton": "Adding...",
+    "addButton": "Add new criterion"
+  },
+  "CriteriaPage": {
+    "title": "Criteria Preview",
+    "generalCriteria": "General Criteria",
+    "additionalCriteria": "Additional Criteria",
+    "failedToLoadCriteria": "Failed to load criteria"
   },
   "Sidebar": {
     "title": "Admin Panel",
