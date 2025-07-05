@@ -8,7 +8,13 @@ import {
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
-const FileUploadDropzone = ({ field }: { field: any }) => {
+const FileUploadDropzone = ({
+  field,
+  maxFiles,
+}: {
+  field: any;
+  maxFiles?: number;
+}) => {
   const files = field.value || [];
   const t = useTranslations();
   const dropzone = {
@@ -16,7 +22,7 @@ const FileUploadDropzone = ({ field }: { field: any }) => {
       "image/*": [".jpg", ".jpeg", ".png"],
     },
     multiple: true,
-    maxFiles: 4,
+    maxFiles: maxFiles || 4,
     maxSize: 1 * 1024 * 1024,
   };
 
