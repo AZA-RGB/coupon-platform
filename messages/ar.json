@@ -552,6 +552,17 @@
     "addingButton": "جاري الإضافة...",
     "addButton": "إضافة معيار جديد"
   },
+  "UpdateCriterionDialog": {
+    "updateCriterion": "تعديل المعيار",
+    "nameLabel": "الاسم",
+    "namePlaceholder": "أدخل اسم المعيار",
+    "typeLabel": "النوع",
+    "typePlaceholder": "اختر نوع الحقل",
+    "generalCriterion": "معيار عام",
+    "generalCriterionDescription": "سيتم تعيين المعيار لجميع أنواع الكوبونات",
+    "updatingButton": "جاري التحديث...",
+    "updateButton": "تحديث المعيار"
+  },
   "Sidebar": {
     "title": "لوحة التحكم",
     "navigation": "التنقل",
@@ -560,10 +571,10 @@
     "appearance": "المظهر",
     "theme": "السمة",
     "language": "اللغة",
-    "dashboard": "لوحة المعلومات",
+    "dashboard": "لوحة القيادة",
     "coupons": "الكوبونات",
     "couponTypes": "أنواع الكوبونات",
-    "providers": "مقدمي الخدمة",
+    "providers": "مقدمو الخدمات",
     "customers": "العملاء",
     "complaints": "الشكاوى",
     "requests": "الطلبات",

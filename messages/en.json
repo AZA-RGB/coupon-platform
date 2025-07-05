@@ -556,6 +556,17 @@
     "additionalCriteria": "Additional Criteria",
     "failedToLoadCriteria": "Failed to load criteria"
   },
+  "UpdateCriterionDialog": {
+    "updateCriterion": "update Criterion",
+    "nameLabel": "name",
+    "namePlaceholder": "Enter criterion name",
+    "typeLabel": "Type",
+    "typePlaceholder": "Select a field type",
+    "generalCriterion": "General criterion",
+    "generalCriterionDescription": "The criterion will be assigned to all coupon types",
+    "updatingButton": "Updating...",
+    "updateButton": "Update criterion"
+  },
   "Sidebar": {
     "title": "Admin Panel",
     "navigation": "Navigation",
