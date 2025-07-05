@@ -59,21 +59,41 @@ import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import debounce from "lodash/debounce";
-import { couponTypeOptions, topCategoriesData, fetchCouponTypes, deleteCouponType } from "./constants";
+import {
+  couponTypeOptions,
+  topCategoriesData,
+  fetchCouponTypes,
+  deleteCouponType,
+} from "./constants";
 import MyImage from "@/components/my-image";
+import AddTypeDialog from "@/components/AddType";
 
 const COUPONS_PER_PAGE = 10;
-const FALLBACK_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const FALLBACK_IMAGE =
+  "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
 
-const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPages, selectedTypes, setSelectedTypes, handleDeleteSelected }) => {
+const CouponTypesGrid = ({
+  t,
+  couponTypes,
+  currentPage,
+  setCurrentPage,
+  totalPages,
+  selectedTypes,
+  setSelectedTypes,
+  handleDeleteSelected,
+}) => {
   const handleSelectType = (id) => {
     setSelectedTypes((prev) =>
-      prev.includes(id) ? prev.filter((typeId) => typeId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((typeId) => typeId !== id)
+        : [...prev, id],
     );
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = couponTypes.every((type) => selectedTypes.includes(type.id));
+    const allSelected = couponTypes.every((type) =>
+      selectedTypes.includes(type.id),
+    );
     setSelectedTypes(allSelected ? [] : couponTypes.map((type) => type.id));
   };
 
@@ -105,7 +125,12 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                 onClick={handleToggleSelectAll}
                 disabled={couponTypes.length === 0}
               >
-                {t(selectedTypes.length === couponTypes.length && couponTypes.length > 0 ? "deselectAll" : "selectAll")}
+                {t(
+                  selectedTypes.length === couponTypes.length &&
+                    couponTypes.length > 0
+                    ? "deselectAll"
+                    : "selectAll",
+                )}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -119,7 +144,9 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("confirmDeleteTitle")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                       {t("confirmDeleteDesc", { count: selectedTypes.length })}
                     </AlertDialogDescription>
@@ -135,9 +162,12 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {couponTypes.map((type) => (
-                <Card key={type.id} className="overflow-hidden hover:shadow-md transition-shadow p-0">
+                <Card
+                  key={type.id}
+                  className="overflow-hidden hover:shadow-md transition-shadow p-0"
+                >
                   <div className="relative w-full h-32">
-                   <MyImage src={''} alt={type.name} />
+                    <MyImage src={""} alt={type.name} />
                   </div>
                   <CardHeader className="py-0 px-3">
                     <div className="flex items-center gap-2">
@@ -153,8 +183,8 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                           type.status === "active"
                             ? "bg-green-100 text-green-800"
                             : type.status === "expired"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
                         {t(type.status)}
@@ -162,8 +192,14 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                     </CardDescription>
                   </CardHeader>
                   <CardFooter className="px-3 pb-3 flex justify-center gap-2">
-                    <Button variant="outline" className="w-full h-8 text-xs" asChild>
-                      <Link href={`/dashboard/coupons/types/${type.id}`}>{t("details")}</Link>
+                    <Button
+                      variant="outline"
+                      className="w-full h-8 text-xs"
+                      asChild
+                    >
+                      <Link href={`/dashboard/coupons/types/${type.id}`}>
+                        {t("details")}
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -182,7 +218,9 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                   e.preventDefault();
                   if (currentPage > 1) setCurrentPage(currentPage - 1);
                 }}
-                className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+                className={
+                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                }
               >
                 {t("previous")}
               </PaginationPrevious>
@@ -208,7 +246,11 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
                   e.preventDefault();
                   if (currentPage < totalPages) setCurrentPage(currentPage + 1);
                 }}
-                className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                className={
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
               >
                 {t("next")}
               </PaginationNext>
@@ -223,15 +265,25 @@ const CouponTypesGrid = ({ t, couponTypes, currentPage, setCurrentPage, totalPag
 const TopCategoriesCard = ({ t, topCategoriesData }) => {
   return (
     <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
-      <CardTitle className="text-lg text-primary mb-1">{t("topCategories")}</CardTitle>
+      <CardTitle className="text-lg text-primary mb-1">
+        {t("topCategories")}
+      </CardTitle>
       <div className="space-y-4">
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("rank")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("category")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("sales")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("popularity")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -257,10 +309,19 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
   );
 };
 
-const ReportGeneratorCard = ({ t, couponType, setCouponType, dateRange, setDateRange, handleGenerateReport }) => {
+const ReportGeneratorCard = ({
+  t,
+  couponType,
+  setCouponType,
+  dateRange,
+  setDateRange,
+  handleGenerateReport,
+}) => {
   return (
     <Card className="w-full lg:w-2/5 p-4">
-      <CardTitle className="text-lg text-primary mb-1">{t("generateReport")}</CardTitle>
+      <CardTitle className="text-lg text-primary mb-1">
+        {t("generateReport")}
+      </CardTitle>
       <div className="space-y-4">
         <div className="space-y-4 w-full">
           <Label htmlFor="couponType">{t("couponType")}</Label>
@@ -281,18 +342,24 @@ const ReportGeneratorCard = ({ t, couponType, setCouponType, dateRange, setDateR
           <Label>{t("selectDate")}</Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
                 <CalendarIcon className="mr-2 h-4 w-4 opacity-70 shrink-0" />
                 {dateRange?.from ? (
                   dateRange?.to ? (
                     <>
-                      {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                      {format(dateRange.from, "MMM dd, yyyy")} -{" "}
+                      {format(dateRange.to, "MMM dd, yyyy")}
                     </>
                   ) : (
                     format(dateRange.from, "MMM dd, yyyy")
                   )
                 ) : (
-                  <span className="text-muted-foreground">{t("selectDate")}</span>
+                  <span className="text-muted-foreground">
+                    {t("selectDate")}
+                  </span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -300,7 +367,9 @@ const ReportGeneratorCard = ({ t, couponType, setCouponType, dateRange, setDateR
               <Calendar
                 mode="range"
                 selected={dateRange}
-                onSelect={(range) => range && setDateRange({ from: range.from, to: range.to })}
+                onSelect={(range) =>
+                  range && setDateRange({ from: range.from, to: range.to })
+                }
                 numberOfMonths={2}
               />
             </PopoverContent>
@@ -320,7 +389,10 @@ export default function TypesAllCouponsPage() {
   const [couponType, setCouponType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
-  const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
+  const [dateRange, setDateRange] = useState({
+    from: undefined,
+    to: undefined,
+  });
   const [couponTypes, setCouponTypes] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -328,13 +400,17 @@ export default function TypesAllCouponsPage() {
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value) => setSearchTerm(value), 300),
-    []
+    [],
   );
 
   const fetchCouponTypesData = async () => {
     setIsLoading(true);
     try {
-      const { couponTypes, totalPages, currentPage: apiCurrentPage } = await fetchCouponTypes(currentPage, COUPONS_PER_PAGE);
+      const {
+        couponTypes,
+        totalPages,
+        currentPage: apiCurrentPage,
+      } = await fetchCouponTypes(currentPage, COUPONS_PER_PAGE);
       console.log("Setting couponTypes:", couponTypes);
       setCouponTypes(couponTypes);
       setTotalPages(totalPages);
@@ -342,7 +418,7 @@ export default function TypesAllCouponsPage() {
         setCurrentPage(apiCurrentPage);
       }
     } catch (error) {
-      console.error('Error fetching coupon types:', error);
+      console.error("Error fetching coupon types:", error);
       toast.error(t("fetchErrorDesc"), {
         description: t("fetchError"),
         duration: 5000,
@@ -358,19 +434,19 @@ export default function TypesAllCouponsPage() {
   }, [currentPage]);
 
   const handleDeleteSelected = async () => {
-    console.log('Selected Coupon Types:', selectedTypes);
+    console.log("Selected Coupon Types:", selectedTypes);
     setIsLoading(true);
     try {
       const deletePromises = selectedTypes.map((id) => deleteCouponType(id));
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
-        console.error('Failed to delete some coupon types:', failedDeletions);
+        console.error("Failed to delete some coupon types:", failedDeletions);
         const errorMessages = failedDeletions.map((result) => {
           const error = result.error;
           const status = error.response?.status;
           const message = error.response?.data?.message || error.message;
-          return `Coupon Type ID ${result.id}: ${status ? `Status ${status} - ` : ''}${message}`;
+          return `Coupon Type ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
         });
         toast.error(t("deleteFailedDesc"), {
           description: errorMessages.join("; ") || t("deleteFailed"),
@@ -386,13 +462,16 @@ export default function TypesAllCouponsPage() {
         await fetchCouponTypesData();
       }
     } catch (error) {
-      console.error('Error during deletion:', error);
+      console.error("Error during deletion:", error);
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
-      toast.error(`${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ''}: ${message}`, {
-        description: t("deleteError"),
-        duration: 7000,
-      });
+      toast.error(
+        `${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+        {
+          description: t("deleteError"),
+          duration: 7000,
+        },
+      );
     } finally {
       setIsLoading(false);
     }
@@ -400,7 +479,10 @@ export default function TypesAllCouponsPage() {
 
   const filteredCouponTypes = useMemo(() => {
     if (!Array.isArray(couponTypes)) {
-      console.error("filteredCouponTypes: couponTypes is not an array:", couponTypes);
+      console.error(
+        "filteredCouponTypes: couponTypes is not an array:",
+        couponTypes,
+      );
       return [];
     }
 
@@ -430,7 +512,7 @@ export default function TypesAllCouponsPage() {
 
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
-    currentPage * COUPONS_PER_PAGE
+    currentPage * COUPONS_PER_PAGE,
   );
 
   const handleGenerateReport = () => {
@@ -472,6 +554,7 @@ export default function TypesAllCouponsPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2">
+                <AddTypeDialog refreshTypes={fetchCouponTypesData} />
                 <div className="relative">
                   <Button
                     variant="outline"

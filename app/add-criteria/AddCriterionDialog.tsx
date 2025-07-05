@@ -36,6 +36,7 @@ import { LoadingButton } from "@/components/ui/loading-buuton";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface AddCriterionDialogProps {
   refresh?: () => void;
@@ -43,6 +44,7 @@ interface AddCriterionDialogProps {
 export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("AddCriterionDialog");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,13 +79,13 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="-mb-1 p-2">+ New criterion</Button>
+        <Button className="-mb-1 p-2">{t("addButton")}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Criterion</DialogTitle>
+          <DialogTitle>{t("addNewCriterion")}</DialogTitle>
           <DialogDescription>
-            Define a new evaluation criterion for your assessment.
+            {t("addNewCriterionDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -94,9 +96,9 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("nameLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter criterion name" {...field} />
+                    <Input placeholder={t("namePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,14 +110,14 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>{t("typeLabel")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full max-h-20 overflow-auto">
-                        <SelectValue placeholder="Select a field type" />
+                        <SelectValue placeholder={t("typePlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-50 overflow-scroll">
@@ -143,9 +145,9 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>General criterion</FormLabel>
+                    <FormLabel>{t("generalCriterion")}</FormLabel>
                     <FormDescription>
-                      The criterion will be assigned to all coupon types
+                      {t("generalCriterionDescription")}
                     </FormDescription>
                     <FormMessage />
                   </div>
@@ -155,10 +157,10 @@ export function AddCriterionDialog({ refresh }: AddCriterionDialogProps) {
 
             <DialogFooter>
               {loading ? (
-                <LoadingButton disabled>Adding...</LoadingButton>
+                <LoadingButton disabled>{t("addingButton")}</LoadingButton>
               ) : (
                 <Button type="submit" hidden={loading}>
-                  Add new criterion
+                  {t("addButton")}
                 </Button>
               )}
             </DialogFooter>

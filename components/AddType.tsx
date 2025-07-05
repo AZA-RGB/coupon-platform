@@ -42,7 +42,7 @@ const formSchema = z.object({
   type_name: z.string().min(1),
   criteria_list: z
     .array(z.string())
-    .nonempty("Please select at least one item")
+    .nonempty("الرجاء اختيار عنصر واحد على الأقل")
     .optional(),
 });
 
@@ -51,7 +51,7 @@ export default function AddTypeDialog({ refreshTypes }) {
     "/criterias/index?page=1&isGeneral=false",
     {
       onError: (err) => {
-        toast.error("Failed to load criteria list");
+        toast.error("فشل تحميل قائمة المعايير");
         console.error("Error fetching criteria:", err);
       },
     },
@@ -78,7 +78,7 @@ export default function AddTypeDialog({ refreshTypes }) {
 
       const response = await api.post("/coupon-types/create", payload);
 
-      toast.success("Coupon type created successfully!");
+      toast.success("تم إنشاء نوع الكوبون بنجاح!");
       console.log("Response:", response.data);
       refreshTypes();
       form.reset();
@@ -89,18 +89,18 @@ export default function AddTypeDialog({ refreshTypes }) {
         if (error.response) {
           // Server responded with a status code outside 2xx
           toast.error(
-            `Error: ${error.response.data.message || "Failed to create coupon type"}`,
+            `خطأ: ${error.response.data.message || "فشل في إنشاء نوع الكوبون"}`,
           );
         } else if (error.request) {
           // Request was made but no response received
-          toast.error("Network error - please check your connection");
+          toast.error("خطأ في الشبكة - يرجى التحقق من اتصالك");
         } else {
           // Something happened in setting up the request
-          toast.error("Request error - please try again");
+          toast.error("خطأ في الطلب - يرجى المحاولة مرة أخرى");
         }
       } else {
         // Non-axios error
-        toast.error("An unexpected error occurred");
+        toast.error("حدث خطأ غير متوقع");
       }
     }
   }
@@ -108,16 +108,16 @@ export default function AddTypeDialog({ refreshTypes }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Type
+        <Button>
+          <Plus className="" />
+          إضافة نوع جديد
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-card">
         <DialogHeader>
-          <DialogTitle>Create New Coupon Type</DialogTitle>
+          <DialogTitle>إنشاء نوع كوبون جديد</DialogTitle>
           <DialogDescription>
-            Add a new coupon type and assign criteria to it.
+            أضف نوع كوبون جديد وقم بتعيين معايير له.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -127,11 +127,11 @@ export default function AddTypeDialog({ refreshTypes }) {
               name="type_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type Name</FormLabel>
+                  <FormLabel>اسم النوع</FormLabel>
                   <FormControl>
-                    <Input placeholder="eg, collaborative" {...field} />
+                    <Input placeholder="مثال: تعاوني" {...field} />
                   </FormControl>
-                  <FormDescription>The name of the type</FormDescription>
+                  <FormDescription>اسم هذا النوع</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -142,7 +142,7 @@ export default function AddTypeDialog({ refreshTypes }) {
               name="criteria_list"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Criteria</FormLabel>
+                  <FormLabel>المعايير</FormLabel>
                   <FormControl>
                     {isLoading ? (
                       <div className="space-y-2">
@@ -155,13 +155,13 @@ export default function AddTypeDialog({ refreshTypes }) {
                       </div>
                     ) : error ? (
                       <div className="flex items-center gap-2 text-destructive">
-                        <span>Failed to load criteria</span>
+                        <span>فشل تحميل المعايير</span>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => mutate()}
                         >
-                          Retry
+                          إعادة المحاولة
                         </Button>
                       </div>
                     ) : (
@@ -174,8 +174,8 @@ export default function AddTypeDialog({ refreshTypes }) {
                           <MultiSelectorInput
                             placeholder={
                               isLoading
-                                ? "Loading criteria..."
-                                : "Select criteria..."
+                                ? "جاري تحميل المعايير..."
+                                : "اختر المعايير..."
                             }
                           />
                         </MultiSelectorTrigger>
@@ -194,9 +194,7 @@ export default function AddTypeDialog({ refreshTypes }) {
                       </MultiSelector>
                     )}
                   </FormControl>
-                  <FormDescription>
-                    Select criteria to assign to this type
-                  </FormDescription>
+                  <FormDescription>تعيين معايير لهذا النوع</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -204,7 +202,7 @@ export default function AddTypeDialog({ refreshTypes }) {
 
             <div className="flex justify-end gap-2">
               <DialogTrigger asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">إلغاء</Button>
               </DialogTrigger>
               <Button
                 type="submit"
@@ -213,10 +211,10 @@ export default function AddTypeDialog({ refreshTypes }) {
                 {form.formState.isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
+                    جاري الإنشاء...
                   </>
                 ) : (
-                  "Create Type"
+                  "إنشاء نوع"
                 )}
               </Button>
             </div>

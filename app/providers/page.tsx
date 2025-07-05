@@ -52,7 +52,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
-import { fetchProviders, deleteProvider, fetchProviderDetails, topCategoriesData, requestsData } from "./constants";
+import {
+  fetchProviders,
+  deleteProvider,
+  fetchProviderDetails,
+  topCategoriesData,
+  requestsData,
+} from "./constants";
 import MyImage from "@/components/my-image";
 
 const PROVIDERS_PER_PAGE = 10;
@@ -181,10 +187,7 @@ const ProviderDetailsModal = ({ provider, t, open, onOpenChange }) => {
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
-                              <MyImage src={provider.image}
-              alt={provider.name} />
-            
-            
+            <MyImage src={provider.image} alt={provider.name} />
           </div>
           <DialogTitle>{provider.name}</DialogTitle>
           <DialogDescription>{provider.description}</DialogDescription>
@@ -228,21 +231,21 @@ const ProvidersTable = ({
 
   const columns = useMemo(
     () => [
-      { key: "select", label: t("select") || "Select" },
-      { key: "userInfo", label: t("userInfo") || "User Info" },
-      { key: "phone", label: t("phone") || "Phone" },
-      { key: "requestDate", label: t("request_date") || "Request Date" },
-      { key: "status", label: t("status") || "Status" },
-      { key: "coupons", label: t("coupons") || "Coupons" },
-      { key: "packages", label: t("packages") || "Packages" },
-      { key: "actions", label: t("actions") || "Actions" },
+      { key: "select", label: t("select") },
+      { key: "userInfo", label: t("userInfo") },
+      { key: "phone", label: t("phone") },
+      { key: "requestDate", label: t("request_date") },
+      { key: "status", label: t("status") },
+      { key: "coupons", label: t("coupons") },
+      { key: "packages", label: t("packages") },
+      { key: "actions", label: t("actions") },
     ],
-    [t]
+    [t],
   );
 
   const displayedData = useMemo(
     () => (isRTL ? [...providers].reverse() : providers),
-    [providers, isRTL]
+    [providers, isRTL],
   );
 
   const formatDate = (date) => {
@@ -257,7 +260,9 @@ const ProvidersTable = ({
     const allSelected = providers.every((provider) =>
       selectedProviders.includes(provider.id),
     );
-    setSelectedProviders(allSelected ? [] : providers.map((provider) => provider.id));
+    setSelectedProviders(
+      allSelected ? [] : providers.map((provider) => provider.id),
+    );
   };
 
   return (
@@ -277,7 +282,8 @@ const ProvidersTable = ({
               disabled={providers.length === 0}
             >
               {t(
-                selectedProviders.length === providers.length && providers.length > 0
+                selectedProviders.length === providers.length &&
+                  providers.length > 0
                   ? "deselectAll"
                   : "selectAll",
               )}
@@ -296,7 +302,9 @@ const ProvidersTable = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {t("confirmDeleteDesc", { count: selectedProviders.length })}
+                    {t("confirmDeleteDesc", {
+                      count: selectedProviders.length,
+                    })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -356,7 +364,7 @@ const ProvidersTable = ({
                               formatDate,
                               handleSelectProvider,
                               setSelectedProvider,
-                              refreshProviders
+                              refreshProviders,
                             )}
                           </TableCell>
                         ))}
@@ -418,7 +426,7 @@ function renderTableCellContent(
   formatDate,
   handleSelectProvider,
   setSelectedProvider,
-  refreshProviders
+  refreshProviders,
 ) {
   switch (key) {
     case "select":
@@ -470,8 +478,8 @@ function renderTableCellContent(
             provider.status === "active"
               ? "bg-green-100 text-green-800"
               : provider.status === "expired"
-              ? "bg-red-100 text-red-800"
-              : "bg-yellow-100 text-yellow-800"
+                ? "bg-red-100 text-red-800"
+                : "bg-yellow-100 text-yellow-800"
           }`}
         >
           {t(provider.status)}
@@ -511,18 +519,19 @@ export default function AllProvidersDashboard() {
   const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value) => {
-      setSearchTerm(value);
-      setCurrentPage(1);
-    }, 300),
-    []
+    () =>
+      debounce((value) => {
+        setSearchTerm(value);
+        setCurrentPage(1);
+      }, 300),
+    [],
   );
 
   const handleSelectProvider = useCallback((id) => {
     setSelectedProviders((prev) =>
       prev.includes(id)
         ? prev.filter((providerId) => providerId !== id)
-        : [...prev, id]
+        : [...prev, id],
     );
   }, []);
 
@@ -541,7 +550,7 @@ export default function AllProvidersDashboard() {
         providers.map((provider) => ({
           ...provider,
           isSelected: selectedProviders.includes(provider.id),
-        }))
+        })),
       );
       setTotalPages(totalPages || 1);
       if (apiCurrentPage !== currentPage) {
@@ -560,7 +569,7 @@ export default function AllProvidersDashboard() {
         {
           description: t("fetchError"),
           duration: 5000,
-        }
+        },
       );
       setProviders([]);
       setTotalPages(1);
@@ -591,10 +600,13 @@ export default function AllProvidersDashboard() {
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedProviders.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedProviders.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          },
+        );
         setSelectedProviders([]);
         setCurrentPage(1);
         await fetchProvidersData();
@@ -608,7 +620,7 @@ export default function AllProvidersDashboard() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);

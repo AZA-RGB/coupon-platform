@@ -169,7 +169,7 @@ export function AppSidebar() {
     },
     {
       title: t("couponTypes"),
-      url: "/coupons/types-all-coupons",
+      url: "/coupons/types-coupons-admin",
       icon: Tickets,
     },
     {
@@ -216,7 +216,7 @@ export function AppSidebar() {
         <SidebarSeparator className="mt-2" />
       </SidebarHeader>
 
-      <SidebarContent className={`${open ? "px-2 overflow-hidden" : ""}`}>
+      <SidebarContent className={`${open ? "overflow-hidden" : ""}`}>
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>

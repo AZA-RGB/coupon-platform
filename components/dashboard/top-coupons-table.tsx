@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "../ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { useTranslations } from "next-intl";
 
 const testData = [
   {
@@ -103,30 +104,35 @@ const testData = [
   },
 ];
 export default function TopCouponsTable() {
+  const t = useTranslations("CouponsTable");
+
   return (
     <Card className="col-span-2 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div >
-          <div className="text-3xl text-primary">Top Coupons</div> 
-          <div className="text-lg">top 10 coupns</div>
+        <div>
+          <div className="text-3xl text-primary font-bold">
+            {t("topCoupons")}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {t("top10Coupons")}
+          </div>
         </div>
 
-
-              <Tabs defaultValue="For me">
-                <TabsList>
-                  <TabsTrigger value="For me">For me</TabsTrigger>
-                  <TabsTrigger value="For all">For all</TabsTrigger>
-                </TabsList>
-              </Tabs>
+        <Tabs defaultValue="For me">
+          <TabsList>
+            <TabsTrigger value="For me">{t("forMe")}</TabsTrigger>
+            <TabsTrigger value="For all">{t("forAll")}</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       <div className="row-span-5 overflow-auto">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead className="w-[100px]">Bill ID</TableHead>
-              <TableHead>Coupon</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Customers</TableHead>
+              <TableHead className="w-[100px]">{t("billID")}</TableHead>
+              <TableHead>{t("coupon")}</TableHead>
+              <TableHead>{t("date")}</TableHead>
+              <TableHead>{t("customers")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

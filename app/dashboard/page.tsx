@@ -10,42 +10,45 @@ import {
   ShoppingCart,
   Users,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function Dashboard() {
-  const testData = [
-    {
-      billID: "#12345",
-      coupon: "shawarma coupon",
-      date: "15/3/2025",
-      customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
-      price: "150",
-    },
-    // ... (rest of your test data remains the same)
-  ];
+  const t = useTranslations();
+
+  // const testData = [
+  //   {
+  //     billID: "#12345",
+  //     coupon: "shawarma coupon",
+  //     date: "15/3/2025",
+  //     customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+  //     price: "150",
+  //   },
+  //   // ... (rest of your test data remains the same)
+  // ];
 
   const cardData = [
     {
-      title: "Total Sales",
+      title: t("AdminDashboard.totalSales"),
       value: "867,878",
       icon: <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
-      title: "New Users",
+      title: t("AdminDashboard.newUsers"),
       value: "12,345",
       icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
-      title: "Orders",
+      title: t("AdminDashboard.orders"),
       value: "5,678",
       icon: <Package className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
-      title: "Revenue",
+      title: t("AdminDashboard.revenue"),
       value: "$89,012",
       icon: <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
-      title: "Visitors",
+      title: t("AdminDashboard.visitors"),
       value: "234,567",
       icon: <LineChart className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
@@ -53,7 +56,6 @@ export default function Dashboard() {
 
   return (
     <div className="p-2 sm:p-5 space-y-3 sm:space-y-5">
-      {/* top statistics cards - now responsive */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-5">
         {cardData.map((card, index) => (
           <Card

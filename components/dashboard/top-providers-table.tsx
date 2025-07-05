@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { useTranslations } from "next-intl";
 
 const testData = [
   {
@@ -103,22 +104,27 @@ const testData = [
   },
 ];
 export default function TopProvidersTable() {
+  const t = useTranslations();
   return (
     <Card className="col-span-2 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-3xl text-primary">Top providers</div>
+        <div className="text-3xl text-primary font-bold">
+          {t("Providers.topProviders")}
+        </div>
         <Button variant="outline" className=" dark:">
-          Export
+          {t("Providers.export")}
         </Button>
       </div>
       <div className="row-span-5 overflow-auto">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead className="w-[100px]">Bill ID</TableHead>
-              <TableHead>Coupon</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Customers</TableHead>
+              <TableHead className="w-[100px]">
+                {t("CouponsTable.billID")}
+              </TableHead>
+              <TableHead>{t("CouponsTable.coupon")}</TableHead>
+              <TableHead>{t("CouponsTable.date")}</TableHead>
+              <TableHead>{t("CouponsTable.customers")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
