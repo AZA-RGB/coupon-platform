@@ -123,7 +123,6 @@ export default function AddEvent() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="title"

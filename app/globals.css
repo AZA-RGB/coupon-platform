@@ -183,7 +183,7 @@
 
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        @apply border-border focus-visible:ring-ring;
         font-family: "Cairo", sans-serif; /* Changed from Almarai to Cairo */
     }
     body {

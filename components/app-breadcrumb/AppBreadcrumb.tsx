@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,20 +6,20 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
-import { Fragment } from "react"
+} from "@/components/ui/breadcrumb";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 
 export function AppBreadcrumb({ className }: { className?: string }) {
-  const pathname = usePathname()
-  const pathSegments = pathname.split('/').filter(segment => segment !== '')
+  const pathname = usePathname();
+  const pathSegments = pathname.split("/").filter((segment) => segment !== "");
 
   // Customize these names as needed
   const pathNames: Record<string, string> = {
     // 'coupons': "Coupons",
     // Add more mappings as needed
-  }
+  };
 
   return (
     <Breadcrumb className={cn("", className)}>
@@ -29,13 +29,15 @@ export function AppBreadcrumb({ className }: { className?: string }) {
         </BreadcrumbItem>
 
         {pathSegments.map((segment, index) => {
-          const isLast = index === pathSegments.length - 1
-          const path = `/${pathSegments.slice(0, index + 1).join('/')}`
-          const displayName = pathNames[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)
+          const isLast = index === pathSegments.length - 1;
+          const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
+          const displayName =
+            pathNames[segment] ||
+            segment.charAt(0).toUpperCase() + segment.slice(1);
 
           return (
             <Fragment key={index}>
-              <BreadcrumbSeparator />
+              <BreadcrumbSeparator className="rtl:rotate-180" />
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{displayName}</BreadcrumbPage>
@@ -44,9 +46,9 @@ export function AppBreadcrumb({ className }: { className?: string }) {
                 )}
               </BreadcrumbItem>
             </Fragment>
-          )
+          );
         })}
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }
