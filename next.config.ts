@@ -6,6 +6,7 @@ const nextConfig = {
       "via.placeholder.com",
       "ecoupon-files.sfo3.cdn.digitaloceanspaces.com",
     ],
+    remotePatterns: [new URL("http://164.92.67.78:3002/images/**")],
   },
   async rewrites() {
     return [
