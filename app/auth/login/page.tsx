@@ -63,6 +63,7 @@ export default function LoginPage() {
       // Save tokens to localStorage
       localStorage.setItem("token", access_token);
       localStorage.setItem("refreshToken", refresh_token);
+      //store role
 
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),

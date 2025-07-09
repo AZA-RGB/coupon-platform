@@ -1,4 +1,5 @@
 {
+
   "Auth": {
     "login": "تسجيل الدخول",
     "register": "التسجيل",
@@ -205,7 +206,9 @@
     "added": "تم الإضافة",
     "details": "التفاصيل",
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "addCoupon": "إضافة كوبون",
+    "topCoupons":"أفضل الكوبونات"
   },
   "Orders": {
     "title": "لوحة الطلبات",
@@ -378,6 +381,50 @@
     "location": "الموقع",
     "birthDate": "تاريخ الميلاد",
     "purchasesCount": "عدد المشتريات"
+  },
+  "Reels": {
+    "title": "جميع الريلزات",
+    "description": "تصفح وإدارة جميع الريلزات الخاصة بك",
+    "activeReels": "الريلزات النشطة",
+    "monthlyViews": "المشاهدات الشهرية",
+    "totalReels": "إجمالي الريلزات",
+    "seeTopReels": "عرض أفضل الريلزات",
+    "seeTopReelsDesc": "عرض الريلزات الأكثر شعبية",
+    "seeTopViews": "عرض أعلى المشاهدات",
+    "seeTopViewsDesc": "استكشاف الريلزات ذات أعلى المشاهدات",
+    "newReel": "ريل جديد",
+    "views": "مشاهدات",
+    "selectAll": "تحديد الكل",
+    "deselectAll": "إلغاء تحديد الكل",
+    "deleteSelected": "حذف المحدد",
+    "filter": "تصفية",
+    "search": "بحث",
+    "previous": "السابق",
+    "next": "التالي",
+    "newest": "الأحدث",
+    "oldest": "الأقدم",
+    "active": "نشط",
+    "expired": "منتهي الصلاحية",
+    "pending": "معلق",
+    "viewDetails": "عرض التفاصيل",
+    "createReel": "انشاء ريل",
+    "cancel": "الغاء",
+    "addReelDesc": "وصف الريل",
+    "addReel": "إضافة ريل",
+    "addReelSuccess": "تم إضافة الريل بنجاح",
+    "addReelSuccessDesc": "تم إرسال الريل للمعالجة بنجاح",
+    "addReelError": "خطأ أثناء إضافة الريل",
+    "addReelErrorDesc": "تعذر إرسال الريل",
+    "deleteReel": "حذف الريل",
+    "deleteReelSuccess": "تم حذف الريل بنجاح",
+    "deleteReelSuccessDesc": "تم حذف الريل بنجاح",
+    "deleteReelError": "خطأ أثناء حذف الريل",
+    "deleteReelErrorDesc": "تعذر حذف الريل",
+    "showReel": "عرض الريلز",
+    "reelDetailsDesc": "تفاصيل الريل",
+    "file": "الملف",
+    "descriptionPlaceholder": "وصف الريل",
+    "uploading": "جاري التحميل"
   },
   "AdminDashboard": {
     "totalSales": "إجمالي المبيعات",
@@ -552,7 +599,11 @@
     "customers": "العملاء",
     "complaints": "الشكاوى",
     "requests": "الطلبات",
-    "reels": "الريلز"
+    "reels": "الريلز",
+    "packages": "الباقات",
+    "events":"الأحداث",
+    "categories": "الفئات",
+    "noMenuItems": "لا يوجد عناصر في القائمة"
   },
   "Complaints": {
     "title": "الشكاوى",
@@ -689,44 +740,5 @@
     "invalidCount": "العدد يجب أن يكون رقمًا صحيحًا أكبر من 0",
     "endDate": "تاريخ الانتهاء",
     "startDate": "تاريخ البدء"
-  },
-
-  "Reels": {
-    "title": "الريلزات",
-    "description": "عرض وإضافة وحذف الريلز",
-    "providerId": "معرف المزود",
-    "providerName": "اسم المزود",
-    "date": "التاريخ",
-    "filter": "تصفية",
-    "search": "بحث",
-    "newest": "الأحدث",
-    "oldest": "الأقدم",
-    "noReelsFound": "لم يتم العثور على ريلز",
-    "fetchError": "خطأ في جلب البيانات",
-    "fetchErrorDesc": "تعذر جلب الريلز",
-    "provider": "المزود",
-    "previous": "السابق",
-    "next": "التالي",
-    "addReel": "إضافة ريل",
-    "addReelDesc": "أدخل وصفًا واختر ملفًا لإضافة ريل جديد",
-    "description_create": "الوصف",
-    "descriptionPlaceholder": "أدخل وصف الريل",
-    "file": "الملف",
-    "fileRequired": "الملف مطلوب",
-    "descriptionRequired": "الوصف مطلوب",
-    "cancel": "إلغاء",
-    "submitting": "جارٍ الإرسال",
-    "addReelSuccess": "تم إضافة الريل بنجاح",
-    "addReelSuccessDesc": "تم إرسال الريل للمعالجة بنجاح",
-    "addReelError": "خطأ أثناء إضافة الريل",
-    "addReelErrorDesc": "تعذر إرسال الريل",
-    "deleteReel": "حذف الريل",
-    "deleteReelSuccess": "تم حذف الريل بنجاح",
-    "deleteReelSuccessDesc": "تم حذف الريل بنجاح",
-    "deleteReelError": "خطأ أثناء حذف الريل",
-    "deleteReelErrorDesc": "تعذر حذف الريل",
-    "showReel":"عرض الريلز",
-    
-    "reelDetailsDesc": "تفاصيل الريل"
   }
 }

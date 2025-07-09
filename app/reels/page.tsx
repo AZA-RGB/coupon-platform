@@ -1,5 +1,7 @@
 "use client";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import useSWR from "swr";
 import {
   Card,
   CardHeader,
@@ -17,286 +19,248 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, Plus, Trash2, Eye } from "lucide-react";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { useTranslations, useLocale } from "next-intl";
-import debounce from "lodash/debounce";
-import { fetchReels, addReel, deleteReel } from "./constants";
+import { Filter, Plus, Search, Play, Trash2 } from "lucide-react";
 import Image from "next/image";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
+import debounce from "lodash/debounce";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ViewportBoundary } from "next/dist/server/app-render/entry-base";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
+import AddReelDialog from "./AddReelDilaog";
+import { Checkbox } from "@/components/ui/checkbox";
+
+import  api  from "@/lib/api"; // Import your preconfigured api
+import { toast } from "sonner";
 
 const REELS_PER_PAGE = 10;
 
-const addReelSchema = z.object({
-  description: z.string().min(1, { message: "descriptionRequired" }),
-  file: z.any().refine((file) => file instanceof File, { message: "fileRequired" }),
-});
+const fetcher = (url) => api.get(url).then((res) => res.data);
 
-const AddReelDialog = ({ refreshReels, t }) => {
-  const form = useForm<z.infer<typeof addReelSchema>>({
-    resolver: zodResolver(addReelSchema),
-    defaultValues: {
-      description: "",
-      file: null,
-    },
-  });
+// const SummaryCards = ({ t }) => {
+//   const summaries = [
+//     { title: t("activeReels"), value: "24,560", change: "+8% from last month" },
+//     {
+//       title: t("monthlyViews"),
+//       value: "24,560",
+//       change: "+8% from last month",
+//     },
+//     { title: t("totalReels"), value: "24,560", change: "+8% from last month" },
+//   ];
 
-  async function onSubmit(values: z.infer<typeof addReelSchema>) {
+//   return (
+//     <Card className="w-full lg:w-3/5 p-4 hidden md:flex flex-col gap-4">
+//       <div className="flex flex-col sm:flex-row gap-4 w-full">
+//         {summaries.map((summary, index) => (
+//           <div key={index} className="flex-1 p-4 flex flex-col justify-between">
+//             <div>
+//               <h2>{summary.title}</h2>
+//               <h4 className="text-2xl">{summary.value}</h4>
+//             </div>
+//             <span className="text-sm text-green-500 mt-2">
+//               {summary.change}
+//             </span>
+//           </div>
+//         ))}
+//       </div>
+//     </Card>
+//   );
+// };
+
+// const MobileSummaryCards = ({ t }) => {
+//   const summaries = [
+//     { title: t("activeReels"), value: "24,560", change: "+8% from last month" },
+//     {
+//       title: t("monthlyViews"),
+//       value: "24,560",
+//       change: "+8% from last month",
+//     },
+//     { title: t("totalReels"), value: "24,560", change: "+8% from last month" },
+//   ];
+
+//   return (
+//     <div className="flex flex-col gap-4 md:hidden">
+//       {summaries.map((summary, index) => (
+//         <Card key={index} className="w-full p-4 flex flex-col justify-between">
+//           <div>
+//             <h2>{summary.title}</h2>
+//             <h4 className="text-2xl">{summary.value}</h4>
+//           </div>
+//           <span className="text-sm text-green-500 mt-2">{summary.change}</span>
+//         </Card>
+//       ))}
+//     </div>
+//   );
+// };
+
+// const NavigationCards = ({ t }) => {
+//   return (
+//     <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-2 md:grid-cols-1 gap-4">
+//       <Link href="/dashboard/top-reels" className="block">
+//         <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
+//           <CardTitle className="text-lg text-primary mb-1">
+//             {t("seeTopReels")}
+//           </CardTitle>
+//           <CardDescription>{t("seeTopReelsDesc")}</CardDescription>
+//         </Card>
+//       </Link>
+//       <Link href="/dashboard/top-views" className="block">
+//         <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
+//           <CardTitle className="text-lg text-primary mb-1">
+//             {t("seeTopViews")}
+//           </CardTitle>
+//           <CardDescription>{t("seeTopViewsDesc")}</CardDescription>
+//         </Card>
+//       </Link>
+//     </div>
+//   );
+// };
+
+const ReelsGrid = ({
+  t,
+  reels,
+  currentPage,
+  setCurrentPage,
+  totalPages,
+  selectedReels,
+  setSelectedReels,
+  mutate,
+}) => {
+  const [playingVideo, setPlayingVideo] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleSelectReel = (id) => {
+    setSelectedReels((prev) =>
+      prev.includes(id) ? prev.filter((reelId) => reelId !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    const allSelected = reels.every((reel) => selectedReels.includes(reel.id));
+    setSelectedReels(allSelected ? [] : reels.map((reel) => reel.id));
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedReels.length === 0) return;
+
     try {
-      const formData = new FormData();
-      formData.append("description", values.description);
-      formData.append("file", values.file);
+      setIsDeleting(true);
+      
+      // Delete each reel individually
+      await Promise.all(
+        selectedReels.map(id => 
+          api.delete(`/reels/${id}`)
+            .catch(error => {
+              console.error(`Failed to delete reel ${id}:`, error);
+              throw error;
+            })
+        )
+      );
 
-      const { success, error } = await addReel(formData);
+      toast(
+        t("deleteSuccess"),
+      );
 
-      if (success) {
-        toast.success(t("addReelSuccessDesc"), {
-          description: t("addReelSuccess"),
-        });
-        refreshReels();
-        form.reset();
-      } else {
-        throw error;
-      }
+      setSelectedReels([]);
+      mutate(); // Refresh the reels list
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error(t("addReelErrorDesc"), {
-        description: t("addReelError"),
-      });
+      toast(
+ t("deleteError"),
+      );
+    } finally {
+      setIsDeleting(false);
     }
-  }
+  };
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-2 h-4 w-4" />
-          {t("addReel")}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t("addReel")}</DialogTitle>
-          <DialogDescription>{t("addReelDesc")}</DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("description")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="file"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("file")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*,video/*"
-                      onChange={(e) => field.onChange(e.target.files?.[0] || null)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-2">
-              <DialogTrigger asChild>
-                <Button variant="outline">{t("cancel")}</Button>
-              </DialogTrigger>
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("submitting")}
-                  </>
-                ) : (
-                  t("addReel")
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-};
+  const handlePlayVideo = (reel) => {
+    setPlayingVideo(reel);
+  };
 
-const ReelDetailsDialog = ({ reel, t, open, onOpenChange }) => {
-  if (!reel) return null;
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
-          <DialogTitle>{reel.description}</DialogTitle>
-          <DialogDescription>{t("reelDetailsDesc")}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="relative w-full h-64">
-            {reel.fileType === 1 ? (
-              <video
-                src={encodeURI(reel.media)}
-                controls
-                className="w-full h-full object-contain"
-              />
-            ) : (
-              <Image
-                src={encodeURI(reel.media)}
-                alt={reel.description}
-                fill
-                className="object-contain"
-              />
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("providerId")}</h4>
-              <p className="text-sm text-muted-foreground">{reel.providerId}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("providerName")}</h4>
-              <p className="text-sm text-muted-foreground">{reel.providerName}</p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("date")}</h4>
-            <p className="text-sm text-muted-foreground">{new Date(reel.date).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("description")}</h4>
-            <p className="text-sm text-muted-foreground">{reel.description}</p>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const ReelsGrid = ({ t, reels, currentPage, setCurrentPage, totalPages, refreshReels }) => {
-  const locale = useLocale();
-  const isRTL = locale === "ar";
-  const [selectedReel, setSelectedReel] = useState(null);
-
-  const handleDeleteReel = async (reelId) => {
-    try {
-      const { success, error } = await deleteReel(reelId);
-      if (success) {
-        toast.success(t("deleteReelSuccessDesc"), {
-          description: t("deleteReelSuccess"),
-        });
-        refreshReels();
-      } else {
-        throw error;
-      }
-    } catch (error) {
-      console.error(`Error deleting reel ${reelId}:`, error);
-      toast.error(t("deleteReelErrorDesc"), {
-        description: t("deleteReelError"),
-      });
-    }
+  const handleCloseVideo = () => {
+    setPlayingVideo(null);
   };
 
   return (
     <>
-      <ReelDetailsDialog
-        reel={selectedReel}
-        t={t}
-        open={!!selectedReel}
-        onOpenChange={(open) => !open && setSelectedReel(null)}
-      />
       <Card>
         <CardContent className="pt-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
-            {reels.length === 0 ? (
-              <div className="col-span-full text-center py-8 text-muted-foreground">
-                {t("noReelsFound")}
-              </div>
-            ) : (
-              reels.map((reel) => (
-                <div
-                  key={reel.id}
-                  className="overflow-hidden transition-shadow p-0 m-0.5 border-0 rounded-none bg-gray-100"
-                >
-                  <div className="relative w-full h-50">
-                    {reel.fileType === 1 ? (
-                      <video
-                        src={encodeURI(reel.media)}
-                        className="w-full h-full object-cover"
-                        muted
-                        loop
-                        autoPlay
-                      />
-                    ) : (
-                      <Image
-                        src={encodeURI(reel.media)}
-                        alt={reel.description}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="p-2">
-                    <p className="text-sm font-medium">{reel.description}</p>
-                    <p className="text-xs text-muted-foreground">{t("provider")}: {reel.providerName}</p>
-                    <div className="flex gap-2 mt-2">
-                      <Button
-                        variant="link"
-                        className="text-primary underline hover:text-primary/80 p-0 h-auto"
-                        onClick={() => setSelectedReel(reel)}
-                      >
-                        <Eye className="mr-1 h-4 w-4" />
-                        {t("showReel")}
-                      </Button>
-                      <Button
-                        variant="link"
-                        className="text-red-600 underline hover:text-red-800 p-0 h-auto"
-                        onClick={() => handleDeleteReel(reel.id)}
-                      >
-                        <Trash2 className="mr-1 h-4 w-4" />
-                        {t("deleteReel")}
-                      </Button>
-                    </div>
-                  </div>
+          <div className="flex justify-end gap-2 mb-4">
+            <Button
+              variant="outline"
+              onClick={handleToggleSelectAll}
+              disabled={reels.length === 0}
+            >
+              {t(
+                selectedReels.length === reels.length && reels.length > 0
+                  ? "deselectAll"
+                  : "selectAll"
+              )}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteSelected}
+              disabled={selectedReels.length === 0 || isDeleting}
+            >
+              {isDeleting ? (
+                <Spinner className="mr-2 h-4 w-4" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {t("deleteSelected")}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {reels.map((reel) => (
+              <Card
+                key={reel.id}
+                className="w-full p-1 flex flex-col justify-between relative"
+              >
+                <div className="absolute top-2 left-2 z-10">
+                  <Checkbox
+                    checked={selectedReels.includes(reel.id)}
+                    onCheckedChange={() => handleSelectReel(reel.id)}
+                    className="h-5 w-5 rounded-full border-2 border-white bg-white/50 backdrop-blur-sm"
+                  />
                 </div>
-              ))
-            )}
+                <div className="relative">
+                  <Image
+                    src="/event.jpg"
+                    alt="s"
+                    width={1920}
+                    height={1080}
+                    className="object-cover rounded-xl"
+                  />
+                  <Button
+                    className="absolute inset-0 flex items-center justify-center w-full h-full p-0 bg-opacity-0 rounded-xl hover:bg-black hover:opacity-50 duration-300"
+                    onClick={() => handlePlayVideo(reel)}
+                  >
+                    <Play className="w-96 h-96 text-white " strokeWidth={6} />
+                  </Button>
+                </div>
+                <div className="flex gap-1.5">
+                  <Avatar>
+                    <AvatarImage
+                      src={
+                        reel.provider.profile_image ||
+                        "https://github.com/shadcn.png"
+                      }
+                    />
+                    <AvatarFallback>{}</AvatarFallback>
+                  </Avatar>
+                  <h2 className="line-clamp-2 overflow-ellipsis">
+                    {reel.reel.name}
+                  </h2>
+                </div>
+                <p className="-mt-4 ms-9 line-clamp-2 overflow-ellipsis font-xs text-muted-foreground">
+                  {reel.description}
+                </p>
+              </Card>
+            ))}
           </div>
         </CardContent>
+
         <CardFooter className="flex justify-center">
           <Pagination>
             <PaginationContent>
@@ -330,7 +294,8 @@ const ReelsGrid = ({ t, reels, currentPage, setCurrentPage, totalPages, refreshR
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                    if (currentPage < totalPages)
+                      setCurrentPage(currentPage + 1);
                   }}
                 >
                   {t("next")}
@@ -340,76 +305,86 @@ const ReelsGrid = ({ t, reels, currentPage, setCurrentPage, totalPages, refreshR
           </Pagination>
         </CardFooter>
       </Card>
+      {playingVideo && (
+        <Dialog open={!!playingVideo} onOpenChange={handleCloseVideo}>
+          <DialogContent
+            showCloseButton={false}
+            className="p-0 border-0 bg-transparent flex items-center max-w-[60vh] justify-center max-h-[90vh]"
+          >
+            <div
+              className="relative w-full max-w-[60vh] max-h-[95svh]"
+              style={{ aspectRatio: "9/16" }}
+            >
+              <video
+                src={`https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/${playingVideo.reel.path}`}
+                autoPlay
+                controls
+                className="w-full h-full object-cover rounded-lg"
+              />
+              <div className="flex absolute bottom-16 left-3 ">
+                <div className="  text-white bg-black backdrop-blur-2xl opacity-90 px-2 py-1 rounded mx-1">
+                  by: {playingVideo.provider.name || "Unknown"}
+                </div>
+                <Avatar>
+                  <AvatarImage
+                    src={
+                      playingVideo.provider.profile_image ||
+                      "https://github.com/shadcn.png"
+                    }
+                  />
+                </Avatar>
+              </div>
+
+              <Button
+                variant="ghost"
+                className="absolute top-2 right-2 text-white bg-accent bg-opacity-90"
+                onClick={handleCloseVideo}
+              >
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 };
 
-export default function ReelsProviderPage() {
+export default function AllReelsPage() {
   const t = useTranslations("Reels");
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
-  const [reels, setReels] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [selectedReels, setSelectedReels] = useState([]);
+
+  const { data, error, isLoading, mutate } = useSWR(
+    `/reels/index?page=${currentPage}`,
+    fetcher
+  );
+  const reels = data?.data?.data || [];
+  const totalPages = data?.data?.last_page || 1;
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value) => {
-      setSearchTerm(value);
-      setCurrentPage(1);
-    }, 300),
+    () => debounce((value) => setSearchTerm(value), 300),
     []
   );
-
-  const fetchReelsData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const {
-        reels,
-        totalPages,
-        currentPage: apiCurrentPage,
-      } = await fetchReels(currentPage, REELS_PER_PAGE);
-      console.log("Fetched reels:", reels, "Total pages:", totalPages, "Current page:", apiCurrentPage);
-      if (!Array.isArray(reels)) {
-        throw new Error("Reels data is not an array");
-      }
-      setReels(reels);
-      setTotalPages(totalPages || 1);
-      if (apiCurrentPage !== currentPage) {
-        setCurrentPage(apiCurrentPage || 1);
-      }
-    } catch (error) {
-      console.error("Error in fetchReelsData:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-        url: error.config?.url,
-      });
-      const errorMessage = error.response?.status
-        ? `${t("fetchErrorDesc")} (Status ${error.response.status}: ${error.response.data?.message || error.message})`
-        : `${t("fetchErrorDesc")} (${error.message})`;
-      toast.error(errorMessage, {
-        description: t("fetchError"),
-        duration: 5000,
-      });
-      setReels([]);
-      setTotalPages(1);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, t]);
-
-  useEffect(() => {
-    console.log("Fetching reels for page:", currentPage, "Search:", searchTerm, "Filter:", filterType);
-    fetchReelsData();
-  }, [fetchReelsData, currentPage, searchTerm, filterType]);
 
   const filteredReels = useMemo(() => {
     return reels
       .filter((reel) => {
         if (searchTerm) {
           const lowerSearch = searchTerm.toLowerCase();
-          return reel.description.toLowerCase().includes(lowerSearch);
+          return (
+            reel.reel.name.toLowerCase().includes(lowerSearch) ||
+            reel.description.toLowerCase().includes(lowerSearch)
+          );
+        }
+        return true;
+      })
+      .filter((reel) => {
+        if (["active", "expired", "pending"].includes(filterType)) {
+          return reel.status === filterType;
         }
         return true;
       })
@@ -423,87 +398,92 @@ export default function ReelsProviderPage() {
       });
   }, [reels, searchTerm, filterType]);
 
-  const currentReels = filteredReels.slice(
-    (currentPage - 1) * REELS_PER_PAGE,
-    currentPage * REELS_PER_PAGE
-  );
+  const filterOptions = [
+    { label: t("newest"), value: "newest" },
+    { label: t("oldest"), value: "oldest" },
+    { label: t("active"), value: "active" },
+    { label: t("expired"), value: "expired" },
+    { label: t("pending"), value: "pending" },
+  ];
+
+  if (error) return <div>Error loading reels</div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
 
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
-      {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        <>
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-              <div>
-                <CardTitle>{t("title")}</CardTitle>
-                <CardDescription>{t("description")}</CardDescription>
-              </div>
-              <div className="flex space-x-2">
-                <div className="relative">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-muted-foreground"
-                    onClick={() => {
-                      const el = document.getElementById("filter-menu");
-                      if (el) el.classList.toggle("hidden");
-                    }}
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t("filter")}
-                  </Button>
-                  <div
-                    id="filter-menu"
-                    className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
-                  >
-                    {[
-                      { label: t("newest"), value: "newest" },
-                      { label: t("oldest"), value: "oldest" },
-                    ].map((item) => (
-                      <button
-                        key={item.value}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-100 ${
-                          filterType === item.value ? "bg-gray-200 dark:bg-gray-100" : ""
-                        }`}
-                        onClick={() => {
-                          setFilterType(item.value);
-                          setCurrentPage(1);
-                          const el = document.getElementById("filter-menu");
-                          if (el) el.classList.add("hidden");
-                        }}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+      {/* <div className="flex flex-col lg:flex-row gap-4 w-full">
+        <SummaryCards t={t} />
+        <NavigationCards t={t} />
+        <MobileSummaryCards t={t} />
+      </div> */}
+      <Card>
+        <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+          <div>
+            <CardTitle>{t("title")}</CardTitle>
+            <CardDescription>{t("description")}</CardDescription>
+          </div>
+          <div className="flex space-x-2">
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-muted-foreground"
+                onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                {t("filter")}
+              </Button>
+              {isFilterMenuOpen && (
+                <div className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow">
+                  {filterOptions.map((item) => (
+                    <button
+                      key={item.value}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-100 ${
+                        filterType === item.value
+                          ? "bg-gray-200 dark:bg-gray-100"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setFilterType(item.value);
+                        setCurrentPage(1);
+                        setIsFilterMenuOpen(false);
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder={t("search")}
-                    className="h-8 max-w-[200px]"
-                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
-                  />
-                  <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div>
-                <AddReelDialog refreshReels={fetchReelsData} t={t} />
-              </div>
-            </CardHeader>
-          </Card>
-          <ReelsGrid
-            t={t}
-            reels={currentReels}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            totalPages={totalPages}
-            refreshReels={fetchReelsData}
-          />
-        </>
-      )}
+              )}
+            </div>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder={t("search")}
+                className="h-8 max-w-[200px]"
+                onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+              />
+              <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
+            </div>
+
+            <AddReelDialog t={t} refreshReels={mutate} />
+          </div>
+        </CardHeader>
+      </Card>
+      <ReelsGrid
+        t={t}
+        reels={filteredReels}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+        selectedReels={selectedReels}
+        setSelectedReels={setSelectedReels}
+        mutate={mutate}
+      />
     </div>
   );
 }
