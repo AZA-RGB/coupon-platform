@@ -373,9 +373,16 @@
     "birthDate": "Birth Date",
     "purchasesCount": "Purchases Count"
   },
-  "Reels": {
+"Reels": {
+  "deleteSuccess":"Deletion successful",
+  "reelsDeleted":"Reels deleted",
+  "deleteError":"Error during deletion",
+    "uploading":"Uploading",
+  "uploadCancelled": "Upload cancelled",
+  "cancelUpload": "Cancel upload",
+  "description":"Description",
+  "close": "Close",
     "title": "All Reels",
-    "description": "Browse and manage all your reels",
     "activeReels": "Active Reels",
     "monthlyViews": "Monthly Views",
     "totalReels": "Total Reels",
@@ -397,7 +404,21 @@
     "active": "Active",
     "expired": "Expired",
     "pending": "Pending",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "addReel": "Add Reel",
+    "addReelDesc": "Fill in the details below to add a new reel",
+    "descriptionPlaceholder": "Enter a description for the reel",
+    "file": "File",
+    "cancel": "Cancel",
+    "submitting": "Submitting",
+    "createReel": "Create Reel",
+    "addSuccess": "Reel added successfully",
+    "addSuccessDesc": "The new reel has been added to your list",
+    "addError": "Error adding reel",
+    "addErrorDesc": "An error occurred while trying to add the reel",
+    "networkError": "Network error",
+    "requestError": "Request error",
+    "unexpectedError": "An unexpected error occurred"
   },
   "AdminDashboard": {
     "totalSales": "Total Sales",
