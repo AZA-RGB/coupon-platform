@@ -379,9 +379,15 @@
     "birthDate": "تاريخ الميلاد",
     "purchasesCount": "عدد المشتريات"
   },
-  "Reels": {
+"Reels": {
+    "deleteSuccess":"تم الحذف بنجاح",
+  "reelsDeleted":"تم حذف الريلزات",
+"deleteError":"خطأ أثناء الحذف",
+    "uploadCancelled": "تم إلغاء التحميل",
+  "cancelUpload": "إلغاء التحميل",
+  "close": "إغلاق",
+  "uploading":"جارٍ الرفع",
     "title": "جميع الريلزات",
-    "description": "تصفح وإدارة جميع الريلزات الخاصة بك",
     "activeReels": "الريلزات النشطة",
     "monthlyViews": "المشاهدات الشهرية",
     "totalReels": "إجمالي الريلزات",
@@ -403,7 +409,23 @@
     "active": "نشط",
     "expired": "منتهي الصلاحية",
     "pending": "معلق",
-    "viewDetails": "عرض التفاصيل"
+    "viewDetails": "عرض التفاصيل",
+    
+    "addReel": "إضافة ريل",
+    "addReelDesc": "املأ التفاصيل أدناه لإضافة ريل جديد",
+    "description": "الوصف",
+    "descriptionPlaceholder": "أدخل وصفًا للريل",
+    "file": "ملف",
+    "cancel": "إلغاء",
+    "submitting": "جاري الإرسال",
+    "createReel": "إنشاء ريل",
+    "addSuccess": "تمت إضافة الريل بنجاح",
+    "addSuccessDesc": "تمت إضافة الريل الجديد إلى قائمتك",
+    "addError": "خطأ في إضافة الريل",
+    "addErrorDesc": "حدث خطأ أثناء محاولة إضافة الريل",
+    "networkError": "خطأ في الشبكة",
+    "requestError": "خطأ في الطلب",
+    "unexpectedError": "حدث خطأ غير متوقع"
   },
   "AdminDashboard": {
     "totalSales": "إجمالي المبيعات",
