@@ -65,7 +65,7 @@ const AdminDashboardPage = () => {
           >
             <div>
               <div className="text-muted-foreground text-sm">{card.title}</div>
-              <div className="text-lg font-semibold">{card.value}</div>
+              <div className="text-sm sm:text-base">{card.value}</div>
             </div>
             <div className="bg-primary text-white rounded-lg p-3">
               {card.icon}
