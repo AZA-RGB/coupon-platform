@@ -76,7 +76,7 @@ export default function TopCustomersList() {
     <div className="">
       <Card className="grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
         <div className="row-span-1 flex flex-row place-content-between items-center">
-          <CardTitle className="text-3xl  text-primary">
+          <CardTitle className="text-2xl  text-primary font-normal">
             {t("Topcustomers")}
           </CardTitle>
         </div>
