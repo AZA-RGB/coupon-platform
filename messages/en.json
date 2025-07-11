@@ -112,6 +112,7 @@
     "acceptedFormats": "\".jpg\", \".jpeg\", \".png\", \".gif\" are accepted"
   },
   "addEvent": {
+    "newEvent": "Add New Event",
     "AddEvent": "Add Event",
     "eventCoverImages": "Event cover Images",
     "eventTitle": "Event Title",
@@ -402,8 +403,8 @@
     "viewDetails": "View Details",
     "createReel": "Create Reel",
     "cancel": "Cancel",
-    "addReelDesc":"Reel Description",
-    "addReel":"Add Reel",
+    "addReelDesc": "Reel Description",
+    "addReel": "Add Reel",
     "submitting": "Submitting",
     "addReelSuccess": "Reel added successfully",
     "addReelSuccessDesc": "The reel was submitted for processing successfully",
@@ -414,12 +415,11 @@
     "deleteReelSuccessDesc": "The reel was deleted successfully",
     "deleteReelError": "Error during reel deletion",
     "deleteReelErrorDesc": "Unable to delete the reel",
-    "showReel":"Show Reel",
+    "showReel": "Show Reel",
     "reelDetailsDesc": "Reel details",
     "file": "File",
     "descriptionPlaceholder": "Enter reel description",
     "uploading": "Uploading"
-    
   },
   "AdminDashboard": {
     "totalSales": "Total Sales",
@@ -606,10 +606,9 @@
     "requests": "Requests",
     "reels": "Reels",
     "packages": "Packages",
-    "events":"Events",
+    "events": "Events",
     "categories": "Categories",
     "noMenuItems": "No menu items found"
-    
   },
   "Complaints": {
     "title": "Complaints",
@@ -705,7 +704,7 @@
     "endDateRequired": "End date is required",
     "invalidFile": "Invalid file"
   },
- "SeasonalEventsProvider": {
+  "SeasonalEventsProvider": {
     "title": "Seasonal Events for Providers",
     "description": "View and manage coupons for seasonal events",
     "image": "Image",
@@ -744,7 +743,7 @@
     "couponRequired": "Coupon is required",
     "countRequired": "Count is required",
     "invalidCount": "Count must be a positive integer",
-    "endDate":"End Date",
-    "startDate":"Start Date"
+    "endDate": "End Date",
+    "startDate": "Start Date"
   }
 }
