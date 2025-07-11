@@ -1,5 +1,4 @@
 {
-
   "Auth": {
     "login": "تسجيل الدخول",
     "register": "التسجيل",
@@ -113,6 +112,7 @@
     "acceptedFormats": "يتم قبول \".jpg\" و \".jpeg\" و \".png\" و \".gif\""
   },
   "addEvent": {
+    "newEvent": "إضافة فعالية جديدة",
     "AddEvent": "إضافة حدث",
     "eventCoverImages": "صور غلاف الحدث",
     "eventTitle": "عنوان الحدث",
@@ -208,7 +208,7 @@
     "previous": "السابق",
     "next": "التالي",
     "addCoupon": "إضافة كوبون",
-    "topCoupons":"أفضل الكوبونات"
+    "topCoupons": "أفضل الكوبونات"
   },
   "Orders": {
     "title": "لوحة الطلبات",
@@ -601,7 +601,7 @@
     "requests": "الطلبات",
     "reels": "الريلز",
     "packages": "الباقات",
-    "events":"الأحداث",
+    "events": "الأحداث",
     "categories": "الفئات",
     "noMenuItems": "لا يوجد عناصر في القائمة"
   },

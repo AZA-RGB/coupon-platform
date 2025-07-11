@@ -25,7 +25,8 @@ import api from "@/lib/api";
 
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { SplinePointer } from "lucide-react";
+import { Plus, SplinePointer } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   title: z.string().min(1).max(50),
@@ -36,7 +37,8 @@ const formSchema = z.object({
   images: z.array(z.instanceof(File)).min(1, "min imagwe"),
 });
 
-export default function AddEvent() {
+export default function AddEvent({ refreshEvents }) {
+  const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("addEvent");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,10 +77,11 @@ export default function AddEvent() {
           "Content-Type": "multipart/form-data", // Important for FormData
         },
       });
-
+      refreshEvents();
       console.log("API Response:", response.data);
-      // Use message from API response, or a fallback
       toast.success(response.data.message || t("submissionSuccess"));
+      setIsOpen(false);
+      form.reset();
     } catch (error: any) {
       console.error("Form submission error", error);
       // Use error message from API response, or a fallback
@@ -97,14 +100,20 @@ export default function AddEvent() {
   }
 
   return (
-    <>
-      <title>Add Event</title>
-      <div className="flex  flex-col   w-full  pb-5">
-        <Card className="md:w-xl max-w-lg self-center   ">
-          <CardHeader className="text-bold text-3xl text-primary -mb-7">
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm">
+          <Plus className="mr-2 h-4 w-4" />
+          {t("newEvent")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className=" max-h-svh overflow-auto">
+        <title>Add Event</title>
+        <div className="">
+          <div className="text-bold text-3xl text-primary mb-3">
             {t("AddEvent")}
-          </CardHeader>
-          <CardContent className="p-5">
+          </div>
+          <div className="block">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -115,7 +124,7 @@ export default function AddEvent() {
                   name="images"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("eventCoverImages")}</FormLabel>
+                      {/* <FormLabel>{t("eventCoverImages")}</FormLabel> */}
                       <FormControl>
                         <FileUploadDropzone field={field} maxFiles={1} />
                       </FormControl>
@@ -237,9 +246,10 @@ export default function AddEvent() {
                 </div>
               </form>
             </Form>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+          </div>
+          {/* </Card> */}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

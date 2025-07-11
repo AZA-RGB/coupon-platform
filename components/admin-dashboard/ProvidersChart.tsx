@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react"; // Import React
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -45,7 +46,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ProviderChart() {
+export const ProviderChart = React.memo(function ProviderChart() {
   return (
     <ChartContainer config={chartConfig} className="min-h-full w-full">
       <BarChart accessibilityLayer data={chartData}>
@@ -62,4 +63,4 @@ export function ProviderChart() {
       </BarChart>
     </ChartContainer>
   );
-}
+});
