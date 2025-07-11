@@ -51,7 +51,7 @@ function Button({
     <Comp
       data-slot="button"
       className={cn(
-        "active:scale-105 active:rotate-x-20 duration-200 ease-in-out",
+        "active:scale-103 active:rotate-x-10  duration-100 ease-in-out ",
         buttonVariants({ variant, size, className }),
       )}
       {...props}
