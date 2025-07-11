@@ -187,13 +187,13 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-sidebar border-t-2 rounded-t-4xl font-bold text-sidebar-foreground w-full p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
             } as React.CSSProperties
           }
-          side={side}
+          side="bottom"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>
