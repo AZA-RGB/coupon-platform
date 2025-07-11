@@ -180,6 +180,33 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: #00cbc1;
 } */
+@layer utilities {
+    /* Customize scrollbar */
+    ::-webkit-scrollbar {
+        width: 3px;
+        /* height: 4px; */
+    }
+
+    ::-webkit-scrollbar-track {
+        padding: 1px;
+        width: 4px;
+        background: var(--background);
+        border-radius: var(--radius);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: var(--radius);
+        transition:
+            transform 0.2s ease,
+            width 0.2s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+        width: 10px;
+    }
+}
 
 @layer base {
     * {
