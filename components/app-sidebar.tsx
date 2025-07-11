@@ -167,6 +167,12 @@ export function AppSidebar() {
       icon: Film,
       roles: ["admin", "provider"],
     },
+    {
+      title: t("criteria"),
+      url: "/add-criteria",
+      icon: Film,
+      roles: ["admin", "provider"],
+    },
   ];
 
   // Filter menu items based on user role (only if userRole is set)

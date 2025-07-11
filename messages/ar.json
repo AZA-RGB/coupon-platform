@@ -585,6 +585,7 @@
     "updateButton": "تحديث المعيار"
   },
   "Sidebar": {
+    "criteria": "المعايير",
     "title": "لوحة التحكم",
     "navigation": "التنقل",
     "profile": "إدارة الملف الشخصي",
