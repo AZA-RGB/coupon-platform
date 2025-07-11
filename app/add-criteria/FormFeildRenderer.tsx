@@ -27,10 +27,12 @@ export function FormFieldRenderer({ field }: FormFieldRendererProps) {
         name={field.name}
         render={({ field: formField }) => (
           <FormItem>
-            {field.type !== "checkbox" && <FormLabel>{field.name}</FormLabel>}
+            {field.type !== "checkbox" && (
+              <FormLabel className="">{field.name}</FormLabel>
+            )}
             <FormControl>
               {field.type === "checkbox" ? (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 ">
                   <Component
                     checked={formField.value}
                     onCheckedChange={formField.onChange}
@@ -53,14 +55,16 @@ export function FormFieldRenderer({ field }: FormFieldRendererProps) {
   // If no form context, render a basic component
   return (
     <>
-      {field.type !== "checkbox" && <label>{field.name}</label>}
+      {field.type !== "checkbox" && (
+        <label className="-mb-10">{field.name}</label>
+      )}
       {field.type === "checkbox" ? (
         <div className="flex items-center space-x-2">
           <Component id={field.name} />
           <label htmlFor={field.name}>{field.name}</label>
         </div>
       ) : (
-        <Component />
+        <Component className="mt-2" />
       )}
     </>
   );

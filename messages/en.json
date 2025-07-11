@@ -590,6 +590,7 @@
     "updateButton": "Update criterion"
   },
   "Sidebar": {
+    "criteria": "criteria",
     "title": "Admin Panel",
     "navigation": "Navigation",
     "profile": "Manage Profile",
