@@ -1,21 +1,21 @@
 import Image from "next/image";
+import { Card } from "../ui/card";
 
 export function ProfileHeader() {
   return (
-    <div className="bg-primary relative mb-4 rounded-2xl sm:h-35 lg:h-50    ">
+    <Card className=" relative mb-4 rounded-2xl sm:h-35 lg:h-50 rtl:bg-gradient-to-r bg-gradient-to-l from-primary to-background    ">
       {/* Background Image */}
-      <Image
+      {/* <Image
         src="/whiteWavyNet.svg"
         alt="Decorative background pattern"
-        className="object-cover"
+        className="object-cover dark:invert-0 dark:saturate-70 rotate-y-180 rtl:rotate-y-90"
         fill
-        priority
-      />
+      /> */}
 
       {/* Content Container */}
-      <div className="relative h-full flex items-center p-4 md:p-6 lg:p-8">
+      <div className="relative h-full flex items-center  ">
         {/* Profile Image */}
-        <div className="relative h-24 w-24 md:h-32 md:w-32 lg:h-40 lg:w-40 bg-amber-100 rounded-2xl overflow-hidden">
+        <div className="absolute rtl:right-3 left-3 h-24 w-24 md:size-60   lg:size-45  rounded-lg overflow-hidden">
           <img
             src="/profilePlaceholder.png"
             alt="Profile picture"
@@ -24,10 +24,10 @@ export function ProfileHeader() {
         </div>
 
         {/* Profile Name */}
-        <h1 className="font-extrabold text-2xl ml-4 md:text-3xl lg:text-4xl lg:ml-6 text-white">
-          Name
+        <h1 className="font-extrabold bottom-0 absolute rtl:right-50 left-50 text-2xl ml-4 md:text-3xl mr-3 lg:text-4xl lg:ml-6 text-primary">
+          الاسم
         </h1>
       </div>
-    </div>
+    </Card>
   );
 }

@@ -183,12 +183,13 @@
 @layer utilities {
     /* Customize scrollbar */
     ::-webkit-scrollbar {
-        width: 3px;
-        /* height: 4px; */
+        width: 4px;
+        height: 4px;
     }
 
     ::-webkit-scrollbar-track {
         padding: 1px;
+        height: 4px;
         width: 4px;
         background: var(--background);
         border-radius: var(--radius);

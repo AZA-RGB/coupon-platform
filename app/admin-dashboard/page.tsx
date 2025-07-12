@@ -23,6 +23,7 @@ import { ProviderChart } from "@/components/admin-dashboard/ProvidersChart";
 import TopCouponsTable from "@/components/dashboard/top-coupons-table";
 import CouponsTable from "@/components/admin-dashboard/CouponsTable";
 import { useLocale, useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -89,7 +90,7 @@ const AdminDashboardPage = () => {
 
       {/* Sales Overview Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="lg:col-span-1 md:p-4">
+        <Card className="lg:col-span-1 md:p-4  bg-gradient-to-r to-background">
           <CardHeader>
             <CardTitle className="text-lg">
               {t("AdminDashboard.salesOverview")}
@@ -99,7 +100,7 @@ const AdminDashboardPage = () => {
             <SalesOverviewChart />
           </CardContent>
         </Card>
-        <Card className="lg:col-span-1  rounded-lg">
+        <Card className="lg:col-span-1  rounded-lg bg-gradient-to-r to-background">
           <CardTitle className="text-lg px-4">
             {t("AdminDashboard.providers")}
           </CardTitle>
@@ -194,7 +195,7 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
               <TableHead className="py-2 px-4 text-start">
                 {t("Providers.name")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead className="py-2 px-4 text-start hidden 2xl:block">
                 {t("Providers.request_date")}
               </TableHead>
               <TableHead className="py-2 px-4 text-center">
@@ -206,20 +207,14 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
             {requestsData.slice(0, 5).map((row, index) => (
               <TableRow key={index} className="hover:bg-secondary">
                 <TableCell className="py-2 px-4">{row.name}</TableCell>
-                <TableCell className="py-2 px-4">
+                <TableCell className="py-2 px-4 hidden 2xl:block ">
                   {row.requestDateTime}
                 </TableCell>
                 <TableCell className="py-2 px-4">
                   <div className="flex gap-2 justify-center">
-                    <button className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-xs">
-                      {t("Providers.accept")}
-                    </button>
-                    <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs">
-                      {t("Providers.reject")}
-                    </button>
-                    <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs">
-                      {t("Providers.viewDetails")}
-                    </button>
+                    <Button variant="link" className="">
+                      {t("Providers.seeDetails")}
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
