@@ -280,6 +280,8 @@
     "next": "التالي"
   },
   "Providers": {
+    "seeDetails": "عرض التفاصيل",
+
     "title": "جميع المزودين",
     "description": "إدارة المزودين وعرض تفاصيلهم",
     "topCategories": "أفضل الفئات",

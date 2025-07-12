@@ -176,186 +176,183 @@ export default function AddCoupon() {
     }
   }
   return (
-    <div className="flex flex-col items-center  text-xl justify-center   md:px-20">
-      <div className="w-full ">
-        <div>
-          <Form {...form}>
-            {/* Add this right after opening the Form component */}
-            {/* {Object.keys(form.formState.errors).length > 0 && (
+    <div className="flex flex-col self-center   text-lg md:px-20  xl:px-30 2xl:px-50  3xl:px-100">
+      <div>
+        <Form {...form}>
+          {/* Add this right after opening the Form component */}
+          {/* {Object.keys(form.formState.errors).length > 0 && (
               <div className="text-red-500 p-4 mb-4">
                 <h3>Form Errors:</h3>
                 <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre>
               </div>
             )} */}
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5 p-5 w-full mx-auto  "
-            >
-              <div className=" grid  grid-col-1 lg:grid-cols-2 gap-x-5 gap-y-1">
-                <Card>
-                  <CardContent className="space-y-10">
-                    <FormField
-                      control={form.control}
-                      name="Type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("Type")}</FormLabel>
-                          <FormControl>
-                            {isLoading || mutatingTypes ? (
-                              <Spinner />
-                            ) : error ? (
-                              <div className="flex items-center gap-2 text-destructive">
-                                <span>Failed to load Type</span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    mutateTypes();
-                                  }}
-                                >
-                                  Retry
-                                </Button>
-                              </div>
-                            ) : (
-                              <Select
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                  handleTypeChange(value);
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-5 p-5 w-full mx-auto  "
+          >
+            <div className=" grid  grid-col-1 lg:grid-cols-2 gap-x-5 gap-y-5">
+              <Card>
+                <CardContent className="space-y-10">
+                  <FormField
+                    control={form.control}
+                    name="Type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("Type")}</FormLabel>
+                        <FormControl>
+                          {isLoading || mutatingTypes ? (
+                            <Spinner />
+                          ) : error ? (
+                            <div className="flex items-center gap-2 text-destructive">
+                              <span>Failed to load Type</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  mutateTypes();
                                 }}
-                                value={field.value}
                               >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue
-                                    placeholder={t("TypePlaceholder")}
-                                  />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-50 overflow-scroll">
-                                  {data.data.data.map(
-                                    (type: { id: number; name: string }) => (
-                                      <SelectItem
-                                        key={type.id}
-                                        value={type.id.toString()}
-                                      >
-                                        {type.name}
-                                      </SelectItem>
-                                    ),
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            )}
-                          </FormControl>
-                          <FormDescription>
-                            {t("typeDescription")}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {LoadingCriteria && <Spinner />}
-                    {criteriadata && (
-                      <div key={form.watch("Type")} className="space-y-10">
-                        {[
-                          ...criteriadata.data.by_type,
-                          ...criteriadata.data.general,
-                        ].map((criterion: FormFieldType) => (
-                          <div
-                            key={criterion.id}
-                            className="flex place-content-between items-center "
-                          >
-                            <div className="flex-1">
-                              <FormFieldRenderer field={criterion} />
+                                Retry
+                              </Button>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          ) : (
+                            <Select
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                handleTypeChange(value);
+                              }}
+                              value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue
+                                  placeholder={t("TypePlaceholder")}
+                                />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-50 overflow-scroll">
+                                {data.data.data.map(
+                                  (type: { id: number; name: string }) => (
+                                    <SelectItem
+                                      key={type.id}
+                                      value={type.id.toString()}
+                                    >
+                                      {type.name}
+                                    </SelectItem>
+                                  ),
+                                )}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </FormControl>
+                        <FormDescription>
+                          {t("typeDescription")}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                    <FormField
-                      control={form.control}
-                      name="images"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("coverImages")}</FormLabel>
-                          <FormControl>
-                            <FileUploadDropzone field={field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="space-y-10">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("title")}</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("titlePlaceholder")}
-                              type="text"
-                              {...field}
-                            />
-                          </FormControl>
+                  />
 
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("description")}</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            {t("addDescription")}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="date"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>{t("expirationDate")}</FormLabel>
-                          <DateTimePickerV2
-                            description="Expiration Date"
-                            label="expiration date"
-                            field={field}
+                  {LoadingCriteria && <Spinner />}
+                  {criteriadata && (
+                    <div key={form.watch("Type")} className="space-y-10">
+                      {[
+                        ...criteriadata.data.by_type,
+                        ...criteriadata.data.general,
+                      ].map((criterion: FormFieldType) => (
+                        <div
+                          key={criterion.id}
+                          className="flex place-content-between items-center "
+                        >
+                          <div className="flex-1">
+                            <FormFieldRenderer field={criterion} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <FormField
+                    control={form.control}
+                    name="images"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("coverImages")}</FormLabel>
+                        <FormControl>
+                          <FileUploadDropzone field={field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="space-y-10">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("title")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("titlePlaceholder")}
+                            type="text"
+                            {...field}
                           />
-                          <FormDescription>
-                            {t("expirationDescription")}
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
+                        </FormControl>
 
-                    <FormField
-                      control={form.control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Price</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    {/* <FormField
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("description")}</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="" {...field} />
+                        </FormControl>
+                        <FormDescription>{t("addDescription")}</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>{t("expirationDate")}</FormLabel>
+                        <DateTimePickerV2
+                          description="Expiration Date"
+                          label="expiration date"
+                          field={field}
+                        />
+                        <FormDescription>
+                          {t("expirationDescription")}
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* <FormField
                                               control={form.control}
                                               name="name_0863847771"
                                               render={({ field }) => (
@@ -375,36 +372,36 @@ export default function AddCoupon() {
                                                 </FormItem>
                                               )}
                                             /> */}
-                    <div className="flex items-center place-content-around">
-                      <Button
-                        type="submit"
-                        disabled={
-                          isLoading ||
-                          LoadingCriteria ||
-                          form.formState.isSubmitting
-                        }
-                      >
-                        {form.formState.isSubmitting ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Adding...
-                          </>
-                        ) : (
-                          t("addNewCoupon")
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        onClick={() => form.reset()}
-                      >
-                        {t("cancel")}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <div className="flex items-center place-content-around">
+                    <Button
+                      type="submit"
+                      disabled={
+                        isLoading ||
+                        LoadingCriteria ||
+                        form.formState.isSubmitting
+                      }
+                    >
+                      {form.formState.isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        t("addNewCoupon")
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={() => form.reset()}
+                    >
+                      {t("cancel")}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-                {/* <FormField
+              {/* <FormField
                                           control={form.control}
                                           name="partner_providers"
                                           render={({ field }) => (
@@ -425,10 +422,9 @@ export default function AddCoupon() {
                                             </FormItem>
                                           )}
                                         /> */}
-              </div>
-            </form>
-          </Form>
-        </div>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

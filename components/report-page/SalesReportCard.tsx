@@ -1,4 +1,9 @@
-import { ChartNoAxesColumnIncreasing, List, Tickets, Users } from "lucide-react";
+import {
+  ChartNoAxesColumnIncreasing,
+  List,
+  Tickets,
+  Users,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 
@@ -7,31 +12,31 @@ const STAT_CARDS = [
     title: "Total sales",
     value: "$1K",
     icon: ChartNoAxesColumnIncreasing,
-    bgColor: "bg-blue-500",
+    bgColor: "blue-500",
   },
   {
     title: "Total orders",
     value: "300",
     icon: List,
-    bgColor: "bg-[#FF947A]",
+    bgColor: "[#FF947A]",
   },
   {
     title: "Products sold",
     value: "50",
     icon: ChartNoAxesColumnIncreasing,
-    bgColor: "bg-[#3CD856]",
+    bgColor: "[#3CD856]",
   },
   {
     title: "New customers",
     value: "20",
     icon: Users,
-    bgColor: "bg-[#BF83FF]",
+    bgColor: "[#BF83FF]",
   },
   {
     title: "Total coupons",
     value: "15",
     icon: Tickets,
-    bgColor: "bg-[#4FD1C5]",
+    bgColor: "[#4FD1C5]",
   },
 ];
 
@@ -52,9 +57,9 @@ export default function SalesReportCard() {
           {STAT_CARDS.map((stat, index) => (
             <div
               key={index}
-              className={`${stat.bgColor} rounded-2xl flex flex-col justify-between p-4`}
+              className={` bg-${stat.bgColor} dark:saturate-100 rounded-2xl text-white flex flex-col justify-between p-4`}
             >
-              <stat.icon className="h-8 w-8 md:h-10 md:w-10" />
+              <stat.icon className="h-8 w-8 md:h-10 md:w-10 " />
               <div className="mt-2 md:mt-4">
                 <div className="font-extrabold text-2xl md:text-3xl">
                   {stat.value}

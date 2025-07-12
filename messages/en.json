@@ -274,6 +274,7 @@
     "deleteSelected": "Delete Selected"
   },
   "Providers": {
+    "seeDetails": "see Details",
     "title": "All Providers",
     "description": "Manage providers and view their details",
     "topCategories": "Top Categories",
