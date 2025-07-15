@@ -90,7 +90,7 @@ const AdminDashboardPage = () => {
 
       {/* Sales Overview Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="lg:col-span-1 md:p-4  bg-gradient-to-r to-background">
+        <Card className="lg:col-span-1 md:p-4  bg-gradient-to-b to-background">
           <CardHeader>
             <CardTitle className="text-lg">
               {t("AdminDashboard.salesOverview")}
@@ -100,7 +100,7 @@ const AdminDashboardPage = () => {
             <SalesOverviewChart />
           </CardContent>
         </Card>
-        <Card className="lg:col-span-1  rounded-lg bg-gradient-to-r to-background">
+        <Card className="lg:col-span-1  rounded-lg bg-gradient-to-b to-background">
           <CardTitle className="text-lg px-4">
             {t("AdminDashboard.providers")}
           </CardTitle>
