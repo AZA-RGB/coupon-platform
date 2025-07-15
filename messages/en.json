@@ -747,5 +747,33 @@
     "invalidCount": "Count must be a positive integer",
     "endDate": "End Date",
     "startDate": "Start Date"
+  },
+  "SalesReport": {
+    "title": "Sales Report",
+    "export": "Export",
+    "stats": {
+      "products_sold": "Products sold",
+      "new_customers": "New customers",
+      "total_orders": "Total orders",
+      "total_sales": "Total sales",
+      "total_coupons": "Total coupons"
+    }
+  },
+  "Invoices": {
+    "title": "Invoices",
+    "exportButton": "Export",
+    "price": "${price}"
+  },
+  "BillingInfo": {
+    "price": "Price",
+    "title": "Billing Information",
+    "exportButton": "Export",
+    "priceFormat": "${price}",
+    "tableHeaders": {
+      "billId": "Bill ID",
+      "coupon": "Coupon",
+      "date": "Date",
+      "customers": "Customers"
+    }
   }
 }

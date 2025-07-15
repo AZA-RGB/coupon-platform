@@ -743,5 +743,32 @@
     "invalidCount": "العدد يجب أن يكون رقمًا صحيحًا أكبر من 0",
     "endDate": "تاريخ الانتهاء",
     "startDate": "تاريخ البدء"
+  },
+  "SalesReport": {
+    "title": "تقرير المبيعات",
+    "export": "تصدير",
+    "stats": {
+      "products_sold": "المنتجات المباعة",
+      "new_customers": "عملاء جدد",
+      "total_orders": "إجمالي الطلبات",
+      "total_sales": "إجمالي المبيعات",
+      "total_coupons": "إجمالي القسائم"
+    }
+  },
+  "Invoices": {
+    "title": "الفواتير",
+    "exportButton": "تصدير"
+  },
+  "BillingInfo": {
+    "price": "السعر",
+    "title": "معلومات الفواتير",
+    "exportButton": "تصدير",
+    "priceFormat": "",
+    "tableHeaders": {
+      "billId": "رقم الفاتورة",
+      "coupon": "كوبون",
+      "date": "التاريخ",
+      "customers": "العملاء"
+    }
   }
 }
