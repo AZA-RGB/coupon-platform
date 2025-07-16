@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Card } from "../ui/card";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 export function ProfileHeader() {
   return (
@@ -8,12 +9,13 @@ export function ProfileHeader() {
       <div className="relative h-full flex items-center  ">
         {/* Profile Image */}
         <div className="absolute rtl:right-3  left-3 size-25 sm:size-35 md:size-35   lg:size-45  rounded-lg overflow-hidden">
-          <Image
-            src="/profilePlaceholder.png"
-            alt="Profile picture"
-            fill
-            className="h-full w-full object-cover"
-          />
+          <Avatar className="size-full">
+            <AvatarImage
+              src="https://github.com/shadcn.png"
+              alt="Profile picture"
+              className="h-full w-full object-cover"
+            />
+          </Avatar>
         </div>
 
         {/* Profile Name */}

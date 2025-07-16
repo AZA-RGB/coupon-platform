@@ -90,6 +90,7 @@
   },
   "search": "بحث",
   "RequestReviewForm": {
+    "downloadTradingRigester": "تحميل السجل التجاري",
     "providerName": "اسم المزود",
     "emailLabel": "البريد الإلكتروني",
     "emailPlaceholder": "example@example.com",

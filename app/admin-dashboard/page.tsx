@@ -24,6 +24,7 @@ import TopCouponsTable from "@/components/dashboard/top-coupons-table";
 import CouponsTable from "@/components/admin-dashboard/CouponsTable";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import RequestReviewDialog from "@/components/RequestReviewDialog";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -127,23 +128,31 @@ const TopCategoriesCard = () => {
   const t = useTranslations();
   return (
     <Card className="h-[35vh] p-4 gap-2">
-      <CardTitle className="text-primary text-lg m-0">
+      <CardTitle className="  text-lg m-0">
         {t("Types.topCategories")}
       </CardTitle>
-      <div className="overflow-auto ">
+      <div className="overflow-auto  rounded-2xl">
         <Table className="min-w-full text-sm">
-          <TableHeader>
+          <TableHeader className="bg-secondary ">
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.rank")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.category")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.sales")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.popularity")}
               </TableHead>
             </TableRow>
@@ -180,25 +189,19 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
   return (
     <Card className=" h-full p-4 flex flex-col gap-2">
       <CardTitle className="flex justify-between items-center">
-        <span className="text-lg text-primary">{t("Providers.requests")}</span>
-        <Link
-          href={`/dashboard/requests`}
-          className="text-sm hover:text-foreground/80"
-        >
+        <span className="text-lg  ">{t("Providers.requests")}</span>
+        <Button variant="outline" className="text-sm hover:text-foreground/80">
           {t("Providers.view_all")}
-        </Link>
+        </Button>
       </CardTitle>
-      <div className="overflow-auto max-h-[35vh]">
+      <div className="overflow-auto max-h-[35vh] rounded-2xl">
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow className="bg-muted">
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead className="py-2 px-4 text-start text-muted-foreground">
                 {t("Providers.name")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start hidden 2xl:block">
-                {t("Providers.request_date")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-center">
+              <TableHead className="py-2 px-4 text-center text-muted-foreground">
                 {t("Providers.action")}
               </TableHead>
             </TableRow>
@@ -212,9 +215,7 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
                 </TableCell>
                 <TableCell className="py-2 px-4">
                   <div className="flex gap-2 justify-center">
-                    <Button variant="link" className="">
-                      {t("Providers.seeDetails")}
-                    </Button>
+                    <RequestReviewDialog />
                   </div>
                 </TableCell>
               </TableRow>

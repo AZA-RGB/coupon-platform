@@ -115,26 +115,28 @@ export default function BillingInfo() {
       className={`md:col-span-2 col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh] ${isRTL ? "text-right" : "text-left"}`}
     >
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-3xl text-primary">{t("title")}</div>
+        <div className="text-3xl ">{t("title")}</div>
         <Button variant="outline">{t("exportButton")}</Button>
       </div>
-      <div className="row-span-5 overflow-auto">
+      <div className="row-span-5 overflow-auto rounded-2xl">
         <Table>
           <TableHeader className="bg-muted text-accent-foreground">
             <TableRow>
-              <TableHead className="rtl:text-right">
+              <TableHead className="rtl:text-right text-muted-foreground">
                 {t("tableHeaders.billId")}
               </TableHead>
-              <TableHead className="rtl:text-right">
+              <TableHead className="rtl:text-right text-muted-foreground">
                 {t("tableHeaders.coupon")}
               </TableHead>
-              <TableHead className="rtl:text-right">
+              <TableHead className="rtl:text-right text-muted-foreground">
                 {t("tableHeaders.date")}
               </TableHead>
-              <TableHead className="rtl:text-right">
+              <TableHead className="rtl:text-right text-muted-foreground">
                 {t("tableHeaders.customers")}
               </TableHead>
-              <TableHead className="rtl:text-right">{t("price")}</TableHead>
+              <TableHead className="rtl:text-right text-muted-foreground">
+                {t("price")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
