@@ -21,7 +21,7 @@ export default function Invoices() {
   return (
     <Card className="col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-3xl text-primary">{t("title")}</div>
+        <div className="text-3xl ">{t("title")}</div>
         <Button variant="outline" className="dark:">
           {t("exportButton")}
         </Button>

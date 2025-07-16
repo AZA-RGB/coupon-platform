@@ -183,10 +183,13 @@
 @layer utilities {
     /* Customize scrollbar */
     ::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
+        width: 0px;
+        height: 0px;
     }
-
+    *:hover::-webkit-scrollbar {
+        width: 5px; /* This will make the thumb wider on hover */
+        height: 5px;
+    }
     ::-webkit-scrollbar-track {
         padding: 1px;
         height: 4px;
@@ -198,14 +201,12 @@
     ::-webkit-scrollbar-thumb {
         background: var(--primary);
         border-radius: var(--radius);
-        transition:
-            transform 0.2s ease,
-            width 0.2s ease;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--primary);
-        width: 10px;
+        width: 5px; /* This will make the thumb wider on hover */
+        height: 5px;
+        background: var(--accent-foreground);
     }
 }
 

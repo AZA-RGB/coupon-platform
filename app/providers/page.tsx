@@ -60,6 +60,7 @@ import {
   requestsData,
 } from "./constants";
 import MyImage from "@/components/my-image";
+import RequestReviewDialog from "@/components/RequestReviewDialog";
 
 const PROVIDERS_PER_PAGE = 10;
 
@@ -162,12 +163,7 @@ const RequestsCard = ({ t, requestsData }) => {
                     >
                       {t("reject")}
                     </button>
-                    <button
-                      className="bg-blue-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-blue-600"
-                      onClick={() => handleAction(row.id, "viewDetails")}
-                    >
-                      {t("viewDetails")}
-                    </button>
+                    <RequestReviewDialog />
                   </div>
                 </TableCell>
               </TableRow>
