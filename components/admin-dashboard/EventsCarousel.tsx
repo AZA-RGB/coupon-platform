@@ -14,6 +14,8 @@ import Image from "next/image";
 import { useLocale } from "next-intl";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
+import { isFloat32Array } from "node:util/types";
 const BASE_CDN = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/";
 interface Event {
   id: number;
@@ -36,15 +38,9 @@ export function EventsCarousel() {
     Autoplay({ delay: 2000, stopOnInteraction: false }),
   );
   const isArabic = useLocale() === "ar";
-  const [events, setEvents] = useState<Event[]>([]);
 
-  useEffect(() => {
-    axios
-      .get("http://164.92.67.78:3002/api/seasonal-events/index?page=1")
-      .then((response) => setEvents(response.data.data.data))
-      .catch((error) => console.error("Error fetching events:", error));
-  }, []);
-
+  const { data, error, isLoading } = useSWR("/seasonal-events/index?page=1");
+  const events = "";
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
@@ -69,22 +65,24 @@ export function EventsCarousel() {
         <CarouselContent
           className={`h-full flex ${isArabic ? "flex-row-reverse" : ""}`}
         >
-          {events.map((event) => (
-            <CarouselItem key={event.id} className="h-full">
-              <div className="relative rounded-2xl overflow-hidden h-full w-full">
-                <Image
-                  fill
-                  src={
-                    event.files.length > 0
-                      ? `${BASE_CDN}${event.files[0].path}`
-                      : "/event.jpg"
-                  }
-                  alt={event.title}
-                  className="object-cover"
-                />
-              </div>
-            </CarouselItem>
-          ))}
+          {data
+            ? data.data.data.map((event) => (
+                <CarouselItem key={event.id} className="h-full">
+                  <div className="relative rounded-2xl overflow-hidden h-full w-full">
+                    <Image
+                      fill
+                      src={
+                        event.files.length > 0
+                          ? `${BASE_CDN}${event.files[0].path}`
+                          : "/event.jpg"
+                      }
+                      alt={event.title}
+                      className="object-cover"
+                    />
+                  </div>
+                </CarouselItem>
+              ))
+            : ""}
         </CarouselContent>
       </div>
       <div className="rounded-b-2xl h-10 -mt-10 bg-gradient-to-t from-5% from-gray-900/90  px-2 flex items-center justify-between text-white relative">
@@ -93,8 +91,12 @@ export function EventsCarousel() {
           variant="ghost"
           style={{ order: isArabic ? 2 : 0 }}
         />
-        <div className="flex-1 text-center h-full order-1  ">
-          {events.length > 0 ? events[current].title : "event title"}
+        <div className="flex-1 text-center h-full order-1 mt-5  ">
+          {data
+            ? data.data.data.length > 0
+              ? data.data.data[current].title
+              : "event title"
+            : ""}
         </div>
         <CarouselNext
           className="mt-2  absolute right-2 top-3"
