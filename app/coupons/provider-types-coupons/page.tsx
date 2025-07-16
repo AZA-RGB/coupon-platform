@@ -53,6 +53,11 @@ import {
   couponTypeOptions,
   topCouponsData,
 } from "./constants";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
+import useSWR from "swr";
 
 const COUPONS_PER_PAGE = 10;
 
@@ -185,6 +190,16 @@ const CouponTypesGrid = ({
   totalPages,
   locale,
 }) => {
+  const [typeIdDetails, setTypeIdDetails] = useState(null); // Use state for typeIdDetails
+
+  const {
+    data: typeDetails,
+    error: typeDetailsError,
+    isLoading: loadingTypeDetails,
+  } = useSWR(
+    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null,
+  );
+
   return (
     <Card>
       <CardContent className="pt-6">
@@ -218,8 +233,8 @@ const CouponTypesGrid = ({
                       type.status === "active"
                         ? "bg-green-100 text-green-800"
                         : type.status === "expired"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
                     {t(type.status)}
@@ -235,11 +250,47 @@ const CouponTypesGrid = ({
                 </div>
               </CardContent>
               <CardFooter className="px-3 pb-3 flex justify-center gap-2">
-                <Button variant="outline" className="w-1/2 h-8 text-xs" asChild>
-                  <Link href={`/dashboard/coupons/types/${type.id}`}>
-                    {t("details")}
-                  </Link>
-                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className=""
+                      onClick={() => {
+                        setTypeIdDetails(type.id);
+                      }}
+                    >
+                      {t("details")}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <ScrollArea className="max-h-[200px] w-auto overflow-auto rounded-md border p-3">
+                      {loadingTypeDetails ? (
+                        <div>
+                          <Spinner className="animate-spin" />
+                        </div>
+                      ) : typeDetailsError ? (
+                        <div>Error loading details</div>
+                      ) : typeDetails &&
+                        typeDetails.data?.general?.length > 0 ? ( //TODO: replace with by_type
+                        typeDetails.data.general.map((criterion, index) => (
+                          <div key={index}>
+                            <div className="flex space-x-4 place-content-between">
+                              <div className="text-sm">
+                                {criterion.name || "Unnamed criterion"}
+                              </div>
+                              <Badge variant="secondary" className="text-sm">
+                                {criterion.type || "Unnamed criterion"}
+                              </Badge>
+                            </div>
+                            <Separator className="my-2" />
+                          </div>
+                        ))
+                      ) : (
+                        <div>No details available</div>
+                      )}
+                    </ScrollArea>
+                  </PopoverContent>
+                </Popover>
                 <Button className="w-1/2 h-8 text-xs" asChild>
                   <Link href={`/dashboard/coupons/new?type=${type.id}`}>
                     {t("addCoupon")}
@@ -314,7 +365,7 @@ export default function TypesAllCouponsPage() {
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value: string) => setSearchTerm(value), 300),
-    []
+    [],
   );
 
   const filteredCouponTypes = useMemo(() => {
@@ -359,7 +410,7 @@ export default function TypesAllCouponsPage() {
   const totalPages = Math.ceil(filteredCouponTypes.length / COUPONS_PER_PAGE);
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
-    currentPage * COUPONS_PER_PAGE
+    currentPage * COUPONS_PER_PAGE,
   );
 
   const handleGenerateReport = () => {
