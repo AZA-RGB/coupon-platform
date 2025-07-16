@@ -25,6 +25,7 @@ import CouponsTable from "@/components/admin-dashboard/CouponsTable";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import RequestReviewDialog from "@/components/RequestReviewDialog";
+import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -81,7 +82,7 @@ const AdminDashboardPage = () => {
         <TopCategoriesCard />
 
         <div className="w-full h-[35vh] ">
-          <CardsCarousel />
+          <EventsCarousel />
         </div>
 
         <div className="w-full h-[35vh] ">

@@ -1,3 +1,4 @@
+import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
 import { CardsCarousel } from "@/components/dashboard/cards-carousel";
 import QRCodeComp from "@/components/dashboard/QR-code";
 import TopCouponsTable from "@/components/dashboard/top-coupons-table";
@@ -76,7 +77,7 @@ export default function Dashboard() {
       {/* main cards - responsive layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="col-span-1 h-[35vh]">
-          <CardsCarousel />
+          <EventsCarousel />
         </div>
         <div className="h-[35vh]  ">
           <CardsCarousel />
