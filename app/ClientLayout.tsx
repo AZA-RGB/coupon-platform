@@ -113,7 +113,6 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb/AppBreadcrumb";
 import { SWRProvider } from "@/components/ui/swrProvier";
 import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
-import MotionWrapper from "@/components/MotionFramerWraper";
 
 export default function ClientLayout({
   children,
