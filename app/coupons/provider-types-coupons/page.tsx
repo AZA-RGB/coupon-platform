@@ -249,7 +249,7 @@ const CouponTypesGrid = ({
                   </span>
                 </div>
               </CardContent>
-              <CardFooter className="px-3 pb-3 flex justify-center gap-2">
+              <CardFooter className="px-3 pb-3 flex place-content-between gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button

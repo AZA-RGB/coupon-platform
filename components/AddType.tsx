@@ -37,9 +37,11 @@ import { Skeleton } from "./ui/skeleton";
 import api from "@/lib/api";
 import axios from "axios";
 import useSWR from "swr";
+import { Textarea } from "./ui/textarea";
 
 const formSchema = z.object({
   type_name: z.string().min(1),
+  type_description: z.string(),
   criteria_list: z
     .array(z.string())
     .nonempty("الرجاء اختيار عنصر واحد على الأقل")
@@ -68,12 +70,13 @@ export default function AddTypeDialog({ refreshTypes }) {
     try {
       // Map selected criteria names to their IDs
       const criteriaIds = data.data.data
-        .filter((criterion) => values.criteria_list?.includes(criterion.name))
-        .map((criterion) => criterion.id);
+        .filter((criterion) => values.criteria_list?.includes(criterion.name)) //get selected criteria (complete object)
+        .map((criterion) => criterion.id); // get the id of it only
 
       const payload = {
         name: values.type_name,
         criteriaIds,
+        description: values.type_description,
       };
 
       const response = await api.post("/coupon-types/create", payload);
@@ -132,6 +135,20 @@ export default function AddTypeDialog({ refreshTypes }) {
                     <Input placeholder="مثال: تعاوني" {...field} />
                   </FormControl>
                   <FormDescription>اسم هذا النوع</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="type_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وصف النوع</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

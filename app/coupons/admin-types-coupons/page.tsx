@@ -214,13 +214,14 @@ const CouponTypesGrid = ({
                           variant="outline"
                           className="w-full"
                           onClick={() => {
+                            console.log(type);
                             setTypeIdDetails(type.id);
                           }}
                         >
                           {t("details")}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className=" p-0">
                         <ScrollArea className="max-h-[200px] w-auto overflow-auto rounded-md border p-3">
                           {loadingTypeDetails ? (
                             <div>
@@ -229,8 +230,8 @@ const CouponTypesGrid = ({
                           ) : typeDetailsError ? (
                             <div>Error loading details</div>
                           ) : typeDetails &&
-                            typeDetails.data?.general?.length > 0 ? ( //TODO: replace with by_type
-                            typeDetails.data.general.map((criterion, index) => (
+                            typeDetails.data?.by_type?.length > 0 ? ( //TODO: replace with by_type
+                            typeDetails.data.by_type.map((criterion, index) => (
                               <div key={index}>
                                 <div className="flex space-x-4 place-content-between">
                                   <div className="text-sm">
