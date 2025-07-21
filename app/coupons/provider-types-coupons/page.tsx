@@ -271,8 +271,8 @@ const CouponTypesGrid = ({
                       ) : typeDetailsError ? (
                         <div>Error loading details</div>
                       ) : typeDetails &&
-                        typeDetails.data?.general?.length > 0 ? ( //TODO: replace with by_type
-                        typeDetails.data.general.map((criterion, index) => (
+                        typeDetails.data?.by_type?.length > 0 ? ( //TODO: replace with by_type
+                        typeDetails.data.by_type.map((criterion, index) => (
                           <div key={index}>
                             <div className="flex space-x-4 place-content-between">
                               <div className="text-sm">
@@ -292,7 +292,7 @@ const CouponTypesGrid = ({
                   </PopoverContent>
                 </Popover>
                 <Button className="w-1/2 h-8 text-xs" asChild>
-                  <Link href={`/dashboard/coupons/new?type=${type.id}`}>
+                  <Link href={`/coupons/AddCoupon?typeId=${type.id}`}>
                     {t("addCoupon")}
                   </Link>
                 </Button>
