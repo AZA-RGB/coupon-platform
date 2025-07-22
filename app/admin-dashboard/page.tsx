@@ -26,6 +26,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import RequestReviewDialog from "@/components/RequestReviewDialog";
 import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
+import useSWR from "swr";
+import { Spinner } from "@/components/ui/spinner";
+import RequestsCard from "./RequestsCard";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -132,7 +135,7 @@ const TopCategoriesCard = () => {
       <CardTitle className="  text-lg m-0">
         {t("Types.topCategories")}
       </CardTitle>
-      <div className="overflow-auto  rounded-2xl">
+      <div className="overflow-auto  rounded-xl">
         <Table className="min-w-full text-sm">
           <TableHeader className="bg-secondary ">
             <TableRow>
@@ -170,53 +173,6 @@ const TopCategoriesCard = () => {
                       className="bg-primary h-2.5 rounded-full"
                       style={{ width: `${row.popularity}%` }}
                     ></div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Card>
-  );
-};
-
-interface RequestsCardProps {
-  requestsData: any[];
-}
-
-const RequestsCard = ({ requestsData }: RequestsCardProps) => {
-  const t = useTranslations();
-  return (
-    <Card className=" h-full p-4 flex flex-col gap-2">
-      <CardTitle className="flex justify-between items-center">
-        <span className="text-lg  ">{t("Providers.requests")}</span>
-        <Button variant="outline" className="text-sm hover:text-foreground/80">
-          {t("Providers.view_all")}
-        </Button>
-      </CardTitle>
-      <div className="overflow-auto max-h-[35vh] rounded-2xl">
-        <Table className="min-w-full text-sm">
-          <TableHeader>
-            <TableRow className="bg-muted">
-              <TableHead className="py-2 px-4 text-start text-muted-foreground">
-                {t("Providers.name")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-center text-muted-foreground">
-                {t("Providers.action")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {requestsData.slice(0, 5).map((row, index) => (
-              <TableRow key={index} className="hover:bg-secondary">
-                <TableCell className="py-2 px-4">{row.name}</TableCell>
-                <TableCell className="py-2 px-4 hidden 2xl:block ">
-                  {row.requestDateTime}
-                </TableCell>
-                <TableCell className="py-2 px-4">
-                  <div className="flex gap-2 justify-center">
-                    <RequestReviewDialog />
                   </div>
                 </TableCell>
               </TableRow>

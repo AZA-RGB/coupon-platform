@@ -7,10 +7,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslations } from "next-intl";
 import { DownloadCloud } from "lucide-react";
 
+interface RequestReviewFormProps {
+  providerData: any;
+}
+
 export function RequestReviewForm({
   className,
+  providerData,
   ...props
-}: React.ComponentProps<"div">) {
+}: RequestReviewFormProps) {
   const t = useTranslations("RequestReviewForm");
 
   return (
@@ -29,7 +34,9 @@ export function RequestReviewForm({
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </div>
-                <h1 className="text-2xl font-bold ">{t("providerName")}</h1>
+                <h1 className="text-2xl font-bold ">
+                  {providerData.provider.name}
+                </h1>
               </div>
               <div className="grid gap-3 mt-10">
                 <Label htmlFor="email">{t("emailLabel")}</Label>
@@ -37,6 +44,7 @@ export function RequestReviewForm({
                   id="email"
                   type="email"
                   placeholder={t("emailPlaceholder")}
+                  value={providerData.provider.user.email}
                   disabled
                 />
               </div>
@@ -46,6 +54,7 @@ export function RequestReviewForm({
                   id="phone"
                   type="tel"
                   placeholder={t("phonePlaceholder")}
+                  value={providerData.provider.user.phone_number}
                   disabled
                 />
               </div>
