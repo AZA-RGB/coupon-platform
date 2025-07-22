@@ -1,33 +1,31 @@
 import Image from "next/image";
+import { Card } from "../ui/card";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 export function ProfileHeader() {
   return (
-    <div className="bg-primary relative mb-4 rounded-2xl sm:h-35 lg:h-50    ">
-      {/* Background Image */}
-      <Image
-        src="/whiteWavyNet.svg"
-        alt="Decorative background pattern"
-        className="object-cover"
-        fill
-        priority
-      />
-
+    <Card className=" relative mb-4 rounded-2xl h-30 sm:h-40 lg:h-50 rtl:bg-gradient-to-r bg-gradient-to-l from-primary to-background    ">
       {/* Content Container */}
-      <div className="relative h-full flex items-center p-4 md:p-6 lg:p-8">
+      <div className="relative h-full flex items-center  ">
         {/* Profile Image */}
-        <div className="relative h-24 w-24 md:h-32 md:w-32 lg:h-40 lg:w-40 bg-amber-100 rounded-2xl overflow-hidden">
-          <img
-            src="/profilePlaceholder.png"
-            alt="Profile picture"
-            className="h-full w-full object-cover"
-          />
+        <div className="absolute rtl:right-3  left-3 size-25 sm:size-35 md:size-35   lg:size-45  rounded-lg overflow-hidden">
+          <Avatar className="size-full">
+            <AvatarImage
+              src="https://github.com/shadcn.png"
+              alt="Profile picture"
+              className="h-full w-full object-cover"
+            />
+          </Avatar>
         </div>
 
         {/* Profile Name */}
-        <h1 className="font-extrabold text-2xl ml-4 md:text-3xl lg:text-4xl lg:ml-6 text-white">
-          Name
+        <h1
+          className="font-extrabold bottom-0 absolute  lg:rtl:right-50 rtl:right-30 sm:rtl:right-40   left-50
+          text-2xl ml-4 md:text-3xl mr-3 lg:text-4xl lg:ml-6 text-primary"
+        >
+          الاسم
         </h1>
       </div>
-    </div>
+    </Card>
   );
 }

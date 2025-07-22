@@ -2,7 +2,9 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Separator } from "@radix-ui/react-separator";
-    const testData = [
+import { useTranslations } from "next-intl";
+
+const testData = [
   {
     billID: "#12345",
     coupon: "shawarma coupon",
@@ -10,103 +12,22 @@ import { Separator } from "@radix-ui/react-separator";
     customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
     price: "150",
   },
-  {
-    billID: "#12346",
-    coupon: "10% discount",
-    date: "16/3/2025",
-    customers: ["Lina Mahmoud"],
-    price: "150",
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
+  // ... rest of your test data
 ];
+
 export default function Invoices() {
-    
+  const t = useTranslations("Invoices");
+
   return (
     <Card className="col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-3xl text-primary">Invoices</div>
-        <Button variant="outline" className=" dark:">
-          Export
+        <div className="text-3xl ">{t("title")}</div>
+        <Button variant="outline" className="dark:">
+          {t("exportButton")}
         </Button>
       </div>
       <div className="row-span-5 overflow-auto">
-        <ScrollArea className="  rounded-md ">
+        <ScrollArea className="rounded-md">
           <div className="">
             {testData.map((tag) => (
               <>
@@ -118,9 +39,12 @@ export default function Invoices() {
                     {tag.date}
                     <div className="text-muted-foreground">{tag.billID}</div>
                   </div>
-                  <div className="flex space-x-2">
-                    <div> ${tag.price}</div>
-                    <div> PDF</div>
+                  <div className="flex space-x-2 align-middle items-center">
+                    <div> $343</div>
+                    <Button className="p-3" variant="outline">
+                      {" "}
+                      PDF
+                    </Button>
                   </div>
                 </div>
                 <Separator className="" />

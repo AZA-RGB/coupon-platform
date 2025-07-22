@@ -180,14 +180,13 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: #00cbc1;
 } */
-
 @layer base {
     * {
         @apply border-border focus-visible:ring-ring;
         font-family: "Cairo", sans-serif; /* Changed from Almarai to Cairo */
     }
     body {
-        @apply bg-background text-foreground;
+        @apply text-foreground;
         font-family: "Cairo", sans-serif; /* Changed from Almarai to Cairo */
     }
 }

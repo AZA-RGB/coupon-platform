@@ -1,3 +1,4 @@
+import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
 import { CardsCarousel } from "@/components/dashboard/cards-carousel";
 import QRCodeComp from "@/components/dashboard/QR-code";
 import TopCouponsTable from "@/components/dashboard/top-coupons-table";
@@ -56,19 +57,19 @@ export default function Dashboard() {
 
   return (
     <div className="p-2 sm:p-5 space-y-3 sm:space-y-5">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {cardData.map((card, index) => (
           <Card
             key={index}
-            className="p-2 sm:p-4 flex flex-row justify-between items-center"
+            className="flex flex-row justify-between items-center p-4"
           >
             <div>
-              <div className="text-xs sm:text-sm text-muted-foreground">
-                {card.title}
-              </div>
+              <div className="text-muted-foreground text-sm">{card.title}</div>
               <div className="text-sm sm:text-base">{card.value}</div>
             </div>
-            <div className="bg-primary rounded-lg p-2 sm:p-4">{card.icon}</div>
+            <div className="bg-primary text-white rounded-lg p-3">
+              {card.icon}
+            </div>
           </Card>
         ))}
       </div>
@@ -76,7 +77,7 @@ export default function Dashboard() {
       {/* main cards - responsive layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="col-span-1 h-[35vh]">
-          <CardsCarousel />
+          <EventsCarousel />
         </div>
         <div className="h-[35vh]  ">
           <CardsCarousel />
