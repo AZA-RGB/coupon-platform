@@ -240,6 +240,9 @@
     "actions": "الإجراءات"
   },
   "Coupons": {
+    "topCouponsDesc":"الكوبونات الاكثر طلباً",
+    "topCouponsTitle":"الكوبونات الاكثر طلباً",
+    "fromLastMonth": "من الشهر الماضي",
     "selectAll": "تحديد الكل",
     "deselectAll": "إلغاء تحديد الكل",
     "deleteSelected": "حذف المحدد",
@@ -335,6 +338,7 @@
     "export": "تصدير"
   },
   "Customers": {
+    "banSuccess": "تم حظر العميل بنجاح",
     "title": "جميع العملاء",
     "description": "إدارة العملاء وعرض تفاصيلهم",
     "totalCustomers": "إجمالي العملاء",
