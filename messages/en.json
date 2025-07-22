@@ -418,7 +418,10 @@
     "reelDetailsDesc": "Reel details",
     "file": "File",
     "descriptionPlaceholder": "Enter reel description",
-    "uploading": "Uploading"
+    "uploading": "Uploading",
+    "addSuccess":"Add success",
+    "addSuccessDesc":"Success",
+    "cancelUpload":"Cancel upload"
     
   },
   "AdminDashboard": {

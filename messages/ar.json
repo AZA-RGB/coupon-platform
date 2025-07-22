@@ -424,8 +424,10 @@
     "reelDetailsDesc": "تفاصيل الريل",
     "file": "الملف",
     "descriptionPlaceholder": "وصف الريل",
-    "uploading": "جاري التحميل"
-  },
+    "uploading": "جاري التحميل",
+    "addSuccess":"تم الاضافة بنجاح",
+    "addSuccessDesc":"تم الاضافة  بنجاح.",
+    "cancelUpload":"الغاء الرفع"  },
   "AdminDashboard": {
     "totalSales": "إجمالي المبيعات",
     "newUsers": "مستخدمون جدد",
