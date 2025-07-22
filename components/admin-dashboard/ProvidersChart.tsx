@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react"; // Import React
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -37,17 +38,17 @@ const chartData = [
 const chartConfig = {
   desktop: {
     label: "Desktop",
-    color: "#2563eb",
+    color: "#00cbc1",
   },
   mobile: {
     label: "Mobile",
-    color: "#60a5fa",
+    color: "#00cbc1",
   },
 } satisfies ChartConfig;
 
-export function ProviderChart() {
+export const ProviderChart = React.memo(function ProviderChart() {
   return (
-    <ChartContainer config={chartConfig} className="min-h-full w-full">
+    <ChartContainer config={chartConfig} className="min-h-full w-full ">
       <BarChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -62,4 +63,4 @@ export function ProviderChart() {
       </BarChart>
     </ChartContainer>
   );
-}
+});

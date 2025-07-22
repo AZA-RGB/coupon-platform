@@ -90,6 +90,7 @@
   },
   "search": "Search",
   "RequestReviewForm": {
+    "downloadTradingRigester": " Download trading register",
     "providerName": "Provider Name",
     "emailLabel": "Email",
     "emailPlaceholder": "m@example.com",
@@ -112,6 +113,7 @@
     "acceptedFormats": "\".jpg\", \".jpeg\", \".png\", \".gif\" are accepted"
   },
   "addEvent": {
+    "newEvent": "Add New Event",
     "AddEvent": "Add Event",
     "eventCoverImages": "Event cover Images",
     "eventTitle": "Event Title",
@@ -273,6 +275,7 @@
     "deleteSelected": "Delete Selected"
   },
   "Providers": {
+    "seeDetails": "see Details",
     "title": "All Providers",
     "description": "Manage providers and view their details",
     "topCategories": "Top Categories",
@@ -402,8 +405,8 @@
     "viewDetails": "View Details",
     "createReel": "Create Reel",
     "cancel": "Cancel",
-    "addReelDesc":"Reel Description",
-    "addReel":"Add Reel",
+    "addReelDesc": "Reel Description",
+    "addReel": "Add Reel",
     "submitting": "Submitting",
     "addReelSuccess": "Reel added successfully",
     "addReelSuccessDesc": "The reel was submitted for processing successfully",
@@ -414,7 +417,7 @@
     "deleteReelSuccessDesc": "The reel was deleted successfully",
     "deleteReelError": "Error during reel deletion",
     "deleteReelErrorDesc": "Unable to delete the reel",
-    "showReel":"Show Reel",
+    "showReel": "Show Reel",
     "reelDetailsDesc": "Reel details",
     "file": "File",
     "descriptionPlaceholder": "Enter reel description",
@@ -423,6 +426,7 @@
     "addSuccessDesc":"Success",
     "cancelUpload":"Cancel upload"
     
+
   },
   "AdminDashboard": {
     "totalSales": "Total Sales",
@@ -593,6 +597,7 @@
     "updateButton": "Update criterion"
   },
   "Sidebar": {
+    "criteria": "criteria",
     "title": "Admin Panel",
     "navigation": "Navigation",
     "profile": "Manage Profile",
@@ -609,10 +614,9 @@
     "requests": "Requests",
     "reels": "Reels",
     "packages": "Packages",
-    "events":"Events",
+    "events": "Events",
     "categories": "Categories",
     "noMenuItems": "No menu items found"
-    
   },
   "Complaints": {
     "title": "Complaints",
@@ -708,7 +712,7 @@
     "endDateRequired": "End date is required",
     "invalidFile": "Invalid file"
   },
- "SeasonalEventsProvider": {
+  "SeasonalEventsProvider": {
     "title": "Seasonal Events for Providers",
     "description": "View and manage coupons for seasonal events",
     "image": "Image",
@@ -747,7 +751,35 @@
     "couponRequired": "Coupon is required",
     "countRequired": "Count is required",
     "invalidCount": "Count must be a positive integer",
-    "endDate":"End Date",
-    "startDate":"Start Date"
+    "endDate": "End Date",
+    "startDate": "Start Date"
+  },
+  "SalesReport": {
+    "title": "Sales Report",
+    "export": "Export",
+    "stats": {
+      "products_sold": "Products sold",
+      "new_customers": "New customers",
+      "total_orders": "Total orders",
+      "total_sales": "Total sales",
+      "total_coupons": "Total coupons"
+    }
+  },
+  "Invoices": {
+    "title": "Invoices",
+    "exportButton": "Export",
+    "price": "${price}"
+  },
+  "BillingInfo": {
+    "price": "Price",
+    "title": "Billing Information",
+    "exportButton": "Export",
+    "priceFormat": "${price}",
+    "tableHeaders": {
+      "billId": "Bill ID",
+      "coupon": "Coupon",
+      "date": "Date",
+      "customers": "Customers"
+    }
   }
 }

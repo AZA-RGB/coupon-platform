@@ -42,7 +42,11 @@ import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import debounce from "lodash/debounce";
-import { fetchSeasonalEvents, deleteSeasonalEvent, createSeasonalEvent } from "./constants";
+import {
+  fetchSeasonalEvents,
+  deleteSeasonalEvent,
+  createSeasonalEvent,
+} from "./constants";
 import MyImage from "@/components/my-image";
 import {
   Dialog,
@@ -64,6 +68,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
+import AddEvent from "../AddEvent/page";
 
 const EVENTS_PER_PAGE = 10;
 
@@ -75,7 +80,9 @@ const formSchema = z.object({
   file: z
     .any()
     .optional()
-    .refine((file) => !file || file instanceof File, { message: "invalidFile" }),
+    .refine((file) => !file || file instanceof File, {
+      message: "invalidFile",
+    }),
 });
 
 const AddEventDialog = ({ refreshEvents, t }) => {
@@ -155,7 +162,10 @@ const AddEventDialog = ({ refreshEvents, t }) => {
                 <FormItem>
                   <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("descriptionPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -166,7 +176,7 @@ const AddEventDialog = ({ refreshEvents, t }) => {
               name="from_date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="w-full" >{t("startDate")}</FormLabel>
+                  <FormLabel className="w-full">{t("startDate")}</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
@@ -197,7 +207,9 @@ const AddEventDialog = ({ refreshEvents, t }) => {
                     <Input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        field.onChange(e.target.files?.[0] || null)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -208,10 +220,7 @@ const AddEventDialog = ({ refreshEvents, t }) => {
               <DialogTrigger asChild>
                 <Button variant="outline">{t("cancel")}</Button>
               </DialogTrigger>
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-              >
+              <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -237,10 +246,7 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
-            <MyImage
-              src={event.image}
-              alt={event.title}
-            />
+            <MyImage src={event.image} alt={event.title} />
           </div>
           <DialogTitle>{event.title}</DialogTitle>
           <DialogDescription>{event.description}</DialogDescription>
@@ -253,22 +259,30 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("status")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">{t(event.status)}</p>
+              <p className="text-sm text-muted-foreground capitalize">
+                {t(event.status)}
+              </p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium">{t("startDate")}</h4>
-              <p className="text-sm text-muted-foreground">{new Date(event.fromDate).toLocaleDateString()}</p>
+              <p className="text-sm text-muted-foreground">
+                {new Date(event.fromDate).toLocaleDateString()}
+              </p>
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("endDate")}</h4>
-              <p className="text-sm text-muted-foreground">{new Date(event.toDate).toLocaleDateString()}</p>
+              <p className="text-sm text-muted-foreground">
+                {new Date(event.toDate).toLocaleDateString()}
+              </p>
             </div>
           </div>
           <div>
             <h4 className="text-sm font-medium">{t("couponsCount")}</h4>
-            <p className="text-sm text-muted-foreground">{event.couponsCount}</p>
+            <p className="text-sm text-muted-foreground">
+              {event.couponsCount}
+            </p>
           </div>
           {event.coupons.length > 0 && (
             <div>
@@ -276,7 +290,8 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
               <ul className="text-sm text-muted-foreground">
                 {event.coupons.map((coupon) => (
                   <li key={coupon.id}>
-                    {coupon.name} ({coupon.couponCode}) - {t("price")}: {coupon.price}
+                    {coupon.name} ({coupon.couponCode}) - {t("price")}:{" "}
+                    {coupon.price}
                   </li>
                 ))}
               </ul>
@@ -346,7 +361,7 @@ const EventsTable = ({
         open={!!selectedEvent}
         onOpenChange={(open) => !open && setSelectedEvent(null)}
       />
-      
+
       <Card className="shadow-none">
         <CardContent className="p-x-2">
           <div className="flex justify-end gap-2 mb-4">
@@ -511,10 +526,7 @@ function renderTableCellContent(
     case "image":
       return (
         <div className="relative w-9 h-10 cursor-pointer">
-          <MyImage
-            src={event.image}
-            alt={event.title}
-          />
+          <MyImage src={event.image} alt={event.title} />
         </div>
       );
     case "title":
@@ -569,10 +581,11 @@ export default function SeasonalEventsPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value) => {
-      setSearchTerm(value);
-      setCurrentPage(1);
-    }, 300),
+    () =>
+      debounce((value) => {
+        setSearchTerm(value);
+        setCurrentPage(1);
+      }, 300),
     [],
   );
 
@@ -592,7 +605,14 @@ export default function SeasonalEventsPage() {
         totalPages,
         currentPage: apiCurrentPage,
       } = await fetchSeasonalEvents(currentPage, EVENTS_PER_PAGE);
-      console.log("Fetched events:", events, "Total pages:", totalPages, "Current page:", apiCurrentPage);
+      console.log(
+        "Fetched events:",
+        events,
+        "Total pages:",
+        totalPages,
+        "Current page:",
+        apiCurrentPage,
+      );
       if (!Array.isArray(events)) {
         throw new Error("Events data is not an array");
       }
@@ -628,7 +648,14 @@ export default function SeasonalEventsPage() {
   }, [currentPage, selectedEvents, t]);
 
   useEffect(() => {
-    console.log("Fetching events for page:", currentPage, "Search:", searchTerm, "Filter:", filterType);
+    console.log(
+      "Fetching events for page:",
+      currentPage,
+      "Search:",
+      searchTerm,
+      "Filter:",
+      filterType,
+    );
     fetchEventsData();
   }, [fetchEventsData, currentPage, searchTerm, filterType]);
 
@@ -636,7 +663,9 @@ export default function SeasonalEventsPage() {
     console.log("Selected Events:", selectedEvents);
     setIsLoading(true);
     try {
-      const deletePromises = selectedEvents.map((id) => deleteSeasonalEvent(id));
+      const deletePromises = selectedEvents.map((id) =>
+        deleteSeasonalEvent(id),
+      );
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
@@ -652,10 +681,13 @@ export default function SeasonalEventsPage() {
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedEvents.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedEvents.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          },
+        );
         setSelectedEvents([]);
         setCurrentPage(1);
         await fetchEventsData();
@@ -691,7 +723,7 @@ export default function SeasonalEventsPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2">
-                <AddEventDialog refreshEvents={fetchEventsData} t={t} />
+                <AddEvent refreshEvents={fetchEventsData} />
                 <div className="relative">
                   <Button
                     variant="outline"

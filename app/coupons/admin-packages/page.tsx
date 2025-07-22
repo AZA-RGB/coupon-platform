@@ -78,7 +78,9 @@ const editFormSchema = z.object({
   file: z
     .any()
     .optional()
-    .refine((file) => !file || file instanceof File, { message: "invalidFile" }),
+    .refine((file) => !file || file instanceof File, {
+      message: "invalidFile",
+    }),
 });
 
 const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
@@ -87,8 +89,12 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
     defaultValues: {
       title: pkg?.title || "",
       description: pkg?.description || "",
-      from_date: pkg?.fromDate ? new Date(pkg.fromDate).toISOString().split('T')[0] : "",
-      to_date: pkg?.toDate ? new Date(pkg.toDate).toISOString().split('T')[0] : "",
+      from_date: pkg?.fromDate
+        ? new Date(pkg.fromDate).toISOString().split("T")[0]
+        : "",
+      to_date: pkg?.toDate
+        ? new Date(pkg.toDate).toISOString().split("T")[0]
+        : "",
       file: null,
     },
   });
@@ -104,9 +110,13 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         formData.append("file", values.file);
       }
 
-      await axios.put(`http://164.92.67.78:3002/api/packages/${pkg.id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.put(
+        `http://164.92.67.78:3002/api/packages/${pkg.id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
 
       toast.success(t("editSuccessDesc"), {
         description: t("editSuccess"),
@@ -135,7 +145,10 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="link" className="text-primary underline hover:text-primary/80 p-0 h-auto">
+        <Button
+          variant="link"
+          className="text-primary underline hover:text-primary/80 p-0 h-auto"
+        >
           {t("editPackage")}
         </Button>
       </DialogTrigger>
@@ -165,7 +178,10 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                 <FormItem>
                   <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("descriptionPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -204,10 +220,12 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <Input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        field.onChange(e.target.files?.[0] || null)
+                      }
                     />
                   </FormControl>
-                  <div className="h-2"/>
+                  <div className="h-2" />
                 </FormItem>
               )}
             />
@@ -215,10 +233,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
               <DialogTrigger asChild>
                 <Button variant="outline">{t("cancel")}</Button>
               </DialogTrigger>
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-              >
+              <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -232,7 +247,8 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
           </form>
         </Form>
       </DialogContent>
-    </Dialog>);
+    </Dialog>
+  );
 };
 
 const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
@@ -243,10 +259,7 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
-            <MyImage
-              src={pkg.image}
-              alt={pkg.title}
-            />
+            <MyImage src={pkg.image} alt={pkg.title} />
           </div>
           <DialogTitle>{pkg.title}</DialogTitle>
           <DialogDescription>{pkg.description}</DialogDescription>
@@ -264,7 +277,7 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
               </p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium">{t("startDate")}</h4>
@@ -279,13 +292,11 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
               </p>
             </div>
           </div>
-          
+
           <div>
             <h4 className="text-sm font-medium">{t("coupons")}</h4>
             <p className="text-sm text-muted-foreground">{pkg.couponsCount}</p>
           </div>
-          
-        
         </div>
       </DialogContent>
     </Dialog>
@@ -344,15 +355,13 @@ const PackagesTable = ({
 
   return (
     <>
-   
-      
       <PackageDetailsModal
         pkg={selectedPackage}
         t={t}
         open={!!selectedPackage}
         onOpenChange={(open) => !open && setSelectedPackage(null)}
       />
-      
+
       <Card className="shadow-none">
         <CardContent className="p-x-2">
           <div className="flex justify-end gap-2 mb-4">
@@ -362,7 +371,8 @@ const PackagesTable = ({
               disabled={packages.length === 0}
             >
               {t(
-                selectedPackages.length === packages.length && packages.length > 0
+                selectedPackages.length === packages.length &&
+                  packages.length > 0
                   ? "deselectAll"
                   : "selectAll",
               )}
@@ -441,7 +451,7 @@ const PackagesTable = ({
                               formatDate,
                               handleSelectPackage,
                               setSelectedPackage,
-                              refreshPackages
+                              refreshPackages,
                             )}
                           </TableCell>
                         ))}
@@ -503,7 +513,7 @@ function renderTableCellContent(
   formatDate,
   handleSelectPackage,
   setSelectedPackage,
-  refreshPackages
+  refreshPackages,
 ) {
   switch (key) {
     case "select":
@@ -516,13 +526,8 @@ function renderTableCellContent(
       );
     case "image":
       return (
-        <div 
-          className="relative w-9 h-10 cursor-pointer"
-        >
-          <MyImage
-            src={pkg.image}
-            alt={pkg.title}
-          />
+        <div className="relative w-9 h-10 cursor-pointer">
+          <MyImage src={pkg.image} alt={pkg.title} />
         </div>
       );
     case "title":
@@ -542,8 +547,8 @@ function renderTableCellContent(
             pkg.status === "active"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
               : pkg.status === "expired"
-              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
           }`}
         >
           {t(pkg.status)}
@@ -561,7 +566,6 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          <EditPackageDialog pkg={pkg} refreshPackages={refreshPackages} t={t} />
         </div>
       );
     default:
@@ -580,18 +584,17 @@ export default function PackagesAllPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value) => {
-      setSearchTerm(value);
-      setCurrentPage(1); // Reset to page 1 on search
-    }, 300),
+    () =>
+      debounce((value) => {
+        setSearchTerm(value);
+        setCurrentPage(1); // Reset to page 1 on search
+      }, 300),
     [],
   );
 
   const handleSelectPackage = useCallback((id) => {
     setSelectedPackages((prev) =>
-      prev.includes(id)
-        ? prev.filter((pkgId) => pkgId !== id)
-        : [...prev, id],
+      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id],
     );
   }, []);
 
@@ -602,8 +605,20 @@ export default function PackagesAllPage() {
         packages,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchPackages(currentPage, PACKAGES_PER_PAGE, searchTerm, filterType);
-      console.log("Fetched packages:", packages, "Total pages:", totalPages, "Current page:", apiCurrentPage);
+      } = await fetchPackages(
+        currentPage,
+        PACKAGES_PER_PAGE,
+        searchTerm,
+        filterType,
+      );
+      console.log(
+        "Fetched packages:",
+        packages,
+        "Total pages:",
+        totalPages,
+        "Current page:",
+        apiCurrentPage,
+      );
       if (!Array.isArray(packages)) {
         throw new Error("Packages data is not an array");
       }
@@ -639,7 +654,14 @@ export default function PackagesAllPage() {
   }, [currentPage, searchTerm, filterType, selectedPackages, t]);
 
   useEffect(() => {
-    console.log("Fetching packages for page:", currentPage, "Search:", searchTerm, "Filter:", filterType);
+    console.log(
+      "Fetching packages for page:",
+      currentPage,
+      "Search:",
+      searchTerm,
+      "Filter:",
+      filterType,
+    );
     fetchPackagesData();
   }, [fetchPackagesData, currentPage, searchTerm, filterType]);
 
@@ -663,10 +685,13 @@ export default function PackagesAllPage() {
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedPackages.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedPackages.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          },
+        );
         setSelectedPackages([]);
         setCurrentPage(1);
         await fetchPackagesData();
@@ -703,7 +728,7 @@ export default function PackagesAllPage() {
               </div>
               <div className="flex space-x-2">
                 <AddPackageDialog refreshPackages={fetchPackagesData} />
-                
+
                 <div className="relative">
                   <Button
                     variant="outline"

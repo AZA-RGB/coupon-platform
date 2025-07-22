@@ -52,7 +52,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Filter, Search } from "lucide-react";
+import { CalendarIcon, Divide, Filter, Search } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -67,6 +67,11 @@ import {
 } from "./constants";
 import MyImage from "@/components/my-image";
 import AddTypeDialog from "@/components/AddType";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import useSWR from "swr";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@/components/ui/badge";
 
 const COUPONS_PER_PAGE = 10;
 const FALLBACK_IMAGE =
@@ -82,6 +87,17 @@ const CouponTypesGrid = ({
   setSelectedTypes,
   handleDeleteSelected,
 }) => {
+  const [typeIdDetails, setTypeIdDetails] = useState(null); // Use state for typeIdDetails
+
+  const {
+    data: typeDetails,
+    error: typeDetailsError,
+    isLoading: loadingTypeDetails,
+    mutate,
+  } = useSWR(
+    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null,
+  );
+
   const handleSelectType = (id) => {
     setSelectedTypes((prev) =>
       prev.includes(id)
@@ -192,15 +208,51 @@ const CouponTypesGrid = ({
                     </CardDescription>
                   </CardHeader>
                   <CardFooter className="px-3 pb-3 flex justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      className="w-full h-8 text-xs"
-                      asChild
-                    >
-                      <Link href={`/dashboard/coupons/types/${type.id}`}>
-                        {t("details")}
-                      </Link>
-                    </Button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => {
+                            console.log(type);
+                            setTypeIdDetails(type.id);
+                          }}
+                        >
+                          {t("details")}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className=" p-0">
+                        <ScrollArea className="max-h-[200px] w-auto overflow-auto rounded-md border p-3">
+                          {loadingTypeDetails ? (
+                            <div>
+                              <Spinner className="animate-spin" />
+                            </div>
+                          ) : typeDetailsError ? (
+                            <div>Error loading details</div>
+                          ) : typeDetails &&
+                            typeDetails.data?.by_type?.length > 0 ? ( //TODO: replace with by_type
+                            typeDetails.data.by_type.map((criterion, index) => (
+                              <div key={index}>
+                                <div className="flex space-x-4 place-content-between">
+                                  <div className="text-sm">
+                                    {criterion.name || "Unnamed criterion"}
+                                  </div>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-sm"
+                                  >
+                                    {criterion.type || "Unnamed criterion"}
+                                  </Badge>
+                                </div>
+                                <Separator className="my-2" />
+                              </div>
+                            ))
+                          ) : (
+                            <div>No details available</div>
+                          )}
+                        </ScrollArea>
+                      </PopoverContent>
+                    </Popover>
                   </CardFooter>
                 </Card>
               ))}

@@ -60,7 +60,9 @@ export function AppSidebar() {
       } else {
         // Fallback or redirect if role is invalid or not found
         setUserRole("admin"); // Default to admin if no valid role
-        console.warn("No valid user role found in localStorage, defaulting to provider");
+        console.warn(
+          "No valid user role found in localStorage, defaulting to provider",
+        );
       }
     } catch (error) {
       console.error("Error accessing localStorage:", error);
@@ -75,7 +77,7 @@ export function AppSidebar() {
       icon: ChartBar,
       roles: ["provider"],
     },
-     {
+    {
       title: t("dashboard"),
       url: "/admin-dashboard",
       icon: ChartBar,
@@ -87,7 +89,7 @@ export function AppSidebar() {
       icon: Ticket,
       roles: ["admin"],
     },
-     {
+    {
       title: t("coupons"),
       url: "/coupons/provider-coupons",
       icon: Ticket,
@@ -99,7 +101,7 @@ export function AppSidebar() {
       icon: Ticket,
       roles: ["admin"],
     },
-     {
+    {
       title: t("packages"),
       url: "/coupons/provider-packages",
       icon: Ticket,
@@ -111,7 +113,7 @@ export function AppSidebar() {
       icon: Tickets,
       roles: ["admin"],
     },
-     {
+    {
       title: t("couponTypes"),
       url: "/coupons/provider-types-coupons",
       icon: Tickets,
@@ -147,7 +149,7 @@ export function AppSidebar() {
       icon: MessageSquareWarning,
       roles: ["admin"],
     },
-      {
+    {
       title: t("events"),
       url: "/provider-events",
       icon: MessageSquareWarning,
@@ -162,6 +164,12 @@ export function AppSidebar() {
     {
       title: t("reels"),
       url: "/reels",
+      icon: Film,
+      roles: ["admin", "provider"],
+    },
+    {
+      title: t("criteria"),
+      url: "/add-criteria",
       icon: Film,
       roles: ["admin", "provider"],
     },
@@ -182,7 +190,7 @@ export function AppSidebar() {
       <SidebarHeader
         className={cn(
           "transition-all duration-300 overflow-hidden py-4",
-          open ? "opacity-100 max-h-24" : "opacity-0 max-h-0 p-0"
+          open ? "opacity-100 max-h-24" : "opacity-0 max-h-0 p-0",
         )}
       >
         <div className="flex items-center justify-between">
@@ -202,9 +210,9 @@ export function AppSidebar() {
               <SidebarMenuButton asChild className="group">
                 <Link
                   href="/profile"
-                  className="flex items-center gap-3 p-3 rounded-sm transition-all duration-300 transform hover:scale-[1.02]"
+                  className="flex items-center gap-3 p-3 rounded-sm transition-all duration-50 transform hover:scale-[1.02]"
                 >
-                  <User className="text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200" />
+                  <User className="text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform duration-15000" />
                   <span className="text-gray-700 dark:text-gray-200 font-medium">
                     {t("profile")}
                   </span>
@@ -228,9 +236,13 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild className="group">
                       <Link
                         href={item.url}
-                        className="flex items-center gap-3 p-3 rounded-sm hover:bg-blue-100/60 dark:hover:bg-blue-900/40 transition-all duration-300 transform hover:scale-[1.02]"
+                        className="flex items-center gap-3 p-3 rounded-sm hover:bg-blue-100/60 dark:hover:bg-blue-900/40 transition-all duration-100 transform hover:scale-[1.02] "
+
+                        // className="flex items-center gap-3 p-3 rounded-sm hover:bg-blue-100/60 dark:hover:bg-primary/30 transition-all duration-50 transform hover:scale-[1.03]"
                       >
                         <item.icon className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:scale-110 transition-transform duration-200" />
+
+                        {/* <item.icon className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary group-hover:scale-110 transition-transform duration-200" /> */}
                         <span className="text-gray-700 dark:text-gray-200 font-medium">
                           {item.title}
                         </span>
@@ -258,7 +270,7 @@ export function AppSidebar() {
                 "w-full rounded-xl transition-all duration-300",
                 open
                   ? "justify-start gap-3 px-3 py-6 hover:bg-blue-100/60 dark:hover:bg-blue-900/40"
-                  : "justify-center hover:bg-blue-100/40 dark:hover:bg-blue-900/20"
+                  : "justify-center hover:bg-blue-100/40 dark:hover:bg-blue-900/20",
               )}
             >
               <Settings className="h-5 w-5 text-gray-500 dark:text-gray-400" />

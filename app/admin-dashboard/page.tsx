@@ -23,6 +23,12 @@ import { ProviderChart } from "@/components/admin-dashboard/ProvidersChart";
 import TopCouponsTable from "@/components/dashboard/top-coupons-table";
 import CouponsTable from "@/components/admin-dashboard/CouponsTable";
 import { useLocale, useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import RequestReviewDialog from "@/components/RequestReviewDialog";
+import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
+import useSWR from "swr";
+import { Spinner } from "@/components/ui/spinner";
+import RequestsCard from "./RequestsCard";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -65,7 +71,7 @@ const AdminDashboardPage = () => {
           >
             <div>
               <div className="text-muted-foreground text-sm">{card.title}</div>
-              <div className="text-lg font-semibold">{card.value}</div>
+              <div className="text-sm sm:text-base">{card.value}</div>
             </div>
             <div className="bg-primary text-white rounded-lg p-3">
               {card.icon}
@@ -79,7 +85,7 @@ const AdminDashboardPage = () => {
         <TopCategoriesCard />
 
         <div className="w-full h-[35vh] ">
-          <CardsCarousel />
+          <EventsCarousel />
         </div>
 
         <div className="w-full h-[35vh] ">
@@ -89,7 +95,7 @@ const AdminDashboardPage = () => {
 
       {/* Sales Overview Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="lg:col-span-1 md:p-4">
+        <Card className="lg:col-span-1 md:p-4  bg-gradient-to-b to-background">
           <CardHeader>
             <CardTitle className="text-lg">
               {t("AdminDashboard.salesOverview")}
@@ -99,7 +105,7 @@ const AdminDashboardPage = () => {
             <SalesOverviewChart />
           </CardContent>
         </Card>
-        <Card className="lg:col-span-1  rounded-lg">
+        <Card className="lg:col-span-1  rounded-lg bg-gradient-to-b to-background">
           <CardTitle className="text-lg px-4">
             {t("AdminDashboard.providers")}
           </CardTitle>
@@ -126,23 +132,31 @@ const TopCategoriesCard = () => {
   const t = useTranslations();
   return (
     <Card className="h-[35vh] p-4 gap-2">
-      <CardTitle className="text-primary text-lg m-0">
+      <CardTitle className="  text-lg m-0">
         {t("Types.topCategories")}
       </CardTitle>
-      <div className="overflow-auto ">
+      <div className="overflow-auto  rounded-xl">
         <Table className="min-w-full text-sm">
-          <TableHeader>
+          <TableHeader className="bg-secondary ">
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.rank")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.category")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.sales")}
               </TableHead>
-              <TableHead className="py-2 px-4 text-start">
+              <TableHead
+                className={`py-2 px-4 text-start text-muted-foreground  rtl:text-right" : ""}`}
+              >
                 {t("Types.popularity")}
               </TableHead>
             </TableRow>
@@ -159,67 +173,6 @@ const TopCategoriesCard = () => {
                       className="bg-primary h-2.5 rounded-full"
                       style={{ width: `${row.popularity}%` }}
                     ></div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Card>
-  );
-};
-
-interface RequestsCardProps {
-  requestsData: any[];
-}
-
-const RequestsCard = ({ requestsData }: RequestsCardProps) => {
-  const t = useTranslations();
-  return (
-    <Card className=" h-full p-4 flex flex-col gap-2">
-      <CardTitle className="flex justify-between items-center">
-        <span className="text-lg text-primary">{t("Providers.requests")}</span>
-        <Link
-          href={`/dashboard/requests`}
-          className="text-sm hover:text-foreground/80"
-        >
-          {t("Providers.view_all")}
-        </Link>
-      </CardTitle>
-      <div className="overflow-auto max-h-[35vh]">
-        <Table className="min-w-full text-sm">
-          <TableHeader>
-            <TableRow className="bg-muted">
-              <TableHead className="py-2 px-4 text-start">
-                {t("Providers.name")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("Providers.request_date")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-center">
-                {t("Providers.action")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {requestsData.slice(0, 5).map((row, index) => (
-              <TableRow key={index} className="hover:bg-secondary">
-                <TableCell className="py-2 px-4">{row.name}</TableCell>
-                <TableCell className="py-2 px-4">
-                  {row.requestDateTime}
-                </TableCell>
-                <TableCell className="py-2 px-4">
-                  <div className="flex gap-2 justify-center">
-                    <button className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-xs">
-                      {t("Providers.accept")}
-                    </button>
-                    <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs">
-                      {t("Providers.reject")}
-                    </button>
-                    <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs">
-                      {t("Providers.viewDetails")}
-                    </button>
                   </div>
                 </TableCell>
               </TableRow>

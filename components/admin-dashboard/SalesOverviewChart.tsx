@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import {
   Area,
   AreaChart,
@@ -8,9 +9,8 @@ import {
   linearGradient,
   stop,
   XAxis,
-  YAxis, // Import YAxis
+  YAxis,
 } from "recharts";
-
 import {
   ChartConfig,
   ChartContainer,
@@ -32,15 +32,15 @@ const chartData = [
 const chartConfig = {
   desktop: {
     label: "Desktop",
-    color: "#2563eb",
+    color: "#00cbc1",
   },
   mobile: {
     label: "Mobile",
-    color: "#60a5fa",
+    color: "#00cbc1",
   },
 } satisfies ChartConfig;
 
-export default function SalesOverviewChart() {
+export default React.memo(function SalesOverviewChart() {
   return (
     <ChartContainer config={chartConfig}>
       <AreaChart data={chartData}>
@@ -52,7 +52,6 @@ export default function SalesOverviewChart() {
           axisLine={false}
           tickFormatter={(value) => value.slice(0, 3)}
         />
-
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         <defs>
@@ -79,4 +78,4 @@ export default function SalesOverviewChart() {
       </AreaChart>
     </ChartContainer>
   );
-}
+});

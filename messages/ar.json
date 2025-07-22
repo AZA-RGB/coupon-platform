@@ -1,5 +1,4 @@
 {
-
   "Auth": {
     "login": "تسجيل الدخول",
     "register": "التسجيل",
@@ -91,6 +90,7 @@
   },
   "search": "بحث",
   "RequestReviewForm": {
+    "downloadTradingRigester": "تحميل السجل التجاري",
     "providerName": "اسم المزود",
     "emailLabel": "البريد الإلكتروني",
     "emailPlaceholder": "example@example.com",
@@ -113,6 +113,7 @@
     "acceptedFormats": "يتم قبول \".jpg\" و \".jpeg\" و \".png\" و \".gif\""
   },
   "addEvent": {
+    "newEvent": "إضافة فعالية جديدة",
     "AddEvent": "إضافة حدث",
     "eventCoverImages": "صور غلاف الحدث",
     "eventTitle": "عنوان الحدث",
@@ -208,7 +209,7 @@
     "previous": "السابق",
     "next": "التالي",
     "addCoupon": "إضافة كوبون",
-    "topCoupons":"أفضل الكوبونات"
+    "topCoupons": "أفضل الكوبونات"
   },
   "Orders": {
     "title": "لوحة الطلبات",
@@ -280,6 +281,8 @@
     "next": "التالي"
   },
   "Providers": {
+    "seeDetails": "عرض التفاصيل",
+
     "title": "جميع المزودين",
     "description": "إدارة المزودين وعرض تفاصيلهم",
     "topCategories": "أفضل الفئات",
@@ -587,6 +590,7 @@
     "updateButton": "تحديث المعيار"
   },
   "Sidebar": {
+    "criteria": "المعايير",
     "title": "لوحة التحكم",
     "navigation": "التنقل",
     "profile": "إدارة الملف الشخصي",
@@ -603,7 +607,7 @@
     "requests": "الطلبات",
     "reels": "الريلز",
     "packages": "الباقات",
-    "events":"الأحداث",
+    "events": "الأحداث",
     "categories": "الفئات",
     "noMenuItems": "لا يوجد عناصر في القائمة"
   },
@@ -742,5 +746,32 @@
     "invalidCount": "العدد يجب أن يكون رقمًا صحيحًا أكبر من 0",
     "endDate": "تاريخ الانتهاء",
     "startDate": "تاريخ البدء"
+  },
+  "SalesReport": {
+    "title": "تقرير المبيعات",
+    "export": "تصدير",
+    "stats": {
+      "products_sold": "المنتجات المباعة",
+      "new_customers": "عملاء جدد",
+      "total_orders": "إجمالي الطلبات",
+      "total_sales": "إجمالي المبيعات",
+      "total_coupons": "إجمالي القسائم"
+    }
+  },
+  "Invoices": {
+    "title": "الفواتير",
+    "exportButton": "تصدير"
+  },
+  "BillingInfo": {
+    "price": "السعر",
+    "title": "معلومات الفواتير",
+    "exportButton": "تصدير",
+    "priceFormat": "",
+    "tableHeaders": {
+      "billId": "رقم الفاتورة",
+      "coupon": "كوبون",
+      "date": "التاريخ",
+      "customers": "العملاء"
+    }
   }
 }
