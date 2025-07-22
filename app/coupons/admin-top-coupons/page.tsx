@@ -18,29 +18,13 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Filter, Plus, Search } from "lucide-react";
-import Image from "next/image";
+import { Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { fetchCoupons } from "./constants";
+import { fetchTopCoupons } from "./constants";
 import MyImage from "@/components/my-image";
-import { MobileSummaryCards, SummaryCards } from "./summary_cards";
 
-const NavigationCards = ({ t }) => {
-  return (
-    <div className="w-full lg:w-2/6 flex flex-col sm:flex-row sm:grid-cols-1">
-      <Link href="/coupons/admin-top-coupons" className="block w-full">
-        <Card className="w-full hover:shadow-sm shadow-none transition-shadow h-full cursor-pointer p-6">
-          <CardTitle className="text-lg text-primary mb-1">
-            {t("seeTopCoupons")}
-          </CardTitle>
-          <CardDescription>{t("seeTopCouponsDesc")}</CardDescription>
-        </Card>
-      </Link>
-    </div>
-  );
-};
 
 const CouponsGrid = ({
   t,
@@ -168,7 +152,7 @@ const CouponsGrid = ({
   );
 };
 
-export default function AllCouponsPage() {
+export default function TopCouponsPage() {
   const t = useTranslations("Coupons");
   const { locale } = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
@@ -196,7 +180,7 @@ export default function AllCouponsPage() {
           coupons,
           totalPages,
           currentPage: apiCurrentPage,
-        } = await fetchCoupons(currentPage, searchQuery, statusFilter);
+        } = await fetchTopCoupons(currentPage, searchQuery, statusFilter);
         setCoupons(coupons);
         setTotalPages(totalPages);
         if (apiCurrentPage !== currentPage) {
@@ -236,19 +220,12 @@ export default function AllCouponsPage() {
         </div>
       ) : (
         <>
-          {/* Section 1: Summary and Navigation */}
-          <div className="flex flex-col lg:flex-row gap-4">
-            <SummaryCards t={t} />
-            <NavigationCards t={t} />
-            <MobileSummaryCards t={t} />
-          </div>
-
-          {/* Section 2: Header with Filter and New Coupon */}
+          {/* Section: Header with Filter and Search */}
           <Card className="shadow-none relative overflow-visible">
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>
-                <CardTitle>{t("title")}</CardTitle>
-                <CardDescription>{t("description")}</CardDescription>
+                <CardTitle>{t("topCouponsTitle")}</CardTitle>
+                <CardDescription>{t("topCouponsDesc")}</CardDescription>
               </div>
               <div className="flex space-x-2 relative z-50">
                 <div className="relative">
@@ -300,18 +277,12 @@ export default function AllCouponsPage() {
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
                 </div>
-                {/* <Button asChild size="sm">
-                  <Link href="/coupons/AddCoupon">
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t("newCoupon")}
-                  </Link>
-                </Button> */}
               </div>
             </CardHeader>
           </Card>
 
-          {/* Section 3: Coupons Grid */}
-        
+          {/* Section: Coupons Grid */}
+       
             <CouponsGrid
               t={t}
               coupons={currentCoupons}

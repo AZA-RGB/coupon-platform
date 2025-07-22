@@ -234,6 +234,9 @@
     "actions": "Actions"
   },
   "Coupons": {
+    "topCouponsDesc": "Top Coupons",
+    "topCouponsTitle": "Top Coupons",
+    "fromLastMonth": "From Last Month",
     "title": "All Coupons",
     "description": "Manage your coupon campaigns",
     "noCouponsFound": "No coupons found for this page.",
@@ -328,6 +331,7 @@
     "export": "Export"
   },
   "Customers": {
+    "banSuccess": "Customer banned successfully",
     "title": "All Customers",
     "description": "Manage customers and view their details",
     "totalCustomers": "Total Customers",
