@@ -12,7 +12,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-export default function RequestReviewDialog() {
+interface RequestReviewDialogProps {
+  providerData: any;
+}
+
+export default function RequestReviewDialog({
+  providerData,
+}: RequestReviewDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("Providers");
   return (
@@ -25,7 +31,7 @@ export default function RequestReviewDialog() {
           <DialogTitle>Request Review</DialogTitle>
         </DialogHeader>
         <div className="py-2">
-          <RequestReviewForm />
+          <RequestReviewForm providerData={providerData} />
         </div>
       </DialogContent>
     </Dialog>

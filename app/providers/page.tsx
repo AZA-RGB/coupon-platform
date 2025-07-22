@@ -163,7 +163,7 @@ const RequestsCard = ({ t, requestsData }) => {
                     >
                       {t("reject")}
                     </button>
-                    <RequestReviewDialog />
+                    <RequestReviewDialog providerData={row.original} />
                   </div>
                 </TableCell>
               </TableRow>
