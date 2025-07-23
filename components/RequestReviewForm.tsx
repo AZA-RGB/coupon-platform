@@ -35,7 +35,7 @@ export function RequestReviewForm({
                   </Avatar>
                 </div>
                 <h1 className="text-2xl font-bold ">
-                  {providerData.provider.name}
+                  {providerData.user.name}
                 </h1>
               </div>
               <div className="grid gap-3 mt-10">
@@ -44,7 +44,7 @@ export function RequestReviewForm({
                   id="email"
                   type="email"
                   placeholder={t("emailPlaceholder")}
-                  value={providerData.provider.user.email}
+                  value={providerData.user.email}
                   disabled
                 />
               </div>
@@ -53,8 +53,8 @@ export function RequestReviewForm({
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder={t("phonePlaceholder")}
-                  value={providerData.provider.user.phone_number}
+                  // placeholder={t("phonePlaceholder")}
+                  placeholder={providerData.user.phone}
                   disabled
                 />
               </div>
