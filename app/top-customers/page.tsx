@@ -35,7 +35,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -46,63 +45,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogFooter 
+  AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { fetchCustomers, deleteCustomer, fetchCustomerDetails, fetchCouponStats, blockCustomer } from "./constants";
+import { fetchCustomers, deleteCustomer, fetchCouponStats, blockCustomer } from "./constants";
 
-
-const SummaryCards = ({ t, summaries }) => {
-  return (
-    <Card className="w-full lg:w-3/4 p-4 hidden md:flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row gap-4 w-full">
-        {summaries.map((summary, index) => (
-          <div key={index} className="flex-1 p-4 flex flex-col justify-between">
-            <div>
-              <h2>{t(summary.title)}</h2>
-              <h4 className="text-2xl">{summary.value}</h4>
-            </div>
-            <span className="text-sm text-green-500 mt-2">
-              {summary.change}
-            </span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-const MobileSummaryCards = ({ t, summaries }) => {
-  return (
-    <div className="flex flex-col gap-4 md:hidden">
-      {summaries.map((summary, index) => (
-        <Card key={index} className="w-full p-4 flex flex-col justify-between">
-          <div>
-            <h2>{t(summary.title)}</h2>
-            <h4 className="text-2xl">{summary.value}</h4>
-          </div>
-          <span className="text-sm text-green-500 mt-2">{summary.change}</span>
-        </Card>
-      ))}
-    </div>
-  );
-};
-
-const NavigationCards = ({ t }) => {
-  return (
-    <div className="w-full lg:w-1/4">
-      <a href="/top-customers" className="block h-full">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-4">
-          <CardTitle className="text-lg text-primary mb-1">
-            {t("seeTopCustomers")}
-          </CardTitle>
-          <CardDescription>{t("seeTopCustomersDesc")}</CardDescription>
-        </Card>
-      </a>
-    </div>
-  );
-};
 
 const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
   if (!customer) return null;
@@ -185,7 +133,7 @@ const CustomersTable = ({
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(isRTL ? "ar-SA" : "en-US", {
+    return new Date(date).toLocaleDateString( "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -486,7 +434,7 @@ function renderTableCellContent(
   }
 }
 
-export default function AllCustomersDashboard() {
+export default function TopCustomersDashboard() {
   const t = useTranslations("Customers");
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -643,11 +591,7 @@ export default function AllCustomersDashboard() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col lg:flex-row gap-4 w-full">
-            <SummaryCards t={t} summaries={summaryData} />
-            <MobileSummaryCards t={t} summaries={summaryData} />
-            <NavigationCards t={t} />
-          </div>
+         
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>

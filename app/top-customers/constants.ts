@@ -9,7 +9,7 @@ export const fetchCustomers = async (page = 1, search = '', status = '') => {
     if (search) params.append('search', search);
     if (status) params.append('customer_status', status);
 
-    const response = await axios.get(`${API_BASE_URL}/customers/all?${params.toString()}`);
+    const response = await axios.get(`${API_BASE_URL}/customers/top-customers?${params.toString()}`);
     const { data } = response.data;
 
     if (!Array.isArray(data)) {

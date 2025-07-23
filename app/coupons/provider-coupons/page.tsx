@@ -19,11 +19,9 @@ import {
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { Filter, Plus, Search } from "lucide-react";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import debounce from "lodash/debounce";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import {
@@ -37,78 +35,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { fetchCoupons, deleteCoupon } from "./constants";
+import { fetchCoupons, fetchCouponStats, deleteCoupon } from "./constants";
 import MyImage from "@/components/my-image";
+import { MobileSummaryCards, SummaryCards } from "../summary_cards";
 
-const COUPONS_PER_PAGE = 10;
-
-const SummaryCards = ({ t, coupons }) => {
-  const activeCoupons = coupons.filter(coupon => coupon.status === 'active').length;
-  const totalCoupons = coupons.length;
-  const totalDiscount = coupons.reduce((sum, coupon) => sum + parseFloat(coupon.discount), 0).toFixed(2);
-
-  const summaries = [
-    { title: t("activeCoupons"), value: activeCoupons, change: "+8% from last month" },
-    { title: t("monthlyReturn"), value: `$${totalDiscount}`, change: "+8% from last month" },
-    { title: t("totalCoupons"), value: totalCoupons, change: "+8% from last month" },
-  ];
-
-  return (
-    <Card className="w-full lg:w-3/5 p-4 hidden md:flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row gap-4 w-full">
-        {summaries.map((summary, index) => (
-          <div key={index} className="flex-1 p-4 flex flex-col justify-between">
-            <div>
-              <h2>{summary.title}</h2>
-              <h4 className="text-2xl">{summary.value}</h4>
-            </div>
-            <span className="text-sm text-green-500 mt-2">{summary.change}</span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-const MobileSummaryCards = ({ t, coupons }) => {
-  const activeCoupons = coupons.filter(coupon => coupon.status === 'active').length;
-  const totalCoupons = coupons.length;
-  const totalDiscount = coupons.reduce((sum, coupon) => sum + parseFloat(coupon.discount), 0).toFixed(2);
-
-  const summaries = [
-    { title: t("activeCoupons"), value: activeCoupons, change: "+8% from last month" },
-    { title: t("monthlyReturn"), value: `$${totalDiscount}`, change: "+8% from last month" },
-    { title: t("totalCoupons"), value: totalCoupons, change: "+8% from last month" },
-  ];
-
-  return (
-    <div className="flex flex-col gap-4 md:hidden">
-      {summaries.map((summary, index) => (
-        <Card key={index} className="w-full p-4 flex flex-col justify-between">
-          <div>
-            <h2>{summary.title}</h2>
-            <h4 className="text-2xl">{summary.value}</h4>
-          </div>
-          <span className="text-sm text-green-500 mt-2">{summary.change}</span>
-        </Card>
-      ))}
-    </div>
-  );
-};
 
 const NavigationCards = ({ t }) => {
   return (
-    <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-2 md:grid-cols-1 gap-4">
-      <Link href="/dashboard/top-coupons" className="block">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-          <CardTitle className="text-lg text-primary mb-1">{t("seeTopCoupons")}</CardTitle>
+    <div className="w-full lg:w-2/6 flex flex-col sm:flex-row sm:grid-cols-1">
+      <Link href="/coupons/admin-top-coupons" className="block w-full">
+        <Card className="w-full hover:shadow-sm shadow-none transition-shadow h-full cursor-pointer p-6">
+          <CardTitle className="text-lg text-primary mb-1">
+            {t("seeTopCoupons")}
+          </CardTitle>
           <CardDescription>{t("seeTopCouponsDesc")}</CardDescription>
-        </Card>
-      </Link>
-      <Link href="/dashboard/top-sales" className="block">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-          <CardTitle className="text-lg text-primary mb-1">{t("seeTopSales")}</CardTitle>
-          <CardDescription>{t("seeTopSalesDesc")}</CardDescription>
         </Card>
       </Link>
     </div>
@@ -128,7 +68,7 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
   };
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardContent className="pt-2">
         {coupons.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
@@ -175,10 +115,10 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
               {coupons.map((coupon) => (
                 <Card
                   key={coupon.id}
-                  className="overflow-hidden hover:shadow-md transition-shadow p-0"
+                  className="overflow-hidden shadow-none transition-shadow p-0"
                 >
                   <div className="relative w-full h-32">
-                  <MyImage src={coupon.image} alt={coupon.name} />
+                    <MyImage src={coupon.image} alt={coupon.name} />
                     <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
                       <span className="text-primary font-bold">{coupon.discount}</span>
                     </div>
@@ -233,7 +173,7 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                   e.preventDefault();
                   if (currentPage > 1) setCurrentPage(currentPage - 1);
                 }}
-                className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+                className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
               >
                 {t("previous")}
               </PaginationPrevious>
@@ -259,7 +199,7 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                   e.preventDefault();
                   if (currentPage < totalPages) setCurrentPage(currentPage + 1);
                 }}
-                className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
               >
                 {t("next")}
               </PaginationNext>
@@ -276,51 +216,56 @@ export default function AllCouponsPage() {
   const { locale } = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedCoupons, setSelectedCoupons] = useState([]);
   const [coupons, setCoupons] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const debouncedSetSearchTerm = useMemo(
-    () => debounce((value: string) => setSearchTerm(value), 300),
-    []
-  );
-
-  const fetchCouponsData = async () => {
-    setIsLoading(true);
-    try {
-      const { coupons, totalPages, currentPage: apiCurrentPage } = await fetchCoupons(currentPage);
-      setCoupons(coupons);
-      setTotalPages(totalPages);
-      if (apiCurrentPage !== currentPage) {
-        setCurrentPage(apiCurrentPage);
-      }
-    } catch (error) {
-      console.error('Error fetching coupons:', error);
-      toast.error(t("fetchErrorDesc"), {
-        description: t("fetchError"),
-        duration: 5000,
-      });
-    } finally {
-      setIsLoading(false);
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setSearchQuery(inputValue);
+      setCurrentPage(1);
     }
   };
 
   useEffect(() => {
-    fetchCouponsData();
-  }, [currentPage]);
+    const loadCoupons = async () => {
+      setIsLoading(true);
+      try {
+        const {
+          coupons,
+          totalPages,
+          currentPage: apiCurrentPage,
+        } = await fetchCoupons(currentPage, searchQuery, statusFilter);
+        setCoupons(coupons);
+        setTotalPages(totalPages);
+        if (apiCurrentPage !== currentPage) {
+          setCurrentPage(apiCurrentPage);
+        }
+      } catch (error) {
+        console.error('Error fetching coupons:', error);
+        toast.error(t("fetchErrorDesc"), {
+          description: t("fetchError"),
+          duration: 5000,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadCoupons();
+  }, [currentPage, searchQuery, statusFilter]);
 
   const handleDeleteSelected = async () => {
-    console.log('Selected Coupons:', selectedCoupons);
     setIsLoading(true);
     try {
       const deletePromises = selectedCoupons.map((id) => deleteCoupon(id));
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
-        console.error('Failed to delete some coupons:', failedDeletions);
         const errorMessages = failedDeletions.map((result) => {
           const error = result.error;
           const status = error.response?.status;
@@ -338,10 +283,9 @@ export default function AllCouponsPage() {
         });
         setSelectedCoupons([]);
         setCurrentPage(1);
-        await fetchCouponsData();
+        await fetchCoupons(currentPage, searchQuery, statusFilter);
       }
     } catch (error) {
-      console.error('Error during deletion:', error);
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
       toast.error(`${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ''}: ${message}`, {
@@ -353,43 +297,23 @@ export default function AllCouponsPage() {
     }
   };
 
-  const filteredCoupons = useMemo(() => {
-    return coupons
-      .filter((coupon) => {
-        if (searchTerm) {
-          const lowerSearch = searchTerm.toLowerCase();
-          return (
-            coupon.name.toLowerCase().includes(lowerSearch) ||
-            coupon.code.toLowerCase().includes(lowerSearch) ||
-            coupon.type.toLowerCase().includes(lowerSearch)
-          );
-        }
-        return true;
-      })
-      .filter((coupon) => {
-        if (["active", "expired", "pending"].includes(filterType)) {
-          return coupon.status === filterType;
-        }
-        return true;
-      })
-      .sort((a, b) => {
-        if (filterType === "newest") {
-          return new Date(b.addDate).getTime() - new Date(a.addDate).getTime();
-        } else if (filterType === "oldest") {
-          return new Date(a.addDate).getTime() - new Date(b.addDate).getTime();
-        }
-        return 0;
-      });
-  }, [coupons, searchTerm, filterType]);
-
-  const currentCoupons = filteredCoupons;
+  const currentCoupons = useMemo(() => {
+    return coupons.sort((a, b) => {
+      if (filterType === "newest") {
+        return new Date(b.addDate).getTime() - new Date(a.addDate).getTime();
+      } else if (filterType === "oldest") {
+        return new Date(a.addDate).getTime() - new Date(b.addDate).getTime();
+      }
+      return 0;
+    });
+  }, [coupons, filterType]);
 
   const filterOptions = [
     { label: t("newest"), value: "newest" },
     { label: t("oldest"), value: "oldest" },
-    { label: t("active"), value: "active" },
-    { label: t("expired"), value: "expired" },
-    { label: t("pending"), value: "pending" },
+    { label: t("active"), value: "0" },
+    { label: t("expired"), value: "1" },
+    { label: t("pending"), value: "2" },
   ];
 
   return (
@@ -401,20 +325,20 @@ export default function AllCouponsPage() {
       ) : (
         <>
           {/* Section 1: Summary and Navigation */}
-          <div className="flex flex-col lg:flex-row gap-4 w-full">
-            <SummaryCards t={t} coupons={coupons} />
+          <div className="flex flex-col lg:flex-row gap-4">
+            <SummaryCards t={t} />
             <NavigationCards t={t} />
-            <MobileSummaryCards t={t} coupons={coupons} />
+            <MobileSummaryCards t={t} />
           </div>
 
           {/* Section 2: Header with Filter and New Coupon */}
-          <Card>
+          <Card className="shadow-none relative overflow-visible">
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>
                 <CardTitle>{t("title")}</CardTitle>
                 <CardDescription>{t("description")}</CardDescription>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 relative z-50">
                 <div className="relative">
                   <Button
                     variant="outline"
@@ -426,15 +350,23 @@ export default function AllCouponsPage() {
                     {t("filter")}
                   </Button>
                   {isFilterMenuOpen && (
-                    <div className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow">
+                    <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
                         <button
                           key={item.value}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-100 ${
-                            filterType === item.value ? "bg-gray-200 dark:bg-gray-100" : ""
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                            filterType === item.value || statusFilter === item.value
+                              ? "bg-gray-200 dark:bg-gray-600"
+                              : ""
                           }`}
                           onClick={() => {
-                            setFilterType(item.value);
+                            if (["newest", "oldest"].includes(item.value)) {
+                              setFilterType(item.value);
+                              setStatusFilter("");
+                            } else {
+                              setStatusFilter(item.value);
+                              setFilterType("");
+                            }
                             setCurrentPage(1);
                             setIsFilterMenuOpen(false);
                           }}
@@ -450,12 +382,14 @@ export default function AllCouponsPage() {
                     type="text"
                     placeholder={t("search")}
                     className="h-8 max-w-[200px]"
-                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
                 </div>
                 <Button asChild size="sm">
-                  <Link href="/dashboard/coupons/new">
+                  <Link href="/coupons/AddCoupon">
                     <Plus className="mr-2 h-4 w-4" />
                     {t("newCoupon")}
                   </Link>
