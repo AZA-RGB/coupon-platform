@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Card,
   CardHeader,
@@ -36,12 +36,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Filter, Search, X } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
-import debounce from "lodash/debounce";
 import { fetchPackages, deletePackage } from "./constants";
 import MyImage from "@/components/my-image";
 import AddTypeDialog from "@/components/AddType";
@@ -53,6 +52,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import AddPackageDialog from "@/components/AddPackage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -64,10 +64,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import axios from "axios";
-import constants from "constants";
-import AddCouponDialog from "@/components/provider-packages/AddCouponDialog";
 
 const PACKAGES_PER_PAGE = 10;
 
@@ -121,6 +119,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
 
       toast.success(t("editSuccessDesc"), {
         description: t("editSuccess"),
+        duration: 3000,
       });
       refreshPackages();
       form.reset();
@@ -131,14 +130,15 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         if (error.response) {
           toast.error(
             `${t("editErrorDesc")}: ${error.response.data.message || t("editError")}`,
+            { duration: 7000 },
           );
         } else if (error.request) {
-          toast.error(t("networkError"));
+          toast.error(t("networkError"), { duration: 7000 });
         } else {
-          toast.error(t("requestError"));
+          toast.error(t("requestError"), { duration: 7000 });
         }
       } else {
-        toast.error(t("unexpectedError"));
+        toast.error(t("unexpectedError"), { duration: 7000 });
       }
     }
   }
@@ -169,6 +169,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormControl>
                     <Input placeholder={t("titlePlaceholder")} {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -184,6 +185,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -196,6 +198,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -208,6 +211,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -226,7 +230,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                       }
                     />
                   </FormControl>
-                  <div className="h-2" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -278,7 +282,6 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
               </p>
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium">{t("startDate")}</h4>
@@ -293,7 +296,6 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
               </p>
             </div>
           </div>
-
           <div>
             <h4 className="text-sm font-medium">{t("coupons")}</h4>
             <p className="text-sm text-muted-foreground">{pkg.couponsCount}</p>
@@ -340,7 +342,7 @@ const PackagesTable = ({
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(isRTL ? "ar-SA" : "en-US", {
+    return new Date(date).toLocaleDateString( "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -348,9 +350,7 @@ const PackagesTable = ({
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = packages.every((pkg) =>
-      selectedPackages.includes(pkg.id),
-    );
+    const allSelected = packages.every((pkg) => selectedPackages.includes(pkg.id));
     setSelectedPackages(allSelected ? [] : packages.map((pkg) => pkg.id));
   };
 
@@ -362,7 +362,6 @@ const PackagesTable = ({
         open={!!selectedPackage}
         onOpenChange={(open) => !open && setSelectedPackage(null)}
       />
-
       <Card className="shadow-none">
         <CardContent className="p-x-2">
           <div className="flex justify-end gap-2 mb-4">
@@ -370,12 +369,12 @@ const PackagesTable = ({
               variant="outline"
               onClick={handleToggleSelectAll}
               disabled={packages.length === 0}
+              className="cursor-pointer"
             >
               {t(
-                selectedPackages.length === packages.length &&
-                  packages.length > 0
+                selectedPackages.length === packages.length && packages.length > 0
                   ? "deselectAll"
-                  : "selectAll",
+                  : "selectAll"
               )}
             </Button>
             <AlertDialog>
@@ -453,6 +452,7 @@ const PackagesTable = ({
                               handleSelectPackage,
                               setSelectedPackage,
                               refreshPackages,
+                              selectedPackages,
                             )}
                           </TableCell>
                         ))}
@@ -515,13 +515,14 @@ function renderTableCellContent(
   handleSelectPackage,
   setSelectedPackage,
   refreshPackages,
+  selectedPackages,
 ) {
   switch (key) {
     case "select":
       return (
         <Checkbox
           className="mx-6"
-          checked={pkg.isSelected}
+          checked={selectedPackages.includes(pkg.id)}
           onCheckedChange={() => handleSelectPackage(pkg.id)}
         />
       );
@@ -567,12 +568,7 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          <AddCouponDialog />
-          <EditPackageDialog
-            pkg={pkg}
-            refreshPackages={refreshPackages}
-            t={t}
-          />
+          <EditPackageDialog pkg={pkg} refreshPackages={refreshPackages} t={t} />
         </div>
       );
     default:
@@ -583,49 +579,37 @@ function renderTableCellContent(
 export default function PackagesAllPage() {
   const t = useTranslations("Packages");
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [selectedPackages, setSelectedPackages] = useState([]);
   const [packages, setPackages] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedPackages, setSelectedPackages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const debouncedSetSearchTerm = useMemo(
-    () =>
-      debounce((value) => {
-        setSearchTerm(value);
-        setCurrentPage(1); // Reset to page 1 on search
-      }, 300),
-    [],
-  );
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setSearchQuery(inputValue);
+      setCurrentPage(1);
+    }
+  };
 
-  const handleSelectPackage = useCallback((id) => {
+  const handleSelectPackage = (id) => {
     setSelectedPackages((prev) =>
-      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id]
     );
-  }, []);
+  };
 
-  const fetchPackagesData = useCallback(async () => {
+  const fetchPackagesData = async () => {
     setIsLoading(true);
     try {
       const {
         packages,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchPackages(
-        currentPage,
-        PACKAGES_PER_PAGE,
-        searchTerm,
-        filterType,
-      );
-      console.log(
-        "Fetched packages:",
-        packages,
-        "Total pages:",
-        totalPages,
-        "Current page:",
-        apiCurrentPage,
-      );
+      } = await fetchPackages(currentPage, searchQuery, statusFilter);
       if (!Array.isArray(packages)) {
         throw new Error("Packages data is not an array");
       }
@@ -653,36 +637,19 @@ export default function PackagesAllPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, searchTerm, filterType, t]);
-
-  const displayedPackages = useMemo(() => {
-    return packages.map((pkg) => ({
-      ...pkg,
-      isSelected: selectedPackages.includes(pkg.id),
-    }));
-  }, [packages, selectedPackages]);
+  };
 
   useEffect(() => {
-    console.log(
-      "Fetching packages for page:",
-      currentPage,
-      "Search:",
-      searchTerm,
-      "Filter:",
-      filterType,
-    );
     fetchPackagesData();
-  }, [fetchPackagesData, currentPage, searchTerm, filterType]);
+  }, [currentPage, searchQuery, statusFilter]);
 
   const handleDeleteSelected = async () => {
-    console.log("Selected Packages:", selectedPackages);
     setIsLoading(true);
     try {
       const deletePromises = selectedPackages.map((id) => deletePackage(id));
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
-        console.error("Failed to delete some packages:", failedDeletions);
         const errorMessages = failedDeletions.map((result) => {
           const error = result.error;
           const status = error.response?.status;
@@ -694,19 +661,15 @@ export default function PackagesAllPage() {
           duration: 7000,
         });
       } else {
-        toast.success(
-          t("deleteSuccessDesc", { count: selectedPackages.length }),
-          {
-            description: t("deleteSuccess"),
-            duration: 3000,
-          },
-        );
+        toast.success(t("deleteSuccessDesc", { count: selectedPackages.length }), {
+          description: t("deleteSuccess"),
+          duration: 3000,
+        });
         setSelectedPackages([]);
         setCurrentPage(1);
         await fetchPackagesData();
       }
     } catch (error) {
-      console.error("Error during deletion:", error);
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
       toast.error(
@@ -720,6 +683,26 @@ export default function PackagesAllPage() {
       setIsLoading(false);
     }
   };
+
+  const currentPackages = useMemo(() => {
+    return packages.sort((a, b) => {
+      if (filterType === "newest") {
+        return new Date(b.fromDate).getTime() - new Date(a.fromDate).getTime();
+      } else if (filterType === "oldest") {
+        return new Date(a.fromDate).getTime() - new Date(b.fromDate).getTime();
+      }
+      return 0;
+    });
+  }, [packages, filterType]);
+
+  const filterOptions = [
+    { label: t("newest"), value: "newest" },
+    { label: t("oldest"), value: "oldest" },
+    { label: t("active"), value: "0" },
+    { label: t("expired"), value: "1" },
+    { label: t("pending"), value: "2" },
+  ];
+
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
       {isLoading ? (
@@ -734,63 +717,63 @@ export default function PackagesAllPage() {
                 <CardTitle>{t("title")}</CardTitle>
                 <CardDescription>{t("description")}</CardDescription>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 relative z-50">
+                <AddPackageDialog refreshPackages={fetchPackagesData} />
                 <div className="relative">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="cursor-pointer text-muted-foreground"
-                    onClick={() => {
-                      const el = document.getElementById("filter-menu");
-                      if (el) el.classList.toggle("hidden");
-                    }}
+                    className="text-muted-foreground"
+                    onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
                   </Button>
-                  <div
-                    id="filter-menu"
-                    className="cursor-pointer absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
-                  >
-                    {[
-                      { label: t("newest"), value: "newest" },
-                      { label: t("oldest"), value: "oldest" },
-                      { label: t("active"), value: "active" },
-                      { label: t("expired"), value: "expired" },
-                      { label: t("pending"), value: "pending" },
-                    ].map((item) => (
-                      <button
-                        key={item.value}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 ${
-                          filterType === item.value ? "bg-gray-200" : ""
-                        }`}
-                        onClick={() => {
-                          setFilterType(item.value);
-                          setCurrentPage(1);
-                          const el = document.getElementById("filter-menu");
-                          if (el) el.classList.add("hidden");
-                        }}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+                  {isFilterMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
+                      {filterOptions.map((item) => (
+                        <button
+                          key={item.value}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                            filterType === item.value || statusFilter === item.value
+                              ? "bg-gray-200 dark:bg-gray-600"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            if (["newest", "oldest"].includes(item.value)) {
+                              setFilterType(item.value);
+                              setStatusFilter("");
+                            } else {
+                              setStatusFilter(item.value);
+                              setFilterType("");
+                            }
+                            setCurrentPage(1);
+                            setIsFilterMenuOpen(false);
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
-                    className={`h-8 rtl:px-7 max-w-[200px]`}
-                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+                    className="h-8 max-w-[200px]"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
                   />
-                  <Search className="absolute right-2 top-2 h-4 w-4   text-muted-foreground" />
+                  <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
             </CardHeader>
           </Card>
           <PackagesTable
             t={t}
-            packages={displayedPackages}
+            packages={currentPackages}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}

@@ -65,6 +65,8 @@ export default function LoginPage() {
       localStorage.setItem("refreshToken", refresh_token);
       //store role
 
+      
+
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),
         duration: 3000,

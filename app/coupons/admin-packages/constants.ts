@@ -3,12 +3,13 @@ import axios from "axios";
 const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
-export const fetchPackages = async (page = 1, perPage = 10, ) => {
+export const fetchPackages = async (page = 1, search = '', status = '') => {
   try {
-    const params = new URLSearchParams({ page: page.toString(), per_page: perPage.toString() });
+    let url = `http://164.92.67.78:3002/api/packages/index?page=${page}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status !== '') url += `&package_status=${status}`;
 
-
-    const response = await axios.get(`http://164.92.67.78:3002/api/packages/index?${params.toString()}`);
+    const response = await axios.get(url);
     const { data } = response.data;
 
     if (!data || !Array.isArray(data.data)) {

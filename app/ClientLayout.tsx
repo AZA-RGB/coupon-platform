@@ -1,3 +1,76 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AppBreadcrumb } from "@/components/app-breadcrumb/AppBreadcrumb";
+import { SWRProvider } from "@/components/ui/swrProvier";
+import { Toaster } from "sonner";
+import NextTopLoader from "nextjs-toploader";
+
+export default function ClientLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const isAuthPage = pathname.startsWith("/auth");
+
+  // Redirect to /dashboard if token exists and user is on an auth page
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && isAuthPage) {
+      router.push("/admin-dashboard");
+    }
+  }, [router, isAuthPage]);
+
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      {isAuthPage ? (
+        // Render only children for auth pages
+        <>
+          <SWRProvider>
+            <main>{children}</main>
+            <NextTopLoader color="#00CBC1" height={5} crawl={false} />
+            <Toaster richColors position="top-center" />
+          </SWRProvider>
+        </>
+      ) : (
+        // Render sidebar and full layout for non-auth pages
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <SWRProvider>
+              <main className="">
+                <div className="flex gap-5 sticky top-0 items-center backdrop-blur-xl z-50">
+                  <SidebarTrigger className="bg-primary dark:bg-primary-dark text-white m-1 rounded-md p-2 hover:bg-primary/90 dark:hover:bg-primary-dark/90 transition-all" />
+                  <AppBreadcrumb />
+                </div>
+                <NextTopLoader color="#00CBC1" height={5} crawl={false} />
+                {children}
+              </main>
+              <Toaster richColors position="top-center" />
+            </SWRProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      )}
+    </ThemeProvider>
+  );
+}
+
+
+
 // "use client";
 // import { useEffect, useState } from "react";
 // import { usePathname, useRouter } from "next/navigation";
@@ -98,73 +171,3 @@
 //     </div>
 //   );
 // }
-
-"use client";
-import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
-import { AppBreadcrumb } from "@/components/app-breadcrumb/AppBreadcrumb";
-import { SWRProvider } from "@/components/ui/swrProvier";
-import { Toaster } from "sonner";
-import NextTopLoader from "nextjs-toploader";
-
-export default function ClientLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const isAuthPage = pathname.startsWith("/auth");
-
-  // Redirect to /dashboard if token exists and user is on an auth page
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && isAuthPage) {
-      router.push("/dashboard");
-    }
-  }, [router, isAuthPage]);
-
-  return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      {isAuthPage ? (
-        // Render only children for auth pages
-        <>
-          <SWRProvider>
-            <main>{children}</main>
-            <NextTopLoader color="#00CBC1" height={5} crawl={false} />
-            <Toaster richColors position="top-center" />
-          </SWRProvider>
-        </>
-      ) : (
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <SWRProvider>
-              <main className="">
-                <div className="flex gap-5 sticky top-0 items-center backdrop-blur-xl z-50">
-                  <SidebarTrigger className="bg-primary dark:bg-primary-dark text-white m-1 rounded-md p-2 hover:bg-primary/90 dark:hover:bg-primary-dark/90 transition-all" />
-                  <AppBreadcrumb />
-                </div>
-                <NextTopLoader color="#00CBC1" height={5} crawl={false} />
-                {children}
-              </main>
-              <Toaster richColors position="top-center" />
-            </SWRProvider>
-          </SidebarInset>
-        </SidebarProvider>
-      )}
-    </ThemeProvider>
-  );
-}
