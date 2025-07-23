@@ -26,7 +26,7 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
       {isLoading && <Spinner className="animate-spin" />}
       {error && "error loading registration requests"}
 
-      {data && (
+      {data?.data && (
         <div className="overflow-auto max-h-[35vh] rounded-xl">
           <Table className="min-w-full text-sm">
             <TableHeader>
@@ -40,9 +40,9 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.data.map((row, index) => (
+              {data?.data.data.map((row, index) => (
                 <TableRow key={index} className="hover:bg-secondary">
-                  <TableCell className="py-2 px-4">{row.provider.name}</TableCell>
+                  <TableCell className="py-2 px-4">{row.user.name}</TableCell>
                   <TableCell className="py-2 px-4">
                     <div className="flex gap-2 justify-center">
                       {console.log(row)}
