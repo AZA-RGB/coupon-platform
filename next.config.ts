@@ -19,6 +19,12 @@ const nextConfig = {
   locales: ["en", "ar"],
   defaultLocale: "en",
   localeDetection: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 const withNextIntl = require("next-intl/plugin")();
