@@ -240,8 +240,8 @@
     "actions": "الإجراءات"
   },
   "Coupons": {
-    "topCouponsDesc":"الكوبونات الاكثر طلباً",
-    "topCouponsTitle":"الكوبونات الاكثر طلباً",
+    "topCouponsDesc": "الكوبونات الاكثر طلباً",
+    "topCouponsTitle": "الكوبونات الاكثر طلباً",
     "fromLastMonth": "من الشهر الماضي",
     "selectAll": "تحديد الكل",
     "deselectAll": "إلغاء تحديد الكل",
@@ -285,7 +285,8 @@
   },
   "Providers": {
     "seeDetails": "عرض التفاصيل",
-
+    "approved": "تاكيد",
+    "pending ": "قيد الانتظار",
     "title": "جميع المزودين",
     "description": "إدارة المزودين وعرض تفاصيلهم",
     "topCategories": "أفضل الفئات",
@@ -432,9 +433,10 @@
     "file": "الملف",
     "descriptionPlaceholder": "وصف الريل",
     "uploading": "جاري التحميل",
-    "addSuccess":"تم الاضافة بنجاح",
-    "addSuccessDesc":"تم الاضافة  بنجاح.",
-    "cancelUpload":"الغاء الرفع"  },
+    "addSuccess": "تم الاضافة بنجاح",
+    "addSuccessDesc": "تم الاضافة  بنجاح.",
+    "cancelUpload": "الغاء الرفع"
+  },
   "AdminDashboard": {
     "totalSales": "إجمالي المبيعات",
     "newUsers": "مستخدمون جدد",

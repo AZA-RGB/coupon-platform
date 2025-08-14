@@ -278,6 +278,8 @@
     "deleteSelected": "Delete Selected"
   },
   "Providers": {
+    "approved": "Approved",
+    "pending ": "Pending",
     "seeDetails": "see Details",
     "title": "All Providers",
     "description": "Manage providers and view their details",
