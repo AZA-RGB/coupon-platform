@@ -31,7 +31,7 @@ import { Spinner } from "@/components/ui/spinner";
 import AddReelDialog from "./AddReelDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import  api  from "@/lib/api"; // Import your preconfigured api
+import api from "@/lib/api"; // Import your preconfigured api
 import { toast } from "sonner";
 
 const REELS_PER_PAGE = 10;
@@ -132,7 +132,9 @@ const ReelsGrid = ({
 
   const handleSelectReel = (id) => {
     setSelectedReels((prev) =>
-      prev.includes(id) ? prev.filter((reelId) => reelId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((reelId) => reelId !== id)
+        : [...prev, id],
     );
   };
 
@@ -146,28 +148,23 @@ const ReelsGrid = ({
 
     try {
       setIsDeleting(true);
-      
+
       // Delete each reel individually
       await Promise.all(
-        selectedReels.map(id => 
-          api.delete(`/reels/${id}`)
-            .catch(error => {
-              console.error(`Failed to delete reel ${id}:`, error);
-              throw error;
-            })
-        )
+        selectedReels.map((id) =>
+          api.delete(`/reels/${id}`).catch((error) => {
+            console.error(`Failed to delete reel ${id}:`, error);
+            throw error;
+          }),
+        ),
       );
 
-      toast(
-        t("deleteSuccess"),
-      );
+      toast(t("deleteSuccess"));
 
       setSelectedReels([]);
       mutate(); // Refresh the reels list
     } catch (error) {
-      toast(
- t("deleteError"),
-      );
+      toast(t("deleteError"));
     } finally {
       setIsDeleting(false);
     }
@@ -194,7 +191,7 @@ const ReelsGrid = ({
               {t(
                 selectedReels.length === reels.length && reels.length > 0
                   ? "deselectAll"
-                  : "selectAll"
+                  : "selectAll",
               )}
             </Button>
             <Button
@@ -250,7 +247,7 @@ const ReelsGrid = ({
                     <AvatarFallback>{}</AvatarFallback>
                   </Avatar>
                   <h2 className="line-clamp-2 overflow-ellipsis">
-                    {reel.reel.name}
+                    {/* {reel.name} */}
                   </h2>
                 </div>
                 <p className="-mt-4 ms-9 line-clamp-2 overflow-ellipsis font-xs text-muted-foreground">
@@ -360,14 +357,14 @@ export default function AllReelsPage() {
 
   const { data, error, isLoading, mutate } = useSWR(
     `/reels/index?page=${currentPage}`,
-    fetcher
+    fetcher,
   );
   const reels = data?.data?.data || [];
   const totalPages = data?.data?.last_page || 1;
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value) => setSearchTerm(value), 300),
-    []
+    [],
   );
 
   const filteredReels = useMemo(() => {
