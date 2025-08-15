@@ -41,7 +41,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
-import { fetchComplaints, deleteComplaint } from "./constants";
+import { fetchPurchases, deletePurchase } from "./constants";
 import {
   Dialog,
   DialogContent,
@@ -50,61 +50,126 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-const COMPLAINTS_PER_PAGE = 10;
+const PURCHASES_PER_PAGE = 10;
 
-const ComplaintDetailsModal = ({ complaint, t, open, onOpenChange }) => {
-  if (!complaint) return null;
+const PurchaseDetailsModal = ({ purchase, t, open, onOpenChange }) => {
+  if (!purchase) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{complaint.title}</DialogTitle>
-          <DialogDescription>{complaint.content}</DialogDescription>
+          <DialogTitle>{t("purchaseDetails")}</DialogTitle>
+          <DialogDescription>{t("purchaseId")}: {purchase.id}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="text-sm font-medium">{t("userId")}</h4>
-              <p className="text-sm text-muted-foreground">{complaint.userId}</p>
+              <h4 className="text-sm font-medium">{t("customerId")}</h4>
+              <p className="text-sm text-muted-foreground">{purchase.customerId}</p>
             </div>
             <div>
-              <h4 className="text-sm font-medium">{t("complainableType")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">{complaint.complainableType}</p>
+              <h4 className="text-sm font-medium">{t("providerId")}</h4>
+              <p className="text-sm text-muted-foreground">{purchase.providerId}</p>
             </div>
           </div>
-          {complaint.complainable && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("purchaseType")}</h4>
+              <p className="text-sm text-muted-foreground">{purchase.purchaseType}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("date")}</h4>
+              <p className="text-sm text-muted-foreground">{new Date(purchase.date).toLocaleDateString()}</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("paidAmount")}</h4>
+            <p className="text-sm text-muted-foreground">{purchase.paidAmount}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("hashKey")}</h4>
+            <p className="text-sm text-muted-foreground">{purchase.hashKey}</p>
+          </div>
+          {purchase.customer && (
             <>
+              <h4 className="text-sm font-medium mt-4">{t("customerDetails")}</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-sm font-medium">{t("complainableName")}</h4>
-                  <p className="text-sm text-muted-foreground">{complaint.complainable.name}</p>
+                  <h4 className="text-sm font-medium">{t("customerName")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.customer.name}</p>
                 </div>
-                {complaint.complainable.description && (
-                  <div>
-                    <h4 className="text-sm font-medium">{t("description")}</h4>
-                    <p className="text-sm text-muted-foreground">{complaint.complainable.description}</p>
-                  </div>
-                )}
+                <div>
+                  <h4 className="text-sm font-medium">{t("customerEmail")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.customer.email}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">{t("customerPhone")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.customer.phone}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">{t("customerLocation")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.customer.location}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">{t("customerBirthDate")}</h4>
+                  <p className="text-sm text-muted-foreground">{new Date(purchase.customer.birthDate).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">{t("purchasesCount")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.customer.purchasesCount}</p>
+                </div>
               </div>
-              {complaint.complainable.price && (
+            </>
+          )}
+          {purchase.provider && (
+            <>
+              <h4 className="text-sm font-medium mt-4">{t("providerDetails")}</h4>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-sm font-medium">{t("price")}</h4>
-                  <p className="text-sm text-muted-foreground">{complaint.complainable.price}</p>
+                  <h4 className="text-sm font-medium">{t("providerName")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.provider.name}</p>
                 </div>
-              )}
-              {complaint.complainable.couponCode && (
                 <div>
-                  <h4 className="text-sm font-medium">{t("couponCode")}</h4>
-                  <p className="text-sm text-muted-foreground">{complaint.complainable.couponCode}</p>
+                  <h4 className="text-sm font-medium">{t("providerEmail")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.provider.email}</p>
                 </div>
-              )}
-              {complaint.complainable.location && (
                 <div>
-                  <h4 className="text-sm font-medium">{t("location")}</h4>
-                  <p className="text-sm text-muted-foreground">{complaint.complainable.location}</p>
+                  <h4 className="text-sm font-medium">{t("providerPhone")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.provider.phone}</p>
                 </div>
-              )}
+                <div>
+                  <h4 className="text-sm font-medium">{t("providerLocation")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.provider.location}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">{t("providerDescription")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.provider.description}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">{t("providerStatus")}</h4>
+                  <p className="text-sm text-muted-foreground">{purchase.provider.status}</p>
+                </div>
+              </div>
+            </>
+          )}
+          {purchase.purchaseCoupons && purchase.purchaseCoupons.length > 0 && (
+            <>
+              <h4 className="text-sm font-medium mt-4">{t("purchaseCoupons")}</h4>
+              <div className="grid gap-2">
+                {purchase.purchaseCoupons.map((coupon) => (
+                  <div key={coupon.id} className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-medium">{t("couponId")}</h4>
+                      <p className="text-sm text-muted-foreground">{coupon.couponId}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium">{t("purchaseKey")}</h4>
+                      <p className="text-sm text-muted-foreground">{coupon.purchaseKey}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </>
           )}
         </div>
@@ -113,52 +178,53 @@ const ComplaintDetailsModal = ({ complaint, t, open, onOpenChange }) => {
   );
 };
 
-const ComplaintsTable = ({
+const PurchasesTable = ({
   t,
-  complaints,
+  purchases,
   currentPage,
   setCurrentPage,
   totalPages,
-  selectedComplaints,
-  setSelectedComplaints,
+  selectedPurchases,
+  setSelectedPurchases,
   handleDeleteSelected,
-  handleSelectComplaint,
+  handleSelectPurchase,
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [selectedPurchase, setSelectedPurchase] = useState(null);
 
   const columns = useMemo(
     () => [
       { key: "select", label: t("select") || "Select" },
-      { key: "title", label: t("title") || "Title" },
-      { key: "content", label: t("content") || "Content" },
-      { key: "userId", label: t("userId") || "User ID" },
-      { key: "complainableType", label: t("complainableType") || "Type" },
+      { key: "customerId", label: t("customerId") || "Customer ID" },
+      { key: "providerId", label: t("providerId") || "Provider ID" },
+      { key: "purchaseType", label: t("purchaseType") || "Purchase Type" },
+      { key: "date", label: t("date") || "Date" },
+      { key: "paidAmount", label: t("paidAmount") || "Paid Amount" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
     [t],
   );
 
   const displayedData = useMemo(
-    () => (isRTL ? [...complaints].reverse() : complaints),
-    [complaints, isRTL],
+    () => (isRTL ? [...purchases].reverse() : purchases),
+    [purchases, isRTL],
   );
 
   const handleToggleSelectAll = () => {
-    const allSelected = complaints.every((complaint) =>
-      selectedComplaints.includes(complaint.id),
+    const allSelected = purchases.every((purchase) =>
+      selectedPurchases.includes(purchase.id),
     );
-    setSelectedComplaints(allSelected ? [] : complaints.map((complaint) => complaint.id));
+    setSelectedPurchases(allSelected ? [] : purchases.map((purchase) => purchase.id));
   };
 
   return (
     <>
-      <ComplaintDetailsModal
-        complaint={selectedComplaint}
+      <PurchaseDetailsModal
+        purchase={selectedPurchase}
         t={t}
-        open={!!selectedComplaint}
-        onOpenChange={(open) => !open && setSelectedComplaint(null)}
+        open={!!selectedPurchase}
+        onOpenChange={(open) => !open && setSelectedPurchase(null)}
       />
       
       <Card className="shadow-none">
@@ -167,10 +233,10 @@ const ComplaintsTable = ({
             <Button
               variant="outline"
               onClick={handleToggleSelectAll}
-              disabled={complaints.length === 0}
+              disabled={purchases.length === 0}
             >
               {t(
-                selectedComplaints.length === complaints.length && complaints.length > 0
+                selectedPurchases.length === purchases.length && purchases.length > 0
                   ? "deselectAll"
                   : "selectAll",
               )}
@@ -180,7 +246,7 @@ const ComplaintsTable = ({
                 <Button
                   variant="destructive"
                   className="cursor-pointer"
-                  disabled={selectedComplaints.length === 0}
+                  disabled={selectedPurchases.length === 0}
                 >
                   {t("deleteSelected")}
                 </Button>
@@ -189,7 +255,7 @@ const ComplaintsTable = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {t("confirmDeleteDesc", { count: selectedComplaints.length })}
+                    {t("confirmDeleteDesc", { count: selectedPurchases.length })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -225,29 +291,29 @@ const ComplaintsTable = ({
                         colSpan={columns.length}
                         className="text-center py-8 text-muted-foreground"
                       >
-                        {t("noComplaintsFound")}
+                        {t("noPurchasesFound")}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    displayedData.map((complaint) => (
+                    displayedData.map((purchase) => (
                       <TableRow
-                        key={complaint.id}
+                        key={purchase.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         {columns.map((column) => (
                           <TableCell
-                            key={`${complaint.id}-${column.key}`}
+                            key={`${purchase.id}-${column.key}`}
                             className={`px-4 py-3 ${
                               isRTL ? "text-right" : "text-left"
                             }`}
                           >
                             {renderTableCellContent(
-                              complaint,
+                              purchase,
                               column.key,
                               isRTL,
                               t,
-                              handleSelectComplaint,
-                              setSelectedComplaint,
+                              handleSelectPurchase,
+                              setSelectedPurchase,
                             )}
                           </TableCell>
                         ))}
@@ -302,55 +368,51 @@ const ComplaintsTable = ({
 };
 
 function renderTableCellContent(
-  complaint,
+  purchase,
   key,
   isRTL,
   t,
-  handleSelectComplaint,
-  setSelectedComplaint,
+  handleSelectPurchase,
+  setSelectedPurchase,
 ) {
   switch (key) {
     case "select":
       return (
         <Checkbox
           className="mx-6"
-          checked={complaint.isSelected}
-          onCheckedChange={() => handleSelectComplaint(complaint.id)}
+          checked={purchase.isSelected}
+          onCheckedChange={() => handleSelectPurchase(purchase.id)}
         />
       );
-    case "title":
-      return <span className="font-medium">{complaint.title}</span>;
-    case "content":
-      return (
-        <span>
-          {complaint.content.length > 25
-            ? complaint.content.slice(0, 25) + '…'
-            : complaint.content}
-        </span>
-      );
-    case "userId":
-      return <span>{complaint.userId}</span>;
-    case "complainableType":
+    case "customerId":
+      return <span>{purchase.customerId}</span>;
+    case "providerId":
+      return <span>{purchase.providerId}</span>;
+    case "purchaseType":
       return (
         <span
           className={`px-2 py-0.5 rounded-full text-xs ${
-            complaint.complainableType === "provider"
+            purchase.purchaseType === "Bank Transfer"
               ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-              : complaint.complainableType === "package"
+              : purchase.purchaseType === "Package Purchase"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
               : "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
           }`}
         >
-          {t(complaint.complainableType)}
+          {t(purchase.purchaseType.replace(/\s+/g, ''))}
         </span>
       );
+    case "date":
+      return <span>{new Date(purchase.date).toLocaleDateString()}</span>;
+    case "paidAmount":
+      return <span>{purchase.paidAmount}</span>;
     case "actions":
       return (
         <div className="flex gap-2">
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"
-            onClick={() => setSelectedComplaint(complaint)}
+            onClick={() => setSelectedPurchase(purchase)}
           >
             {t("viewDetails")}
           </Button>
@@ -361,14 +423,14 @@ function renderTableCellContent(
   }
 }
 
-export default function ComplaintsAllPage() {
-  const t = useTranslations("Complaints");
+export default function PurchasesAllPage() {
+  const t = useTranslations("Purchases");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-  const [complaints, setComplaints] = useState([]);
+  const [purchases, setPurchases] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedComplaints, setSelectedComplaints] = useState([]);
+  const [selectedPurchases, setSelectedPurchases] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -381,37 +443,37 @@ export default function ComplaintsAllPage() {
     }
   };
 
-  const handleSelectComplaint = useCallback((id) => {
-    setComplaints((prevComplaints) =>
-      prevComplaints.map((complaint) =>
-        complaint.id === id
-          ? { ...complaint, isSelected: !complaint.isSelected }
-          : complaint
+  const handleSelectPurchase = useCallback((id) => {
+    setPurchases((prevPurchases) =>
+      prevPurchases.map((purchase) =>
+        purchase.id === id
+          ? { ...purchase, isSelected: !purchase.isSelected }
+          : purchase
       )
     );
-    setSelectedComplaints((prev) =>
+    setSelectedPurchases((prev) =>
       prev.includes(id)
-        ? prev.filter((complaintId) => complaintId !== id)
+        ? prev.filter((purchaseId) => purchaseId !== id)
         : [...prev, id]
     );
   }, []);
 
-  const fetchComplaintsData = useCallback(async () => {
+  const fetchPurchasesData = useCallback(async () => {
     setIsLoading(true);
     try {
       const {
-        complaints,
+        purchases,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchComplaints(currentPage, COMPLAINTS_PER_PAGE, searchQuery, filterType);
-      console.log("Fetched complaints:", complaints, "Total pages:", totalPages, "Current page:", apiCurrentPage);
-      if (!Array.isArray(complaints)) {
-        throw new Error("Complaints data is not an array");
+      } = await fetchPurchases(currentPage, PURCHASES_PER_PAGE, searchQuery, filterType);
+      console.log("Fetched purchases:", purchases, "Total pages:", totalPages, "Current page:", apiCurrentPage);
+      if (!Array.isArray(purchases)) {
+        throw new Error("Purchases data is not an array");
       }
-      setComplaints(
-        complaints.map((complaint) => ({
-          ...complaint,
-          isSelected: selectedComplaints.includes(complaint.id),
+      setPurchases(
+        purchases.map((purchase) => ({
+          ...purchase,
+          isSelected: selectedPurchases.includes(purchase.id),
         }))
       );
       setTotalPages(totalPages || 1);
@@ -419,7 +481,7 @@ export default function ComplaintsAllPage() {
         setCurrentPage(apiCurrentPage || 1);
       }
     } catch (error) {
-      console.error("Error in fetchComplaintsData:", {
+      console.error("Error in fetchPurchasesData:", {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
@@ -432,7 +494,7 @@ export default function ComplaintsAllPage() {
         description: t("fetchError"),
         duration: 5000,
       });
-      setComplaints([]);
+      setPurchases([]);
       setTotalPages(1);
     } finally {
       setIsLoading(false);
@@ -440,37 +502,37 @@ export default function ComplaintsAllPage() {
   }, [currentPage, searchQuery, filterType, t]);
 
   useEffect(() => {
-    console.log("Fetching complaints for page:", currentPage, "Search:", searchQuery, "Filter:", filterType);
-    fetchComplaintsData();
-  }, [fetchComplaintsData]);
+    console.log("Fetching purchases for page:", currentPage, "Search:", searchQuery, "Filter:", filterType);
+    fetchPurchasesData();
+  }, [fetchPurchasesData]);
 
   const handleDeleteSelected = async () => {
-    console.log("Selected Complaints:", selectedComplaints);
+    console.log("Selected Purchases:", selectedPurchases);
     setIsLoading(true);
     try {
-      const deletePromises = selectedComplaints.map((id) => deleteComplaint(id));
+      const deletePromises = selectedPurchases.map((id) => deletePurchase(id));
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
-        console.error("Failed to delete some complaints:", failedDeletions);
+        console.error("Failed to delete some purchases:", failedDeletions);
         const errorMessages = failedDeletions.map((result) => {
           const error = result.error;
           const status = error.response?.status;
           const message = error.response?.data?.message || error.message;
-          return `Complaint ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
+          return `Purchase ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
         });
         toast.error(t("deleteFailedDesc"), {
           description: errorMessages.join("; ") || t("deleteFailed"),
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedComplaints.length }), {
+        toast.success(t("deleteSuccessDesc", { count: selectedPurchases.length }), {
           description: t("deleteSuccess"),
           duration: 3000,
         });
-        setSelectedComplaints([]);
+        setSelectedPurchases([]);
         setCurrentPage(1);
-        await fetchComplaintsData();
+        await fetchPurchasesData();
       }
     } catch (error) {
       console.error("Error during deletion:", error);
@@ -489,9 +551,8 @@ export default function ComplaintsAllPage() {
   };
 
   const filterOptions = [
-    { label: t("provider"), value: "provider" },
-    { label: t("package"), value: "package" },
-    { label: t("coupon"), value: "coupon" },
+    { label: t("BankTransfer"), value: "Bank Transfer" },
+    { label: t("PackagePurchase"), value: "Package Purchase" },
   ];
 
   return (
@@ -509,7 +570,7 @@ export default function ComplaintsAllPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2 relative z-50">
-                {/* <div className="relative">
+                <div className="relative">
                   <Button
                     variant="outline"
                     size="sm"
@@ -541,7 +602,7 @@ export default function ComplaintsAllPage() {
                       ))}
                     </div>
                   )}
-                </div> */}
+                </div>
                 <div className="relative">
                   <Input
                     type="text"
@@ -556,16 +617,16 @@ export default function ComplaintsAllPage() {
               </div>
             </CardHeader>
           </Card>
-          <ComplaintsTable
+          <PurchasesTable
             t={t}
-            complaints={complaints}
+            purchases={purchases}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
-            selectedComplaints={selectedComplaints}
-            setSelectedComplaints={setSelectedComplaints}
+            selectedPurchases={selectedPurchases}
+            setSelectedPurchases={setSelectedPurchases}
             handleDeleteSelected={handleDeleteSelected}
-            handleSelectComplaint={handleSelectComplaint}
+            handleSelectPurchase={handleSelectPurchase}
           />
         </>
       )}
