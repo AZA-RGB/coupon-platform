@@ -72,7 +72,9 @@ const CouponsGrid = ({
                   </div>
                 </div>
                 <CardHeader className="py-0 px-3">
-                  <CardTitle className="text-lg">{coupon.name}</CardTitle>
+                  <CardTitle className="text-lg truncate whitespace-nowrap overflow-hidden">
+                    {coupon.name}
+                  </CardTitle>
                   <CardDescription className="flex justify-between items-center text-xs">
                     <span>{coupon.type}</span>
                     <span
@@ -267,7 +269,8 @@ export default function AllCouponsPage() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value || statusFilter === item.value
+                            filterType === item.value ||
+                            statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}
@@ -311,14 +314,14 @@ export default function AllCouponsPage() {
           </Card>
 
           {/* Section 3: Coupons Grid */}
-        
-            <CouponsGrid
-              t={t}
-              coupons={currentCoupons}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              totalPages={totalPages}
-            />
+
+          <CouponsGrid
+            t={t}
+            coupons={currentCoupons}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </>
       )}
     </div>
