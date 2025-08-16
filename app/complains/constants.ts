@@ -1,10 +1,14 @@
 import axios from "axios";
 
-export const fetchComplaints = async (page = 1, perPage = 10) => {
+const API_BASE_URL = "http://164.92.67.78:3002/api";
+
+export const fetchComplaints = async (page = 1, perPage = 10, search = '', complainableType = '') => {
   try {
     const params = new URLSearchParams({ page: page.toString(), per_page: perPage.toString() });
+    if (search) params.append('search', search);
+    if (complainableType) params.append('complainable_type', complainableType);
 
-    const response = await axios.get(`http://164.92.67.78:3002/api/complains/all?${params.toString()}`);
+    const response = await axios.get(`${API_BASE_URL}/complains/all?${params.toString()}`);
     const { data } = response.data;
 
     if (!data || !Array.isArray(data)) {
@@ -40,7 +44,7 @@ export const fetchComplaints = async (page = 1, perPage = 10) => {
 
 export const deleteComplaint = async (id) => {
   try {
-    const response = await axios.delete(`http://164.92.67.78:3002/api/complains/${id}`);
+    const response = await axios.delete(`${API_BASE_URL}/complains/${id}`);
     console.log(`Delete response for complaint ${id}:`, response);
     return { success: true, response };
   } catch (error) {

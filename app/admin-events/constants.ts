@@ -5,8 +5,14 @@ const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/
 
 export const fetchSeasonalEvents = async (page = 1, perPage = 10) => {
   try {
-    const params = new URLSearchParams({ page: page.toString(), per_page: perPage.toString() });
-    const response = await axios.get(`http://164.92.67.78:3002/api/seasonal-events/index?${params.toString()}`);
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString(),
+    });
+
+    const response = await axios.get(
+      `http://164.92.67.78:3002/api/seasonal-events/index?${params.toString()}`
+    );
     const { data } = response.data;
 
     if (!data || !Array.isArray(data.data)) {
@@ -20,18 +26,35 @@ export const fetchSeasonalEvents = async (page = 1, perPage = 10) => {
         userId: event.user_id || "Unknown",
         title: event.title || "Untitled",
         description: event.description || "No description",
-        fromDate: event.from_date ? new Date(event.from_date).toISOString() : new Date().toISOString(),
-        toDate: event.to_date ? new Date(event.to_date).toISOString() : new Date().toISOString(),
-        status: event.seasonal_event_status === 0 ? "active" : "inactive",
-        image: event.files && event.files.length > 0 ? `${CDN_BASE_URL}/${event.files[0].path}` : DEFAULT_IMAGE,
+        fromDate: event.from_date
+          ? new Date(event.from_date).toISOString()
+          : new Date().toISOString(),
+        toDate: event.to_date
+          ? new Date(event.to_date).toISOString()
+          : new Date().toISOString(),
+        status:
+          event.seasonal_event_status === 0 ? "active" : "inactive",
+        image:
+          event.files && event.files.length > 0
+            ? `${CDN_BASE_URL}/${event.files[0].path}`
+            : DEFAULT_IMAGE,
         couponsCount: event.coupons ? event.coupons.length : 0,
-        coupons: event.coupons.map((coupon) => ({
-          id: coupon.id,
-          couponId: coupon.coupon_id,
-          name: coupon.coupon.name || "Unknown",
-          couponCode: coupon.coupon.coupon_code || "N/A",
-          price: coupon.coupon.price || "0",
-        })),
+        coupons: (event.coupons || []).map((coupon) => {
+          const isCoupon = coupon.eventable_type === "coupon";
+          return {
+            id: coupon.id,
+            couponId: coupon.eventable_id,
+            name: isCoupon
+              ? coupon.eventable?.name || "Unknown"
+              : coupon.eventable?.title || "Unknown",
+            couponCode: isCoupon
+              ? coupon.eventable?.coupon_code || "N/A"
+              : "N/A",
+            price: isCoupon
+              ? coupon.eventable?.price || "0"
+              : coupon.eventable?.total_price?.toString() || "0",
+          };
+        }),
       })),
       totalPages: data.last_page || 1,
       currentPage: data.current_page || 1,

@@ -39,7 +39,6 @@ import { fetchCoupons, fetchCouponStats, deleteCoupon } from "./constants";
 import MyImage from "@/components/my-image";
 import { MobileSummaryCards, SummaryCards } from "../summary_cards";
 
-
 const NavigationCards = ({ t }) => {
   return (
     <div className="w-full lg:w-2/6 flex flex-col sm:flex-row sm:grid-cols-1">
@@ -55,15 +54,28 @@ const NavigationCards = ({ t }) => {
   );
 };
 
-const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, selectedCoupons, setSelectedCoupons, handleDeleteSelected }) => {
+const CouponsGrid = ({
+  t,
+  coupons,
+  currentPage,
+  setCurrentPage,
+  totalPages,
+  selectedCoupons,
+  setSelectedCoupons,
+  handleDeleteSelected,
+}) => {
   const handleSelectCoupon = (id) => {
     setSelectedCoupons((prev) =>
-      prev.includes(id) ? prev.filter((couponId) => couponId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((couponId) => couponId !== id)
+        : [...prev, id]
     );
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = coupons.every((coupon) => selectedCoupons.includes(coupon.id));
+    const allSelected = coupons.every((coupon) =>
+      selectedCoupons.includes(coupon.id)
+    );
     setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
   };
 
@@ -83,7 +95,12 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                 disabled={coupons.length === 0}
                 className="cursor-pointer"
               >
-                {t(selectedCoupons.length === coupons.length && coupons.length > 0 ? "deselectAll" : "selectAll")}
+                {t(
+                  selectedCoupons.length === coupons.length &&
+                    coupons.length > 0
+                    ? "deselectAll"
+                    : "selectAll"
+                )}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -97,9 +114,13 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("confirmDeleteTitle")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {t("confirmDeleteDesc", { count: selectedCoupons.length })}
+                      {t("confirmDeleteDesc", {
+                        count: selectedCoupons.length,
+                      })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -120,7 +141,9 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                   <div className="relative w-full h-32">
                     <MyImage src={coupon.image} alt={coupon.name} />
                     <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
-                      <span className="text-primary font-bold">{coupon.discount}</span>
+                      <span className="text-primary font-bold">
+                        {coupon.discount}
+                      </span>
                     </div>
                   </div>
                   <CardHeader className="py-0 px-3">
@@ -129,7 +152,9 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                         checked={selectedCoupons.includes(coupon.id)}
                         onCheckedChange={() => handleSelectCoupon(coupon.id)}
                       />
-                      <CardTitle className="text-lg">{coupon.name}</CardTitle>
+                      <CardTitle className="text-lg">
+                        {coupon.name}
+                      </CardTitle>
                     </div>
                     <CardDescription className="flex justify-between items-center text-xs">
                       <span>{coupon.type}</span>
@@ -148,13 +173,23 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                   </CardHeader>
                   <CardContent className="py-1 px-3">
                     <div className="flex justify-between text-xs">
-                      <span>{t("uses")}: {coupon.uses}</span>
-                      <span>{t("code")}: {coupon.code}</span>
+                      <span>
+                        {t("uses")}: {coupon.uses}
+                      </span>
+                      <span>
+                        {t("code")}: {coupon.code}
+                      </span>
                     </div>
                   </CardContent>
                   <CardFooter className="px-3 pb-3">
-                    <Button variant="outline" className="w-full h-8 text-xs" asChild>
-                      <Link href={`/dashboard/coupons/${coupon.id}`}>{t("viewDetails")}</Link>
+                    <Button
+                      variant="outline"
+                      className="w-full h-8 text-xs"
+                      asChild
+                    >
+                      <Link href={`/dashboard/coupons/${coupon.id}`}>
+                        {t("viewDetails")}
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -173,7 +208,9 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                   e.preventDefault();
                   if (currentPage > 1) setCurrentPage(currentPage - 1);
                 }}
-                className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                className={
+                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                }
               >
                 {t("previous")}
               </PaginationPrevious>
@@ -199,7 +236,11 @@ const CouponsGrid = ({ t, coupons, currentPage, setCurrentPage, totalPages, sele
                   e.preventDefault();
                   if (currentPage < totalPages) setCurrentPage(currentPage + 1);
                 }}
-                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                className={
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
               >
                 {t("next")}
               </PaginationNext>
@@ -247,7 +288,7 @@ export default function AllCouponsPage() {
           setCurrentPage(apiCurrentPage);
         }
       } catch (error) {
-        console.error('Error fetching coupons:', error);
+        console.error("Error fetching coupons:", error);
         toast.error(t("fetchErrorDesc"), {
           description: t("fetchError"),
           duration: 5000,
@@ -270,17 +311,22 @@ export default function AllCouponsPage() {
           const error = result.error;
           const status = error.response?.status;
           const message = error.response?.data?.message || error.message;
-          return `Coupon ID ${result.id}: ${status ? `Status ${status} - ` : ''}${message}`;
+          return `Coupon ID ${result.id}: ${
+            status ? `Status ${status} - ` : ""
+          }${message}`;
         });
         toast.error(t("deleteFailedDesc"), {
           description: errorMessages.join("; ") || t("deleteFailed"),
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedCoupons.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedCoupons.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          }
+        );
         setSelectedCoupons([]);
         setCurrentPage(1);
         await fetchCoupons(currentPage, searchQuery, statusFilter);
@@ -288,10 +334,15 @@ export default function AllCouponsPage() {
     } catch (error) {
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
-      toast.error(`${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ''}: ${message}`, {
-        description: t("deleteError"),
-        duration: 7000,
-      });
+      toast.error(
+        `${t("deleteErrorDesc")} ${
+          status ? `(Status ${status})` : ""
+        }: ${message}`,
+        {
+          description: t("deleteError"),
+          duration: 7000,
+        }
+      );
     } finally {
       setIsLoading(false);
     }
@@ -355,7 +406,8 @@ export default function AllCouponsPage() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value || statusFilter === item.value
+                            filterType === item.value ||
+                            statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}

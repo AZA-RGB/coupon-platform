@@ -114,7 +114,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        },
+        }
       );
 
       toast.success(t("editSuccessDesc"), {
@@ -129,8 +129,10 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           toast.error(
-            `${t("editErrorDesc")}: ${error.response.data.message || t("editError")}`,
-            { duration: 7000 },
+            `${t("editErrorDesc")}: ${
+              error.response.data.message || t("editError")
+            }`,
+            { duration: 7000 }
           );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
@@ -333,16 +335,16 @@ const PackagesTable = ({
       { key: "coupons", label: t("coupons") || "Coupons" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
-    [t],
+    [t]
   );
 
   const displayedData = useMemo(
     () => (isRTL ? [...packages].reverse() : packages),
-    [packages, isRTL],
+    [packages, isRTL]
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString( "en-US", {
+    return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -350,7 +352,9 @@ const PackagesTable = ({
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = packages.every((pkg) => selectedPackages.includes(pkg.id));
+    const allSelected = packages.every((pkg) =>
+      selectedPackages.includes(pkg.id)
+    );
     setSelectedPackages(allSelected ? [] : packages.map((pkg) => pkg.id));
   };
 
@@ -372,7 +376,8 @@ const PackagesTable = ({
               className="cursor-pointer"
             >
               {t(
-                selectedPackages.length === packages.length && packages.length > 0
+                selectedPackages.length === packages.length &&
+                  packages.length > 0
                   ? "deselectAll"
                   : "selectAll"
               )}
@@ -452,7 +457,7 @@ const PackagesTable = ({
                               handleSelectPackage,
                               setSelectedPackage,
                               refreshPackages,
-                              selectedPackages,
+                              selectedPackages
                             )}
                           </TableCell>
                         ))}
@@ -467,7 +472,9 @@ const PackagesTable = ({
         <CardFooter className="pt-4">
           <Pagination className="w-full">
             <PaginationContent
-              className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}
+              className={`w-full ${
+                isRTL ? "justify-center" : "justify-center"
+              }`}
             >
               <PaginationItem>
                 <PaginationPrevious
@@ -515,7 +522,7 @@ function renderTableCellContent(
   handleSelectPackage,
   setSelectedPackage,
   refreshPackages,
-  selectedPackages,
+  selectedPackages
 ) {
   switch (key) {
     case "select":
@@ -533,7 +540,12 @@ function renderTableCellContent(
         </div>
       );
     case "title":
-      return <span className="font-medium">{pkg.title}</span>;
+      return (
+        <span className="font-medium">
+          {pkg.title.length > 15 ? pkg.title.slice(0, 15) + "..." : pkg.title}
+        </span>
+      );
+
     case "provider":
       return <span>{pkg.provider}</span>;
     case "dateRange":
@@ -549,8 +561,8 @@ function renderTableCellContent(
             pkg.status === "active"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
               : pkg.status === "expired"
-                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
           }`}
         >
           {t(pkg.status)}
@@ -568,7 +580,11 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          <EditPackageDialog pkg={pkg} refreshPackages={refreshPackages} t={t} />
+          <EditPackageDialog
+            pkg={pkg}
+            refreshPackages={refreshPackages}
+            t={t}
+          />
         </div>
       );
     default:
@@ -626,7 +642,9 @@ export default function PackagesAllPage() {
         url: error.config?.url,
       });
       const errorMessage = error.response?.status
-        ? `${t("fetchErrorDesc")} (Status ${error.response.status}: ${error.response.data?.message || error.message})`
+        ? `${t("fetchErrorDesc")} (Status ${error.response.status}: ${
+            error.response.data?.message || error.message
+          })`
         : `${t("fetchErrorDesc")} (${error.message})`;
       toast.error(errorMessage, {
         description: t("fetchError"),
@@ -654,17 +672,22 @@ export default function PackagesAllPage() {
           const error = result.error;
           const status = error.response?.status;
           const message = error.response?.data?.message || error.message;
-          return `Package ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
+          return `Package ID ${result.id}: ${
+            status ? `Status ${status} - ` : ""
+          }${message}`;
         });
         toast.error(t("deleteFailedDesc"), {
           description: errorMessages.join("; ") || t("deleteFailed"),
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedPackages.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedPackages.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          }
+        );
         setSelectedPackages([]);
         setCurrentPage(1);
         await fetchPackagesData();
@@ -673,11 +696,13 @@ export default function PackagesAllPage() {
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
       toast.error(
-        `${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+        `${t("deleteErrorDesc")} ${
+          status ? `(Status ${status})` : ""
+        }: ${message}`,
         {
           description: t("deleteError"),
           duration: 7000,
-        },
+        }
       );
     } finally {
       setIsLoading(false);
@@ -735,7 +760,8 @@ export default function PackagesAllPage() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value || statusFilter === item.value
+                            filterType === item.value ||
+                            statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}

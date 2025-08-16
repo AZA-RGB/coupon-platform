@@ -1,4 +1,6 @@
+// pages/auth/login.tsx
 "use client";
+import jwt from "jsonwebtoken";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -39,7 +41,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      console.log("Sending login data:", loginData); // Debug request data
+      console.log("Sending login data:", loginData);
       const response = await axios.post(
         "/api/auth/login",
         {
@@ -51,27 +53,38 @@ export default function LoginPage() {
         }
       );
 
-      console.log("API Response:", response.data); // Debug API response
+      console.log("API Response:", response.data);
 
-      // Extract tokens from response.data.data
+      // // Extract tokens and role from response
+      const role  = response.data.role || null;
       const { access_token, refresh_token } = response.data.data || {};
 
-      if (!access_token || !refresh_token) {
+      if (!access_token || !refresh_token || !role) {
         throw new Error(t("tokenError"));
       }
 
-      // Save tokens to localStorage
+
+      console.log("Tokens:", access_token, refresh_token);
+      console.log("Role:", role);
+
+      // // Save tokens and role to localStorage
       localStorage.setItem("token", access_token);
       localStorage.setItem("refreshToken", refresh_token);
-      //store role
-
-      
+      localStorage.setItem("userRole", role);
 
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),
         duration: 3000,
       });
-      router.push("/dashboard");
+
+      // Redirect based on role
+      if (role === "admin") {
+        router.push("/admin-dashboard");
+      } else if (role === "provider") {
+        router.push("/provider-dashboard");
+      } else {
+        router.push("/auth/login"); // User or Guest
+      }
     } catch (error: any) {
       console.error("Login error:", error.response?.data || error.message);
       let message = t("unknownError");

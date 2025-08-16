@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -22,8 +22,6 @@ import { Filter, Search } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import debounce from "lodash/debounce";
 import {
   Table,
   TableBody,
@@ -55,12 +53,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   fetchProviders,
   deleteProvider,
-  fetchProviderDetails,
-  topCategoriesData,
-  requestsData,
+  fetchTopCategories,
+  fetchPendingRequests,
+  approveRequest,
+  rejectRequest,
 } from "./constants";
 import MyImage from "@/components/my-image";
-import RequestReviewDialog from "@/components/RequestReviewDialog";
 
 const PROVIDERS_PER_PAGE = 10;
 
@@ -74,18 +72,10 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">
-                {t("rank")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("category")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("sales")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("popularity")}
-              </TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -111,19 +101,12 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
   );
 };
 
-const handleAction = (id, action) => {
-  console.log(`Action: ${action} for request ID: ${id}`);
-};
-
-const RequestsCard = ({ t, requestsData }) => {
+const RequestsCard = ({ t, requestsData, handleApproveRequest, handleRejectRequest }) => {
   return (
     <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
       <CardTitle className="mb-1 flex justify-between">
         <span className="text-lg text-primary">{t("requests")}</span>
-        <Link
-          href={`/dashboard/requests`}
-          className="text-sm hover:text-foreground/80"
-        >
+        <Link href="/requests" className="text-sm hover:text-foreground/80">
           {t("view_all")}
         </Link>
       </CardTitle>
@@ -131,47 +114,140 @@ const RequestsCard = ({ t, requestsData }) => {
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">
-                {t("name")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("requestDateTime")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-center">
-                {t("action")}
-              </TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("name")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("requestDateTime")}</TableHead>
+              <TableHead className="py-2 px-4 text-center">{t("action")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {requestsData.slice(0, 5).map((row, index) => (
-              <TableRow key={index} className="hover:bg-secondary">
-                <TableCell className="py-2 px-4">{row.name}</TableCell>
-                <TableCell className="py-2 px-4">
-                  {row.requestDateTime}
-                </TableCell>
-                <TableCell className="py-2 px-4">
-                  <div className="flex gap-2">
-                    <button
-                      className="bg-green-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-green-600"
-                      onClick={() => handleAction(row.id, "accept")}
-                    >
-                      {t("accept")}
-                    </button>
-                    <button
-                      className="bg-red-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-red-600"
-                      onClick={() => handleAction(row.id, "reject")}
-                    >
-                      {t("reject")}
-                    </button>
-                    <RequestReviewDialog providerData={row.original} />
-                  </div>
+            {requestsData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                  {t("noRequestsFound")}
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              requestsData.slice(0, 5).map((row, index) => (
+                <TableRow key={index} className="hover:bg-secondary">
+                  <TableCell className="py-2 px-4">{row.name}</TableCell>
+                  <TableCell className="py-2 px-4">{row.requestDateTime}</TableCell>
+                  <TableCell className="py-2 px-4">
+                    <div className="flex gap-2 justify-center">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            className="bg-green-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-green-600"
+                          >
+                            {t("accept")}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("confirmApproveTitle")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t("confirmApproveDesc", { name: row.name })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleApproveRequest(row.id)}>
+                              {t("confirm")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            className="bg-red-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-red-600"
+                          >
+                            {t("reject")}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("confirmRejectTitle")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t("confirmRejectDesc", { name: row.name })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleRejectRequest(row.id)}>
+                              {t("confirm")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
     </Card>
+  );
+};
+
+const RequestDetailsModal = ({ request, t, open, onOpenChange }) => {
+  if (!request) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{t("requestDetails")}: {request.name}</DialogTitle>
+          <DialogDescription>{t("requestId")}: {request.id}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("userId")}</h4>
+              <p className="text-sm text-muted-foreground">{request.userId}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("email")}</h4>
+              <p className="text-sm text-muted-foreground">{request.email}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("phone")}</h4>
+              <p className="text-sm text-muted-foreground">{request.phone}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("createdAt")}</h4>
+              <p className="text-sm text-muted-foreground">{new Date(request.createdAt).toLocaleDateString()}</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("location")}</h4>
+            <p className="text-sm text-muted-foreground">{request.location}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("description")}</h4>
+            <p className="text-sm text-muted-foreground">{request.description}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("bankId")}</h4>
+              <p className="text-sm text-muted-foreground">{request.bankId}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("categoryId")}</h4>
+              <p className="text-sm text-muted-foreground">{request.categoryId}</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">{t("secretKey")}</h4>
+            <p className="text-sm text-muted-foreground">{request.secretKey}</p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -180,7 +256,7 @@ const ProviderDetailsModal = ({ provider, t, open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
             <MyImage src={provider.image} alt={provider.name} />
@@ -209,282 +285,279 @@ const ProviderDetailsModal = ({ provider, t, open, onOpenChange }) => {
   );
 };
 
-const ProvidersTable = ({
-  t,
-  providers,
-  currentPage,
-  setCurrentPage,
-  totalPages,
-  selectedProviders,
-  setSelectedProviders,
-  handleDeleteSelected,
-  handleSelectProvider,
-  refreshProviders,
-}) => {
-  const locale = useLocale();
-  const isRTL = locale === "ar";
-  const [selectedProvider, setSelectedProvider] = useState(null);
+// eslint-disable-next-line react/display-name
+const ProvidersTable = memo(
+  ({
+    t,
+    providers,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    selectedProviders,
+    setSelectedProviders,
+    handleDeleteSelected,
+    handleSelectProvider,
+    setProviders,
+    refreshProviders,
+  }) => {
+    const locale = useLocale();
+    const isRTL = locale === "ar";
+    const [selectedProvider, setSelectedProvider] = useState(null);
+    const [selectedRequest, setSelectedRequest] = useState(null);
 
-  const columns = useMemo(
-    () => [
-      { key: "select", label: t("select") },
-      { key: "userInfo", label: t("userInfo") },
-      { key: "phone", label: t("phone") },
-      { key: "requestDate", label: t("request_date") },
-      { key: "status", label: t("status") },
-      { key: "coupons", label: t("coupons") },
-      { key: "packages", label: t("packages") },
-      { key: "actions", label: t("actions") },
-    ],
-    [t],
-  );
-
-  const displayedData = useMemo(
-    () => (isRTL ? [...providers].reverse() : providers),
-    [providers, isRTL],
-  );
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(isRTL ? "ar-SA" : "en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  };
-
-  const handleToggleSelectAll = () => {
-    const allSelected = providers.every((provider) =>
-      selectedProviders.includes(provider.id),
+    const columns = useMemo(
+      () => [
+        { key: "select", label: t("select") || "Select" },
+        { key: "userInfo", label: t("userInfo") || "User Info" },
+        { key: "phone", label: t("phone") || "Phone" },
+        { key: "requestDate", label: t("requestDate") || "Request Date" },
+        { key: "status", label: t("status") || "Status" },
+        { key: "coupons", label: t("coupons") || "Coupons" },
+        { key: "packages", label: t("packages") || "Packages" },
+        { key: "actions", label: t("actions") || "Actions" },
+      ],
+      [t],
     );
-    setSelectedProviders(
-      allSelected ? [] : providers.map((provider) => provider.id),
-    );
-  };
 
-  return (
-    <>
-      <ProviderDetailsModal
-        provider={selectedProvider}
-        t={t}
-        open={!!selectedProvider}
-        onOpenChange={(open) => !open && setSelectedProvider(null)}
-      />
-      <Card className="shadow-sm">
-        <CardContent className="p-x-2">
-          <div className="flex justify-end gap-2 mb-4">
-            <Button
-              variant="outline"
-              onClick={handleToggleSelectAll}
-              disabled={providers.length === 0}
-            >
-              {t(
-                selectedProviders.length === providers.length &&
-                  providers.length > 0
-                  ? "deselectAll"
-                  : "selectAll",
-              )}
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  className="cursor-pointer"
-                  disabled={selectedProviders.length === 0}
-                >
-                  {t("deleteSelected")}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t("confirmDeleteDesc", {
-                      count: selectedProviders.length,
-                    })}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteSelected}>
-                    {t("confirm")}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-          <div className="overflow-x-auto">
-            <div className="rounded-md border" dir={isRTL ? "rtl" : "ltr"}>
-              <Table>
-                <TableHeader className="bg-gray-100 dark:bg-gray-800">
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableHead
-                        key={column.key}
-                        className={`px-4 py-3 font-medium ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {column.label}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {displayedData.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        {t("noProvidersFound")}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    displayedData.map((provider) => (
-                      <TableRow
-                        key={provider.id}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                      >
-                        {columns.map((column) => (
-                          <TableCell
-                            key={`${provider.id}-${column.key}`}
-                            className={`px-4 py-3 ${
-                              isRTL ? "text-right" : "text-left"
-                            }`}
-                          >
-                            {renderTableCellContent(
-                              provider,
-                              column.key,
-                              isRTL,
-                              t,
-                              formatDate,
-                              handleSelectProvider,
-                              setSelectedProvider,
-                              refreshProviders,
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="pt-4">
-          <Pagination className="w-full">
-            <PaginationContent
-              className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}
-            >
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() =>
-                    currentPage > 1 && setCurrentPage(currentPage - 1)
-                  }
-                  className="cursor-pointer"
-                  disabled={currentPage === 1}
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(index + 1)}
-                    isActive={currentPage === index + 1}
+    const displayedData = useMemo(
+      () => (isRTL ? [...providers].reverse() : providers),
+      [providers, isRTL],
+    );
+
+    const handleToggleSelectAll = useCallback(() => {
+      const allSelected = providers.every((provider) =>
+        selectedProviders.includes(provider.id),
+      );
+      setSelectedProviders(
+        allSelected ? [] : providers.map((provider) => provider.id),
+      );
+    }, [providers, selectedProviders, setSelectedProviders]);
+
+    return (
+      <>
+        <ProviderDetailsModal
+          provider={selectedProvider}
+          t={t}
+          open={!!selectedProvider}
+          onOpenChange={(open) => !open && setSelectedProvider(null)}
+        />
+        <RequestDetailsModal
+          request={selectedRequest}
+          t={t}
+          open={!!selectedRequest}
+          onOpenChange={(open) => !open && setSelectedRequest(null)}
+        />
+        <Card className="shadow-none">
+          <CardContent className="p-x-2">
+            <div className="flex justify-end gap-2 mb-4">
+              <Button
+                variant="outline"
+                onClick={handleToggleSelectAll}
+                disabled={providers.length === 0}
+                className="cursor-pointer"
+              >
+                {t(
+                  selectedProviders.length === providers.length && providers.length > 0
+                    ? "deselectAll"
+                    : "selectAll",
+                )}
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
                     className="cursor-pointer"
+                    disabled={selectedProviders.length === 0}
                   >
-                    {index + 1}
-                  </PaginationLink>
+                    {t("deleteSelected")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t("confirmDeleteDesc", { count: selectedProviders.length })}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSelected}>
+                      {t("confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+            <div className="overflow-x-auto">
+              <div className="rounded-md border" dir={isRTL ? "rtl" : "ltr"}>
+                <Table>
+                  <TableHeader className="bg-gray-100 dark:bg-gray-800">
+                    <TableRow>
+                      {columns.map((column) => (
+                        <TableHead
+                          key={column.key}
+                          className={`px-4 py-3 font-medium ${
+                            isRTL ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {column.label}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {displayedData.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="text-center py-8 text-muted-foreground"
+                        >
+                          {t("noProvidersFound")}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      displayedData.map((provider) => (
+                        <TableRow
+                          key={provider.id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                        >
+                          {columns.map((column) => (
+                            <TableCell
+                              key={`${provider.id}-${column.key}`}
+                              className={`px-4 py-3 ${
+                                isRTL ? "text-right" : "text-left"
+                              }`}
+                            >
+                              {renderTableCellContent(
+                                provider,
+                                column.key,
+                                isRTL,
+                                t,
+                                handleSelectProvider,
+                                setSelectedProvider,
+                                selectedProviders,
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="pt-4">
+            <Pagination className="w-full">
+              <PaginationContent
+                className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}
+              >
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() =>
+                      currentPage > 1 && setCurrentPage(currentPage - 1)
+                    }
+                    className="cursor-pointer"
+                    disabled={currentPage === 1}
+                  />
                 </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    currentPage < totalPages && setCurrentPage(currentPage + 1)
-                  }
-                  className="cursor-pointer"
-                  disabled={currentPage === totalPages}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </CardFooter>
-      </Card>
-    </>
-  );
-};
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(index + 1)}
+                      isActive={currentPage === index + 1}
+                      className="cursor-pointer"
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      currentPage < totalPages && setCurrentPage(currentPage + 1)
+                    }
+                    className="cursor-pointer"
+                    disabled={currentPage === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </CardFooter>
+        </Card>
+      </>
+    );
+  },
+);
 
 function renderTableCellContent(
   provider,
   key,
   isRTL,
   t,
-  formatDate,
   handleSelectProvider,
   setSelectedProvider,
-  refreshProviders,
+  selectedProviders,
 ) {
+  const statusStyles = {
+    active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+    expired: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+    pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  };
+
   switch (key) {
     case "select":
       return (
         <Checkbox
           className="mx-6"
-          checked={provider.isSelected}
+          checked={selectedProviders.includes(provider.id)}
           onCheckedChange={() => handleSelectProvider(provider.id)}
         />
       );
     case "userInfo":
       return (
-        <div className={`flex items-center ${"flex-row"} gap-2`}>
-          <div className="relative w-9 h-10">
+        <div className="flex items-center gap-2">
+          <div className="relative w-10 h-10">
             <Image
               src={provider.image}
               alt={provider.name}
               fill
-              className="rounded-[10px] object-cover"
+              className="rounded-full object-cover"
             />
           </div>
-          <div className="flex flex-col">
-            <span className="font-medium">{provider.name}</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {provider.email}
-            </span>
+          <div>
+            <p className="font-medium">{provider.name}</p>
+            <p className="text-sm text-muted-foreground">{provider.email}</p>
           </div>
         </div>
       );
     case "phone":
+      return <span>{provider.phone}</span>;
+    case "requestDate":
       return (
-        <span
-          style={{
-            direction: "ltr",
-            unicodeBidi: "isolate",
-            display: "inline-block",
-            textAlign: isRTL ? "right" : "left",
-          }}
-        >
-          {provider.phone}
+        <span>
+          {new Date(provider.requestDate).toLocaleDateString(
+             "en-US",
+            {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            },
+          )}
         </span>
       );
-    case "requestDate":
-      return formatDate(provider.requestDate);
     case "status":
       return (
         <span
-          className={`px-2 py-0.5 rounded-full text-xs ${
-            provider.status === "active"
-              ? "bg-green-100 text-green-800"
-              : provider.status === "expired"
-                ? "bg-red-100 text-red-800"
-                : "bg-yellow-100 text-yellow-800"
-          }`}
+          className={`px-2 py-0.5 rounded-full text-xs ${statusStyles[provider.status] || statusStyles.pending}`}
         >
           {t(provider.status)}
         </span>
       );
     case "coupons":
-      return `${provider.totalCoupons}`;
+      return <span>{provider.totalCoupons}</span>;
     case "packages":
-      return `${provider.totalPackages}`;
+      return <span>{provider.totalPackages}</span>;
     case "actions":
       return (
         <div className="flex gap-2">
@@ -502,32 +575,36 @@ function renderTableCellContent(
   }
 }
 
-export default function AllProvidersDashboard() {
+export default function AllProvidersPage() {
   const t = useTranslations("Providers");
-  const { locale } = useRouter();
+  const locale = useLocale();
+  const isRTL = locale === "ar";
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [providers, setProviders] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedProviders, setSelectedProviders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [topCategoriesData, setTopCategoriesData] = useState([]);
+  const [requestsData, setRequestsData] = useState([]);
 
-  const debouncedSetSearchTerm = useMemo(
-    () =>
-      debounce((value) => {
-        setSearchTerm(value);
+  const handleSearchKeyPress = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setSearchQuery(inputValue);
         setCurrentPage(1);
-      }, 300),
-    [],
+      }
+    },
+    [inputValue],
   );
 
   const handleSelectProvider = useCallback((id) => {
     setSelectedProviders((prev) =>
-      prev.includes(id)
-        ? prev.filter((providerId) => providerId !== id)
-        : [...prev, id],
+      prev.includes(id) ? prev.filter((providerId) => providerId !== id) : [...prev, id],
     );
   }, []);
 
@@ -538,16 +615,11 @@ export default function AllProvidersDashboard() {
         providers,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchProviders(currentPage, PROVIDERS_PER_PAGE);
+      } = await fetchProviders(currentPage, PROVIDERS_PER_PAGE, searchQuery, statusFilter);
       if (!Array.isArray(providers)) {
         throw new Error("Providers data is not an array");
       }
-      setProviders(
-        providers.map((provider) => ({
-          ...provider,
-          isSelected: selectedProviders.includes(provider.id),
-        })),
-      );
+      setProviders(providers);
       setTotalPages(totalPages || 1);
       if (apiCurrentPage !== currentPage) {
         setCurrentPage(apiCurrentPage || 1);
@@ -572,13 +644,135 @@ export default function AllProvidersDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, selectedProviders, t]);
+  }, [currentPage, searchQuery, statusFilter, t]);
+
+  const fetchTopCategoriesData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchTopCategories();
+      setTopCategoriesData(data);
+    } catch (error) {
+      console.error("Error in fetchTopCategoriesData:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      toast.error(
+        error.response?.status
+          ? `${t("fetchErrorDesc")} (Status ${error.response.status}: ${error.response.data?.message || error.message})`
+          : `${t("fetchErrorDesc")} (${error.message})`,
+        {
+          description: t("fetchError"),
+          duration: 5000,
+        },
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
+
+  const fetchRequestsData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const { requests } = await fetchPendingRequests();
+      if (!Array.isArray(requests)) {
+        throw new Error("Requests data is not an array");
+      }
+      setRequestsData(requests);
+    } catch (error) {
+      console.error("Error in fetchRequestsData:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      toast.error(
+        error.response?.status
+          ? `${t("fetchErrorDesc")} (Status ${error.response.status}: ${error.response.data?.message || error.message})`
+          : `${t("fetchErrorDesc")} (${error.message})`,
+        {
+          description: t("fetchError"),
+          duration: 5000,
+        },
+      );
+      setRequestsData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
+
+  const handleApproveRequest = useCallback(async (requestId) => {
+    try {
+      const { success, error } = await approveRequest(requestId);
+      if (success) {
+        toast.success(t("approveSuccess", { id: requestId }), {
+          duration: 3000,
+        });
+        await fetchRequestsData();
+      } else {
+        const status = error.response?.status;
+        const message = error.response?.data?.message || error.message;
+        toast.error(
+          `${t("approveErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+          {
+            description: t("approveError"),
+            duration: 7000,
+          },
+        );
+      }
+    } catch (error) {
+      console.error("Error during approval:", error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || error.message;
+      toast.error(
+        `${t("approveErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+        {
+          description: t("approveError"),
+          duration: 7000,
+        },
+      );
+    }
+  }, [t, fetchRequestsData]);
+
+  const handleRejectRequest = useCallback(async (requestId) => {
+    try {
+      const { success, error } = await rejectRequest(requestId);
+      if (success) {
+        toast.success(t("rejectSuccess", { id: requestId }), {
+          duration: 3000,
+        });
+        await fetchRequestsData();
+      } else {
+        const status = error.response?.status;
+        const message = error.response?.data?.message || error.message;
+        toast.error(
+          `${t("rejectErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+          {
+            description: t("rejectError"),
+            duration: 7000,
+          },
+        );
+      }
+    } catch (error) {
+      console.error("Error during rejection:", error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || error.message;
+      toast.error(
+        `${t("rejectErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+        {
+          description: t("rejectError"),
+          duration: 7000,
+        },
+      );
+    }
+  }, [t, fetchRequestsData]);
 
   useEffect(() => {
     fetchProvidersData();
-  }, [fetchProvidersData, currentPage]);
+    fetchTopCategoriesData();
+    fetchRequestsData();
+  }, [fetchProvidersData, fetchTopCategoriesData, fetchRequestsData]);
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = useCallback(async () => {
     setIsLoading(true);
     try {
       const deletePromises = selectedProviders.map((id) => deleteProvider(id));
@@ -621,14 +815,25 @@ export default function AllProvidersDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedProviders, t, fetchProvidersData]);
+
+  const currentProviders = useMemo(() => {
+    return providers.sort((a, b) => {
+      if (filterType === "newest") {
+        return new Date(b.requestDate).getTime() - new Date(a.requestDate).getTime();
+      } else if (filterType === "oldest") {
+        return new Date(a.requestDate).getTime() - new Date(b.requestDate).getTime();
+      }
+      return 0;
+    });
+  }, [providers, filterType]);
 
   const filterOptions = [
     { label: t("newest"), value: "newest" },
     { label: t("oldest"), value: "oldest" },
-    { label: t("active"), value: "active" },
-    { label: t("expired"), value: "expired" },
-    { label: t("pending"), value: "pending" },
+    { label: t("active"), value: "0" },
+    { label: t("expired"), value: "1" },
+    { label: t("pending"), value: "2" },
   ];
 
   return (
@@ -641,7 +846,12 @@ export default function AllProvidersDashboard() {
         <>
           <div className="flex flex-col lg:flex-row gap-4 w-full">
             <TopCategoriesCard t={t} topCategoriesData={topCategoriesData} />
-            <RequestsCard t={t} requestsData={requestsData} />
+            <RequestsCard
+              t={t}
+              requestsData={requestsData}
+              handleApproveRequest={handleApproveRequest}
+              handleRejectRequest={handleRejectRequest}
+            />
           </div>
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
@@ -661,19 +871,25 @@ export default function AllProvidersDashboard() {
                     {t("filter")}
                   </Button>
                   {isFilterMenuOpen && (
-                    <div className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow">
+                    <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
                         <button
                           key={item.value}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-100 ${
-                            filterType === item.value
-                              ? "bg-gray-200 dark:bg-gray-100"
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                            filterType === item.value || statusFilter === item.value
+                              ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}
                           onClick={() => {
-                            setFilterType(item.value);
-                            setIsFilterMenuOpen(false);
+                            if (["newest", "oldest"].includes(item.value)) {
+                              setFilterType(item.value);
+                              setStatusFilter("");
+                            } else {
+                              setStatusFilter(item.value);
+                              setFilterType("");
+                            }
                             setCurrentPage(1);
+                            setIsFilterMenuOpen(false);
                           }}
                         >
                           {item.label}
@@ -687,7 +903,9 @@ export default function AllProvidersDashboard() {
                     type="text"
                     placeholder={t("search")}
                     className="h-8 max-w-[200px]"
-                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
                 </div>
@@ -696,7 +914,7 @@ export default function AllProvidersDashboard() {
           </Card>
           <ProvidersTable
             t={t}
-            providers={providers}
+            providers={currentProviders}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
@@ -704,6 +922,7 @@ export default function AllProvidersDashboard() {
             setSelectedProviders={setSelectedProviders}
             handleDeleteSelected={handleDeleteSelected}
             handleSelectProvider={handleSelectProvider}
+            setProviders={setProviders}
             refreshProviders={fetchProvidersData}
           />
         </>
