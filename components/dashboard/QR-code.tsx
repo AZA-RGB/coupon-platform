@@ -4,12 +4,13 @@ import QRCode from "react-qr-code";
 
 export default function QRCodeComp({ value, size }) {
   return (
-    <QRCode
-      className="border border-red-50"
-      value={value}
-      size={size}
-      // level="H" // Error correction level
-      fgColor=""
-    />
+    <div className=" border-8 rounded-xl border-white">
+      <QRCode
+        className="rounded-sm"
+        value={value}
+        size={size}
+        // level="H" // Error correction level
+      />
+    </div>
   );
 }
