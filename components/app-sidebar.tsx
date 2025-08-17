@@ -43,7 +43,7 @@ import Link from "next/link";
 import LogoutToggler from "./logoutToggler";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-
+import Cookies from "js-cookie";
 export function AppSidebar() {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
@@ -54,14 +54,14 @@ export function AppSidebar() {
   // Fetch user role from localStorage on component mount
   useEffect(() => {
     try {
-      const storedRole = localStorage.getItem("userRole");
+      const storedRole = Cookies.get("userRole");
       if (storedRole && ["admin", "provider"].includes(storedRole)) {
         setUserRole(storedRole);
       } else {
         // Fallback or redirect if role is invalid or not found
         setUserRole("admin"); // Default to admin if no valid role
         console.warn(
-          "No valid user role found in localStorage, defaulting to provider",
+          "No valid user role found in localStorage, defaulting to admin",
         );
       }
     } catch (error) {

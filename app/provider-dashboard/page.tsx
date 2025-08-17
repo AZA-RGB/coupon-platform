@@ -80,7 +80,7 @@ export default function Dashboard() {
           <EventsCarousel />
         </div>
         <div className="h-[35vh]  ">
-          <CardsCarousel />
+          <EventsCarousel />
         </div>
         <Card className="flex-1 flex items-center justify-center p-4 ">
           <QRCodeComp value="https://google.com" size={180} />

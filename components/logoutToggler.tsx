@@ -11,15 +11,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
+import Cookies from "js-cookie";
 export default function LogoutToggler() {
   const t = useTranslations("LogoutToggler");
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    router.push("/auth/login");
+    Cookies.remove("token");
+    Cookies.remove("refreshToken");
+    Cookies.remove("userRole");
+
+    router.replace("/auth/login");
   };
 
   return (
@@ -34,7 +36,6 @@ export default function LogoutToggler() {
           <span>{t("logout")}</span>
         </Button>
       </DropdownMenuTrigger>
-    
     </DropdownMenu>
   );
 }

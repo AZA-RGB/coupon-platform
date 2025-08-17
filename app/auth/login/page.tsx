@@ -1,6 +1,6 @@
 // pages/auth/login.tsx
 "use client";
-import jwt from "jsonwebtoken";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -50,27 +50,26 @@ export default function LoginPage() {
         },
         {
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       console.log("API Response:", response.data);
 
       // // Extract tokens and role from response
-      const role  = response.data.role || null;
+      const role = response.data.role || null;
       const { access_token, refresh_token } = response.data.data || {};
 
       if (!access_token || !refresh_token || !role) {
         throw new Error(t("tokenError"));
       }
 
-
       console.log("Tokens:", access_token, refresh_token);
       console.log("Role:", role);
 
       // // Save tokens and role to localStorage
-      localStorage.setItem("token", access_token);
-      localStorage.setItem("refreshToken", refresh_token);
-      localStorage.setItem("userRole", role);
+      Cookies.set("token", access_token, { expires: 7 }); // expires in 7 days
+      Cookies.set("refreshToken", refresh_token, { expires: 30 }); // expires in 30 days
+      Cookies.set("userRole", role, { expires: 7 }); // expires in 7 days
 
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),

@@ -112,7 +112,9 @@ export default function CouponsTable() {
     <Card className="col-span-2 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
         <div>
-          <div className="text-3xl ">{t("CouponsTable.topCoupons")}</div>
+          <div className="text-xl font-bold ">
+            {t("CouponsTable.topCoupons")}
+          </div>
         </div>
       </div>
       <div className="row-span-5 overflow-auto rounded-2xl ">
