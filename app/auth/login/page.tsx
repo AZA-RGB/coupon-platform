@@ -1,6 +1,7 @@
 // pages/auth/login.tsx
 "use client";
 import Cookies from "js-cookie";
+import jwt from "jsonwebtoken";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
