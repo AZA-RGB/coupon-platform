@@ -3,11 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslations } from "next-intl";
-import { DownloadCloud } from "lucide-react";
 import { approveRequest, rejectRequest } from "@/app/providers/constants";
-import { RequestDetailsModal } from "@/app/requests/page";
+import { MapPin } from "lucide-react";
 
 interface RequestReviewFormProps {
   providerData: any;
@@ -43,18 +41,11 @@ export function RequestReviewForm({
           <div className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col  items-center h-20 text-center">
-                <div className="h-full">
-                  <Avatar className="h-full w-full">
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </div>
-                <h1 className="text-2xl font-bold ">
+                <div className="h-full"></div>
+                <h1 className="text-2xl font-bold mb-3 ">
                   {providerData.user.name}
                 </h1>
+                <div>{providerData.user.provider.description}</div>
               </div>
               <div className="grid gap-3 mt-10">
                 <Label htmlFor="email">{t("emailLabel")}</Label>
@@ -63,6 +54,18 @@ export function RequestReviewForm({
                   type="email"
                   placeholder={t("emailPlaceholder")}
                   value={providerData.user.email}
+                  disabled
+                />
+              </div>
+              <div className="grid gap-3 ">
+                <Label>
+                  {" "}
+                  <MapPin />
+                  {t("location")}
+                </Label>
+                <Input
+                  id="location"
+                  value={providerData.user.provider.location}
                   disabled
                 />
               </div>
