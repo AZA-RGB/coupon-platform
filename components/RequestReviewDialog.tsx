@@ -14,24 +14,31 @@ import { useTranslations } from "next-intl";
 
 interface RequestReviewDialogProps {
   providerData: any;
+  updateRequests: any;
 }
 
 export default function RequestReviewDialog({
   providerData,
+  updateRequests,
 }: RequestReviewDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("Providers");
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="link">{t("seeDetails")}</Button>
+        <Button variant="link">{t("viewDetails")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] ">
         <DialogHeader>
           <DialogTitle>Request Review</DialogTitle>
         </DialogHeader>
         <div className="py-2">
-          <RequestReviewForm providerData={providerData} />
+          <RequestReviewForm
+            providerData={providerData}
+            onActionComplete={() => setIsOpen(false)}
+            updateRequests={updateRequests}
+          />
         </div>
       </DialogContent>
     </Dialog>

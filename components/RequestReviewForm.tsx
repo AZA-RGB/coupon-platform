@@ -6,17 +6,35 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslations } from "next-intl";
 import { DownloadCloud } from "lucide-react";
+import { approveRequest, rejectRequest } from "@/app/providers/constants";
+import { RequestDetailsModal } from "@/app/requests/page";
 
 interface RequestReviewFormProps {
   providerData: any;
+  onActionComplete?: () => void;
+  updateRequests: () => void;
 }
 
 export function RequestReviewForm({
   className,
   providerData,
+  onActionComplete,
+  updateRequests,
   ...props
 }: RequestReviewFormProps) {
   const t = useTranslations("RequestReviewForm");
+
+  const handleApprove = () => {
+    approveRequest(providerData.id);
+    onActionComplete?.();
+    updateRequests();
+  };
+
+  const handleReject = () => {
+    rejectRequest(providerData.id);
+    onActionComplete?.();
+    updateRequests();
+  };
 
   return (
     <div className={cn("  flex flex-col gap-6", className)} {...props}>
@@ -53,23 +71,16 @@ export function RequestReviewForm({
                 <Input
                   id="phone"
                   type="tel"
-                  // placeholder={t("phonePlaceholder")}
                   placeholder={providerData.user.phone}
                   disabled
                 />
               </div>
-              <div className="grid gap-3">
-                <Button className="w-full" variant="outline">
-                  <DownloadCloud />
-                  {t("downloadTradingRigester")}
-                </Button>
-              </div>
               <div className="flex place-content-start  gap-8">
-                <Button className="" type="submit">
+                <Button className="" onClick={handleApprove}>
                   {t("acceptButton")}
                 </Button>
                 <Button
-                  type="submit"
+                  onClick={handleReject}
                   className="hover:bg-chart-5 bg-destructive"
                 >
                   {t("denyButton")}

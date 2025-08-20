@@ -112,7 +112,7 @@
     --sidebar-ring: #00cbc1;
 }
 
-.dark {
+/*.dark {
     --background: oklch(0.141 0.005 285.823);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.21 0.006 285.885);
@@ -144,7 +144,7 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: #00cbc1;
-} */
+}*/
 @layer base {
     * {
         @apply border-border focus-visible:ring-ring;

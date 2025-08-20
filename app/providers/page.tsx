@@ -72,10 +72,18 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("rank")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("category")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("sales")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("popularity")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -101,7 +109,12 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
   );
 };
 
-const RequestsCard = ({ t, requestsData, handleApproveRequest, handleRejectRequest }) => {
+const RequestsCard = ({
+  t,
+  requestsData,
+  handleApproveRequest,
+  handleRejectRequest,
+}) => {
   return (
     <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
       <CardTitle className="mb-1 flex justify-between">
@@ -114,15 +127,24 @@ const RequestsCard = ({ t, requestsData, handleApproveRequest, handleRejectReque
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">{t("name")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("requestDateTime")}</TableHead>
-              <TableHead className="py-2 px-4 text-center">{t("action")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("name")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("requestDateTime")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-center">
+                {t("action")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {requestsData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={3}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   {t("noRequestsFound")}
                 </TableCell>
               </TableRow>
@@ -130,27 +152,31 @@ const RequestsCard = ({ t, requestsData, handleApproveRequest, handleRejectReque
               requestsData.slice(0, 5).map((row, index) => (
                 <TableRow key={index} className="hover:bg-secondary">
                   <TableCell className="py-2 px-4">{row.name}</TableCell>
-                  <TableCell className="py-2 px-4">{row.requestDateTime}</TableCell>
+                  <TableCell className="py-2 px-4">
+                    {row.requestDateTime}
+                  </TableCell>
                   <TableCell className="py-2 px-4">
                     <div className="flex gap-2 justify-center">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button
-                            className="bg-green-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-green-600"
-                          >
+                          <Button className="bg-green-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-green-600">
                             {t("accept")}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>{t("confirmApproveTitle")}</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t("confirmApproveTitle")}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
                               {t("confirmApproveDesc", { name: row.name })}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleApproveRequest(row.id)}>
+                            <AlertDialogAction
+                              onClick={() => handleApproveRequest(row.id)}
+                            >
                               {t("confirm")}
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -158,28 +184,29 @@ const RequestsCard = ({ t, requestsData, handleApproveRequest, handleRejectReque
                       </AlertDialog>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button
-                            className="bg-red-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-red-600"
-                          >
+                          <Button className="bg-red-500 cursor-pointer text-white px-1 py-1 rounded hover:bg-red-600">
                             {t("reject")}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>{t("confirmRejectTitle")}</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t("confirmRejectTitle")}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
                               {t("confirmRejectDesc", { name: row.name })}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleRejectRequest(row.id)}>
+                            <AlertDialogAction
+                              onClick={() => handleRejectRequest(row.id)}
+                            >
                               {t("confirm")}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-                    
                     </div>
                   </TableCell>
                 </TableRow>
@@ -192,15 +219,19 @@ const RequestsCard = ({ t, requestsData, handleApproveRequest, handleRejectReque
   );
 };
 
-const RequestDetailsModal = ({ request, t, open, onOpenChange }) => {
+const RequestDetailsModal = ({ request, t }) => {
   if (!request) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog>
       <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("requestDetails")}: {request.name}</DialogTitle>
-          <DialogDescription>{t("requestId")}: {request.id}</DialogDescription>
+          <DialogTitle>
+            {t("requestDetails")}: {request.name}
+          </DialogTitle>
+          <DialogDescription>
+            {t("requestId")}: {request.id}
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
@@ -220,7 +251,9 @@ const RequestDetailsModal = ({ request, t, open, onOpenChange }) => {
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("createdAt")}</h4>
-              <p className="text-sm text-muted-foreground">{new Date(request.createdAt).toLocaleDateString()}</p>
+              <p className="text-sm text-muted-foreground">
+                {new Date(request.createdAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
           <div>
@@ -229,7 +262,9 @@ const RequestDetailsModal = ({ request, t, open, onOpenChange }) => {
           </div>
           <div>
             <h4 className="text-sm font-medium">{t("description")}</h4>
-            <p className="text-sm text-muted-foreground">{request.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {request.description}
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -238,7 +273,9 @@ const RequestDetailsModal = ({ request, t, open, onOpenChange }) => {
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("categoryId")}</h4>
-              <p className="text-sm text-muted-foreground">{request.categoryId}</p>
+              <p className="text-sm text-muted-foreground">
+                {request.categoryId}
+              </p>
             </div>
           </div>
           <div>
@@ -357,7 +394,8 @@ const ProvidersTable = memo(
                 className="cursor-pointer"
               >
                 {t(
-                  selectedProviders.length === providers.length && providers.length > 0
+                  selectedProviders.length === providers.length &&
+                    providers.length > 0
                     ? "deselectAll"
                     : "selectAll",
                 )}
@@ -374,9 +412,13 @@ const ProvidersTable = memo(
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("confirmDeleteTitle")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {t("confirmDeleteDesc", { count: selectedProviders.length })}
+                      {t("confirmDeleteDesc", {
+                        count: selectedProviders.length,
+                      })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -475,7 +517,8 @@ const ProvidersTable = memo(
                 <PaginationItem>
                   <PaginationNext
                     onClick={() =>
-                      currentPage < totalPages && setCurrentPage(currentPage + 1)
+                      currentPage < totalPages &&
+                      setCurrentPage(currentPage + 1)
                     }
                     className="cursor-pointer"
                     disabled={currentPage === totalPages}
@@ -502,7 +545,8 @@ function renderTableCellContent(
   const statusStyles = {
     active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
     expired: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+    pending:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
   };
 
   switch (key) {
@@ -536,14 +580,11 @@ function renderTableCellContent(
     case "requestDate":
       return (
         <span>
-          {new Date(provider.requestDate).toLocaleDateString(
-             "en-US",
-            {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            },
-          )}
+          {new Date(provider.requestDate).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })}
         </span>
       );
     case "status":
@@ -604,7 +645,9 @@ export default function AllProvidersPage() {
 
   const handleSelectProvider = useCallback((id) => {
     setSelectedProviders((prev) =>
-      prev.includes(id) ? prev.filter((providerId) => providerId !== id) : [...prev, id],
+      prev.includes(id)
+        ? prev.filter((providerId) => providerId !== id)
+        : [...prev, id],
     );
   }, []);
 
@@ -615,7 +658,12 @@ export default function AllProvidersPage() {
         providers,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchProviders(currentPage, PROVIDERS_PER_PAGE, searchQuery, statusFilter);
+      } = await fetchProviders(
+        currentPage,
+        PROVIDERS_PER_PAGE,
+        searchQuery,
+        statusFilter,
+      );
       if (!Array.isArray(providers)) {
         throw new Error("Providers data is not an array");
       }
@@ -700,15 +748,28 @@ export default function AllProvidersPage() {
     }
   }, [t]);
 
-  const handleApproveRequest = useCallback(async (requestId) => {
-    try {
-      const { success, error } = await approveRequest(requestId);
-      if (success) {
-        toast.success(t("approveSuccess", { id: requestId }), {
-          duration: 3000,
-        });
-        await fetchRequestsData();
-      } else {
+  const handleApproveRequest = useCallback(
+    async (requestId) => {
+      try {
+        const { success, error } = await approveRequest(requestId);
+        if (success) {
+          toast.success(t("approveSuccess", { id: requestId }), {
+            duration: 3000,
+          });
+          await fetchRequestsData();
+        } else {
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          toast.error(
+            `${t("approveErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+            {
+              description: t("approveError"),
+              duration: 7000,
+            },
+          );
+        }
+      } catch (error) {
+        console.error("Error during approval:", error);
         const status = error.response?.status;
         const message = error.response?.data?.message || error.message;
         toast.error(
@@ -719,29 +780,32 @@ export default function AllProvidersPage() {
           },
         );
       }
-    } catch (error) {
-      console.error("Error during approval:", error);
-      const status = error.response?.status;
-      const message = error.response?.data?.message || error.message;
-      toast.error(
-        `${t("approveErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
-        {
-          description: t("approveError"),
-          duration: 7000,
-        },
-      );
-    }
-  }, [t, fetchRequestsData]);
+    },
+    [t, fetchRequestsData],
+  );
 
-  const handleRejectRequest = useCallback(async (requestId) => {
-    try {
-      const { success, error } = await rejectRequest(requestId);
-      if (success) {
-        toast.success(t("rejectSuccess", { id: requestId }), {
-          duration: 3000,
-        });
-        await fetchRequestsData();
-      } else {
+  const handleRejectRequest = useCallback(
+    async (requestId) => {
+      try {
+        const { success, error } = await rejectRequest(requestId);
+        if (success) {
+          toast.success(t("rejectSuccess", { id: requestId }), {
+            duration: 3000,
+          });
+          await fetchRequestsData();
+        } else {
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          toast.error(
+            `${t("rejectErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+            {
+              description: t("rejectError"),
+              duration: 7000,
+            },
+          );
+        }
+      } catch (error) {
+        console.error("Error during rejection:", error);
         const status = error.response?.status;
         const message = error.response?.data?.message || error.message;
         toast.error(
@@ -752,19 +816,9 @@ export default function AllProvidersPage() {
           },
         );
       }
-    } catch (error) {
-      console.error("Error during rejection:", error);
-      const status = error.response?.status;
-      const message = error.response?.data?.message || error.message;
-      toast.error(
-        `${t("rejectErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
-        {
-          description: t("rejectError"),
-          duration: 7000,
-        },
-      );
-    }
-  }, [t, fetchRequestsData]);
+    },
+    [t, fetchRequestsData],
+  );
 
   useEffect(() => {
     fetchProvidersData();
@@ -820,9 +874,13 @@ export default function AllProvidersPage() {
   const currentProviders = useMemo(() => {
     return providers.sort((a, b) => {
       if (filterType === "newest") {
-        return new Date(b.requestDate).getTime() - new Date(a.requestDate).getTime();
+        return (
+          new Date(b.requestDate).getTime() - new Date(a.requestDate).getTime()
+        );
       } else if (filterType === "oldest") {
-        return new Date(a.requestDate).getTime() - new Date(b.requestDate).getTime();
+        return (
+          new Date(a.requestDate).getTime() - new Date(b.requestDate).getTime()
+        );
       }
       return 0;
     });
@@ -876,7 +934,8 @@ export default function AllProvidersPage() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value || statusFilter === item.value
+                            filterType === item.value ||
+                            statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}

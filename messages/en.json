@@ -90,6 +90,7 @@
   },
   "search": "Search",
   "RequestReviewForm": {
+    "location": "Location",
     "downloadTradingRigester": " Download trading register",
     "providerName": "Provider Name",
     "emailLabel": "Email",

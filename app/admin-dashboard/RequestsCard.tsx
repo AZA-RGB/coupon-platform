@@ -5,23 +5,24 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import useSWR from "swr";
 
 interface RequestsCardProps {
   requestsData: any[];
 }
 
-const RequestsCard = ({ requestsData }: RequestsCardProps) => {
-  const { data, error, isLoading } = useSWR("/registration-requests/pending");
+ const RequestsCard = () => {
+  const { data, error, isLoading ,mutate} = useSWR("/registration-requests/pending");
 
   const t = useTranslations();
   return (
     <Card className=" h-full p-4 flex flex-col gap-2">
       <CardTitle className="flex justify-between items-center">
         <span className="text-lg  ">{t("Providers.requests")}</span>
-        {/* <Button variant="outline" className="text-sm hover:text-foreground/80">
+        <Link href="/requests" className="text-sm hover:text-foreground/80">
           {t("Providers.view_all")}
-        </Button> */}
+        </Link>
       </CardTitle>
       {isLoading && <Spinner className="animate-spin" />}
       {error && "error loading registration requests"}
@@ -45,8 +46,7 @@ const RequestsCard = ({ requestsData }: RequestsCardProps) => {
                   <TableCell className="py-2 px-4">{row.user.name}</TableCell>
                   <TableCell className="py-2 px-4">
                     <div className="flex gap-2 justify-center">
-                      {console.log(row)}
-                      <RequestReviewDialog providerData={row} />
+                      <RequestReviewDialog providerData={row} updateRequests={mutate} />
                     </div>
                   </TableCell>
                 </TableRow>
