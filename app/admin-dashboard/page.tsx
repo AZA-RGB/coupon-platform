@@ -1,7 +1,7 @@
 "use client"; // Mark the entire file as a client component due to useEffect
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { requestsData, fetchTopCategories } from "../providers/constants";
+import { fetchTopCategories } from "../providers/constants";
 import {
   DollarSign,
   LineChart,
@@ -26,6 +26,7 @@ import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
 import { Spinner } from "@/components/ui/spinner";
 import RequestsCard from "./RequestsCard";
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -84,7 +85,7 @@ const AdminDashboardPage = () => {
           <EventsCarousel />
         </div>
         <div className="w-full h-[35vh]">
-          {/*<RequestsCard requestsData={requestsData} />*/}
+          <RequestsCard />
         </div>
       </div>
 
@@ -125,26 +126,11 @@ const AdminDashboardPage = () => {
 
 const TopCategoriesCard = () => {
   const t = useTranslations();
-  const [topCategoriesData, setTopCategoriesData] = useState([
-    { rank: 1, category: "Travel", sales: 15, popularity: 100 },
-  ]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchTopCategories();
-        setTopCategoriesData(data);
-        setIsLoading(false);
-      } catch (err) {
-        setError(err.message || "Failed to load top categories");
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const {
+    isLoading,
+    error,
+    data: topCategoriesData,
+  } = useSWR("/categories/top-selling-categories");
 
   return (
     <Card className="h-[35vh] p-4 gap-2">
@@ -177,27 +163,14 @@ const TopCategoriesCard = () => {
                 >
                   {t("Types.sales")}
                 </TableHead>
-                <TableHead
-                  className={`py-2 px-4 text-start text-muted-foreground rtl:text-right`}
-                >
-                  {t("Types.popularity")}
-                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {topCategoriesData.slice(0, 5).map((row, index) => (
+              {topCategoriesData.data.map((row, index) => (
                 <TableRow key={index} className="hover:bg-secondary">
-                  <TableCell className="py-2 px-4">{row.rank}</TableCell>
-                  <TableCell className="py-2 px-4">{row.category}</TableCell>
-                  <TableCell className="py-2 px-4">{row.sales}</TableCell>
-                  <TableCell className="py-2 px-4">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-primary h-2.5 rounded-full"
-                        style={{ width: `${row.popularity}%` }}
-                      ></div>
-                    </div>
-                  </TableCell>
+                  <TableCell className="py-2 px-4">{index}</TableCell>
+                  <TableCell className="py-2 px-4">{row.name}</TableCell>
+                  <TableCell className="py-2 px-4">{row.sales_count}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

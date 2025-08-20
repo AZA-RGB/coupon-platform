@@ -283,9 +283,9 @@
     "previous": "السابق",
     "next": "التالي"
   },
-   "Providers": {
+  "Providers": {
     "export": "تصدير",
-    "topProviders": "المقدمين الأكثر طلباً",
+    "topProviders": "المزودين الأكثر طلبا",
     "title": "جميع مقدمي الخدمات",
     "description": "إدارة جميع مقدمي الخدمات في النظام الأساسي",
     "search": "بحث",
@@ -409,7 +409,7 @@
     "purchasesCount": "عدد المشتريات"
   },
   "Reels": {
-    "submitting":"جارٍ الإرسال",
+    "submitting": "جارٍ الإرسال",
     "title": "جميع الريلزات",
     "description": "تصفح وإدارة جميع الريلزات الخاصة بك",
     "activeReels": "الريلزات النشطة",
@@ -799,7 +799,7 @@
       "customers": "العملاء"
     }
   },
-   "Purchases": {
+  "Purchases": {
     "title": "جميع المشتريات",
     "description": "إدارة جميع المشتريات المسجلة في النظام.",
     "select": "تحديد",
@@ -849,8 +849,8 @@
     "purchaseCoupons": "كوبونات الشراء",
     "couponId": "معرف الكوبون",
     "purchaseKey": "مفتاح الشراء",
-    "DigitalWallet":"المحفظة الرقمية",
-    "hashKey":"مفتاح الشراء",
-    "CreditCard":"بطاقة ائتمان"
+    "DigitalWallet": "المحفظة الرقمية",
+    "hashKey": "مفتاح الشراء",
+    "CreditCard": "بطاقة ائتمان"
   }
 }
