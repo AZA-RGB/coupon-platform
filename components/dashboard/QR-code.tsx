@@ -1,13 +1,28 @@
 "use client";
 
 import QRCode from "react-qr-code";
+import useSWR from "swr";
+import { Spinner } from "../ui/spinner";
+import { useEffect, useState } from "react";
 
-export default function QRCodeComp({ value, size }) {
+export default function QRCodeComp({ size }) {
+  const [rand, setRand] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRand(Math.floor(Math.random() * 9000) + 1000);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+  const { isLoading, error, data } = useSWR("/providers/show-me");
+
+  if (isLoading) return <Spinner className={`animate-spin h-${size + 10}`} />;
+  if (error) return <Spinner className="animate-spin" />;
   return (
-    <div className=" border-8 rounded-xl border-white">
+    <div className="border-8 rounded-xl border-white">
       <QRCode
         className="rounded-sm"
-        value={value}
+        value={rand + "" + data.data.user_id}
         size={size}
         // level="H" // Error correction level
       />
