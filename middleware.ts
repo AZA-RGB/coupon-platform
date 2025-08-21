@@ -11,7 +11,6 @@ export function middleware(request: NextRequest) {
     "/auth/login",
     "/auth/register",
     "/auth/forget-password",
-    "/",
   ];
 
   // Allow public paths and Next.js internal paths
@@ -23,7 +22,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If not authenticated, redirect to login
+  // Handle root path ("/") redirection
+  if (pathname === "/") {
+    if (!token) {
+      // Not logged in - redirect to login
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    } else if (userRole === "admin") {
+      // Admin user - redirect to admin dashboard
+      return NextResponse.redirect(new URL("/admin-dashboard", request.url));
+    } else if (userRole === "provider") {
+      // Provider user - redirect to provider dashboard
+      return NextResponse.redirect(new URL("/provider-dashboard", request.url));
+    } else {
+      // Unknown role or no role - redirect to login
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+  }
+
+  // If not authenticated for other paths, redirect to login
   if (!token) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
@@ -51,9 +67,8 @@ export function middleware(request: NextRequest) {
 
   // Find if current path is protected
   const routeConfig = roleProtectedRoutes.find(
-    (route) => pathname === route.path, // Handle nested routes
+    (route) => pathname === route.path,
   );
-  console.log("hellllllllllllllo", routeConfig);
 
   // If route is not in our protected list, allow access
   if (!routeConfig) {
@@ -67,10 +82,8 @@ export function middleware(request: NextRequest) {
 
   // User doesn't have permission - redirect appropriately
   if (userRole === "admin") {
-    // Admin trying to access provider route? Send to admin dashboard
     return NextResponse.redirect(new URL("/admin-dashboard", request.url));
   } else if (userRole === "provider") {
-    // Provider trying to access admin route? Send to provider dashboard
     return NextResponse.redirect(new URL("/provider-dashboard", request.url));
   }
 
