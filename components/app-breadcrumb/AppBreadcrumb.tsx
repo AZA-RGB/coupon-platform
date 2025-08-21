@@ -24,10 +24,6 @@ export function AppBreadcrumb({ className }: { className?: string }) {
   return (
     <Breadcrumb className={cn("", className)}>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
-        </BreadcrumbItem>
-
         {pathSegments.map((segment, index) => {
           const isLast = index === pathSegments.length - 1;
           const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
