@@ -54,7 +54,9 @@ export function AppSidebar() {
   // Fetch user role from localStorage on component mount
   useEffect(() => {
     try {
+      // const storedRole = Cookies.get("userRole");
       const storedRole = Cookies.get("userRole");
+
       if (storedRole && ["admin", "provider"].includes(storedRole)) {
         setUserRole(storedRole);
       } else {
