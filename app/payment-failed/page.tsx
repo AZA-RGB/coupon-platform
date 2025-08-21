@@ -1,10 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { XCircle, ArrowRight, RefreshCcw, Mail, Home } from "lucide-react";
-import Link from "next/link";
-
+import { XCircle } from "lucide-react";
 export default function PaymentFailed() {
   const [mounted, setMounted] = useState(false);
 

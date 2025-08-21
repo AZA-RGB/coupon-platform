@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, ArrowRight, Download, Share2, Home } from "lucide-react";
-import Link from "next/link";
+import { CheckCircle } from "lucide-react";
 
 export default function PaymentSuccess() {
   const [mounted, setMounted] = useState(false);
