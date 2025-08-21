@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/payment")) {
+    const response = NextResponse.next();
+    response.headers.set("x-no-layout", "true");
+    return response;
+  }
   const pathname = request.nextUrl.pathname;
   const token = request.cookies.get("token");
   const userRole = request.cookies.get("userRole")?.value;

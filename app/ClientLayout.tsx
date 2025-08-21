@@ -21,6 +21,7 @@ export default function ClientLayout({
   const router = useRouter();
   const pathname = usePathname();
   const isAuthPage = pathname.startsWith("/auth");
+  const isPaymentPage = pathname.startsWith("/payment");
 
   // Redirect to /dashboard if token exists and user is on an auth page
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function ClientLayout({
       enableSystem
       disableTransitionOnChange
     >
-      {isAuthPage ? (
+      {isAuthPage || isPaymentPage ? (
         // Render only children for auth pages
         <>
           <SWRProvider>
@@ -68,8 +69,6 @@ export default function ClientLayout({
     </ThemeProvider>
   );
 }
-
-
 
 // "use client";
 // import { useEffect, useState } from "react";
