@@ -46,7 +46,7 @@ export function middleware(request: NextRequest) {
     { path: "/provider-events", roles: ["provider"] },
     { path: "/requests", roles: ["admin", "provider"] },
     { path: "/reels", roles: ["admin", "provider"] },
-    { path: "/add-criteria", roles: ["admin", "provider"] },
+    { path: "/add-criteria", roles: ["admin"] },
   ];
 
   // Find if current path is protected

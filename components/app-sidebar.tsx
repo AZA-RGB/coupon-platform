@@ -173,7 +173,7 @@ export function AppSidebar() {
       title: t("criteria"),
       url: "/add-criteria",
       icon: Film,
-      roles: ["admin", "provider"],
+      roles: ["admin"],
     },
   ];
 
