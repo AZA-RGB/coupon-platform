@@ -18,7 +18,7 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Filter, Plus, Search } from "lucide-react";
+import { Edit, Filter, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -68,13 +68,13 @@ const CouponsGrid = ({
     setSelectedCoupons((prev) =>
       prev.includes(id)
         ? prev.filter((couponId) => couponId !== id)
-        : [...prev, id]
+        : [...prev, id],
     );
   };
 
   const handleToggleSelectAll = () => {
     const allSelected = coupons.every((coupon) =>
-      selectedCoupons.includes(coupon.id)
+      selectedCoupons.includes(coupon.id),
     );
     setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
   };
@@ -99,7 +99,7 @@ const CouponsGrid = ({
                   selectedCoupons.length === coupons.length &&
                     coupons.length > 0
                     ? "deselectAll"
-                    : "selectAll"
+                    : "selectAll",
                 )}
               </Button>
               <AlertDialog>
@@ -152,9 +152,7 @@ const CouponsGrid = ({
                         checked={selectedCoupons.includes(coupon.id)}
                         onCheckedChange={() => handleSelectCoupon(coupon.id)}
                       />
-                      <CardTitle className="text-lg">
-                        {coupon.name}
-                      </CardTitle>
+                      <CardTitle className="text-lg">{coupon.name}</CardTitle>
                     </div>
                     <CardDescription className="flex justify-between items-center text-xs">
                       <span>{coupon.type}</span>
@@ -163,8 +161,8 @@ const CouponsGrid = ({
                           coupon.status === "active"
                             ? "bg-green-100 text-green-800"
                             : coupon.status === "expired"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
                         {t(coupon.status)}
@@ -181,10 +179,15 @@ const CouponsGrid = ({
                       </span>
                     </div>
                   </CardContent>
-                  <CardFooter className="px-3 pb-3">
+                  <CardFooter className="px-3 gap-3 pb-3">
+                    <Button className="p-0 h-8 w-8 ">
+                      <Link href={`/coupons/update-coupon?id=${coupon.id}`}>
+                        <Edit size={5} />
+                      </Link>
+                    </Button>
                     <Button
                       variant="outline"
-                      className="w-full h-8 text-xs"
+                      className="flex-1 h-8 text-xs"
                       asChild
                     >
                       <Link href={`/dashboard/coupons/${coupon.id}`}>
@@ -325,7 +328,7 @@ export default function AllCouponsPage() {
           {
             description: t("deleteSuccess"),
             duration: 3000,
-          }
+          },
         );
         setSelectedCoupons([]);
         setCurrentPage(1);
@@ -341,7 +344,7 @@ export default function AllCouponsPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);
