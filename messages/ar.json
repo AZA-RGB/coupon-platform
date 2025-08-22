@@ -312,7 +312,8 @@
     "points": "النقاط",
     "removeGift":"حذف الهدية",
     "selectGiftType":"اختر نوع الهدية",
-    "giftDeleteSuccess":"تم حذف الهدية بنجاح"
+    "giftDeleteSuccess":"تم حذف الهدية بنجاح",
+    "giftDeleteSuccessDesc":"تم حذف الهدية بنجاح"
   },
   "Providers": {
     "export": "تصدير",

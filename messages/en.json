@@ -305,9 +305,9 @@
     "enterPoints": "Enter Points",
     "points": "Points",
     "selectGiftType":"Select Gift Type",
-
     "giftDeleteSuccess": "Gift program deleted successfully",
-    "removeGift":"Remove Gift"
+    "removeGift":"Remove Gift",
+    "giftDeleteSuccessDesc": "The gift program was deleted successfully"
   },
 
   "Providers": {
