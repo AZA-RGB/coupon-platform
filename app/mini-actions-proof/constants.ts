@@ -40,27 +40,57 @@ interface MiniActionProof {
   time: number;
   files: File[];
   mini_action: MiniAction;
-  customer: Customer;
+  customer: Customer | null; // Allow customer to be null
 }
 
-export const fetchMiniActionProofs = async (page: number, search: string, filter: string) => {
+export const fetchMiniActionProofs = async (
+  page: number,
+  search: string,
+  filter: string
+) => {
   try {
-    const response = await axios.get("http://164.92.67.78:3002/api/mini-action-proofs/all", {
-      params: { page, search, filter },
-    });
+    const response = await axios.get(
+      "http://164.92.67.78:3002/api/mini-action-proofs/all",
+      {
+        params: { page, search, filter },
+      }
+    );
+    const miniActionProofs = response.data.data;
+
+    // Validate that miniActionProofs is an array and filter out invalid entries
+    if (!Array.isArray(miniActionProofs)) {
+      throw new Error("API response data is not an array");
+    }
+
+    // Filter out proofs with missing or null customer
+    const validMiniActionProofs = miniActionProofs.filter(
+      (proof: MiniActionProof) => proof.customer && proof.customer.bank_id
+    );
+
+    if (validMiniActionProofs.length < miniActionProofs.length) {
+      console.warn(
+        `Filtered out ${
+          miniActionProofs.length - validMiniActionProofs.length
+        } invalid MiniActionProofs with missing customer or bank_id`
+      );
+    }
+
     return {
-      miniActionProofs: response.data.data,
+      miniActionProofs: validMiniActionProofs,
       totalPages: response.data.totalPages || 1,
       currentPage: response.data.currentPage || page,
     };
   } catch (error) {
+    console.error("Error fetching mini action proofs:", error);
     throw error;
   }
 };
 
 export const fetchMiniActionProofDetails = async (id: number) => {
   try {
-    const response = await axios.get(`http://164.92.67.78:3002/api/mini-action-proofs/${id}`);
+    const response = await axios.get(
+      `http://164.92.67.78:3002/api/mini-action-proofs/${id}`
+    );
     return response.data.data;
   } catch (error) {
     throw error;
@@ -69,7 +99,9 @@ export const fetchMiniActionProofDetails = async (id: number) => {
 
 export const approveMiniActionProof = async (id: number) => {
   try {
-    await axios.post(`http://164.92.67.78:3002/api/mini-action-proofs/${id}/approve`);
+    await axios.post(
+      `http://164.92.67.78:3002/api/mini-action-proofs/${id}/approve`
+    );
     return { success: true, id };
   } catch (error) {
     return { success: false, id, error };
@@ -78,7 +110,9 @@ export const approveMiniActionProof = async (id: number) => {
 
 export const rejectMiniActionProof = async (id: number) => {
   try {
-    await axios.post(`http://164.92.67.78:3002/api/mini-action-proofs/${id}/reject`);
+    await axios.post(
+      `http://164.92.67.78:3002/api/mini-action-proofs/${id}/reject`
+    );
     return { success: true, id };
   } catch (error) {
     return { success: false, id, error };

@@ -35,7 +35,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { fetchCoupons, fetchCouponStats, deleteCoupon } from "./constants";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { fetchCoupons, fetchCouponStats, deleteCoupon, fetchCouponDetails, createGiftProgram, deleteGiftProgram } from "./constants";
 import MyImage from "@/components/my-image";
 import { MobileSummaryCards, SummaryCards } from "../summary_cards";
 
@@ -54,6 +68,287 @@ const NavigationCards = ({ t }) => {
   );
 };
 
+const CouponDetailsModal = ({
+  coupon,
+  t,
+  open,
+  onOpenChange,
+  setGiftModalOpen,
+  setSelectedCouponId,
+  refreshCouponDetails,
+}) => {
+  if (!coupon) return null;
+
+  const handleDeleteGift = async (giftId: number) => {
+    try {
+      const result = await deleteGiftProgram(giftId);
+      if (result.success) {
+        toast.success(t("giftDeleteSuccess"), {
+          description: t("giftDeleteSuccessDesc"),
+          duration: 3000,
+        });
+        await refreshCouponDetails();
+      } else {
+        throw result.error;
+      }
+    } catch (error) {
+      console.error("Error deleting gift program:", error);
+      toast.error(t("giftDeleteErrorDesc"), {
+        description: error.response?.data?.message || t("giftDeleteError"),
+        duration: 7000,
+      });
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto overflow-x-hidden">
+        <DialogHeader>
+          <DialogTitle>{coupon.name}</DialogTitle>
+          <DialogDescription>{coupon.description}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          {coupon.files.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium">{t("files")}</h4>
+              <div className="grid grid-cols-2 gap-2">
+                {coupon.files.map((file) => (
+                  <div key={file.id} className="relative w-full h-32">
+                    <MyImage src={file.path} alt={file.name} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("couponCode")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.coupon_code}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("status")}</h4>
+              <p className="text-sm text-muted-foreground capitalize">{t(coupon.coupon_status)}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("discount")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.price}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("date")}</h4>
+              <p className="text-sm text-muted-foreground">{new Date(coupon.date).toLocaleDateString()}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("category")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.category}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("couponType")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.coupon_type}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("provider")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.provider}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("providerLocation")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.provider_location}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium">{t("providerEmail")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.provider_email}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium">{t("providerPhone")}</h4>
+              <p className="text-sm text-muted-foreground">{coupon.provider_phone}</p>
+            </div>
+          </div>
+          {coupon.couponCriteria.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium">{t("couponCriteria")}</h4>
+              <ul className="text-sm text-muted-foreground">
+                {coupon.couponCriteria.map((criteria) => (
+                  <li key={criteria.id}>
+                    {criteria.criteria_name}: {criteria.value} ({criteria.criteria_type})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {coupon.giftPrograms.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium">{t("giftPrograms")}</h4>
+              <ul className="text-sm text-muted-foreground">
+                {coupon.giftPrograms.map((gift) => (
+                  <li key={gift.id} className="flex justify-between items-center">
+                    <span>
+                      {gift.gift_coupon_id
+                        ? `Gift Coupon ID: ${gift.gift_coupon_id}`
+                        : `Points: ${gift.points_value}`}, Active: {gift.is_active ? 'Yes' : 'No'}
+                    </span>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteGift(gift.id)}
+                    >
+                      {t("removeGift")}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {coupon.giftPrograms.length === 0 && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSelectedCouponId(coupon.id);
+                setGiftModalOpen(true);
+                onOpenChange(false);
+              }}
+            >
+              {t("addGift")}
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const GiftProgramModal = ({
+  couponId,
+  coupons,
+  t,
+  open,
+  onOpenChange,
+  refreshCoupons,
+}) => {
+  const [giftType, setGiftType] = useState<"coupon" | "points">("coupon");
+  const [selectedGiftCouponId, setSelectedGiftCouponId] = useState("");
+  const [pointsValue, setPointsValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (giftType === "coupon" && !selectedGiftCouponId) {
+      toast.error(t("selectCouponError"), {
+        description: t("selectCouponErrorDesc"),
+        duration: 5000,
+      });
+      return;
+    }
+    if (giftType === "points" && (!pointsValue || parseInt(pointsValue) <= 0)) {
+      toast.error(t("invalidPointsError"), {
+        description: t("invalidPointsErrorDesc"),
+        duration: 5000,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const giftData = {
+        type: "coupon",
+        giftable_id: couponId,
+        ...(giftType === "coupon" ? { coupon_id: parseInt(selectedGiftCouponId) } : { points: parseInt(pointsValue) }),
+      };
+      const result = await createGiftProgram(giftData);
+      if (result.success) {
+        toast.success(t("giftSuccess"), {
+          description: t("giftSuccessDesc"),
+          duration: 3000,
+        });
+        onOpenChange(false);
+        refreshCoupons();
+      } else {
+        throw result.error;
+      }
+    } catch (error) {
+      console.error("Error creating gift program:", error);
+      toast.error(t("giftErrorDesc"), {
+        description: error.response?.data?.message || t("giftError"),
+        duration: 7000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{t("addGift")}</DialogTitle>
+
+          <DialogDescription>{t("addGiftDesc")}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div>
+            <h4 className="text-sm font-medium">{t("giftType")}</h4>
+              <div className="py-2"></div>
+            <Select  value={giftType} onValueChange={(value: "coupon" | "points") => setGiftType(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("selectGiftType")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="coupon">{t("couponGift")}</SelectItem>
+                <SelectItem value="points">{t("pointsGift")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {giftType === "coupon" ? (
+            <div>
+              <h4 className="text-sm font-medium">{t("selectGiftCoupon")}</h4>
+              <div className="py-2"></div>
+              <Select
+                value={selectedGiftCouponId}
+                onValueChange={setSelectedGiftCouponId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t("selectCoupon")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {coupons
+                    .filter((coupon) => coupon.id !== couponId)
+                    .map((coupon) => (
+                      <SelectItem key={coupon.id} value={coupon.id.toString()}>
+                        {coupon.name} ({coupon.coupon_code})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div>
+              <h4 className="text-sm font-medium">{t("points")}</h4>
+              <Input
+                type="number"
+                placeholder={t("enterPoints")}
+                value={pointsValue}
+                onChange={(e) => setPointsValue(e.target.value)}
+                min="1"
+              />
+            </div>
+          )}
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? t("submitting") : t("submit")}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const CouponsGrid = ({
   t,
   coupons,
@@ -64,6 +359,11 @@ const CouponsGrid = ({
   setSelectedCoupons,
   handleDeleteSelected,
 }) => {
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isGiftModalOpen, setIsGiftModalOpen] = useState(false);
+  const [selectedCouponId, setSelectedCouponId] = useState(null);
+
   const handleSelectCoupon = (id) => {
     setSelectedCoupons((prev) =>
       prev.includes(id)
@@ -79,176 +379,222 @@ const CouponsGrid = ({
     setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
   };
 
+  const handleViewDetails = async (id) => {
+    try {
+      const couponDetails = await fetchCouponDetails(id);
+      setSelectedCoupon(couponDetails);
+      setIsDetailsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching coupon details:", error);
+      toast.error(t("fetchDetailsErrorDesc"), {
+        description: t("fetchDetailsError"),
+        duration: 5000,
+      });
+    }
+  };
+
+  const refreshCouponDetails = async () => {
+    if (selectedCoupon) {
+      try {
+        const couponDetails = await fetchCouponDetails(selectedCoupon.id);
+        setSelectedCoupon(couponDetails);
+      } catch (error) {
+        console.error("Error refreshing coupon details:", error);
+        toast.error(t("fetchDetailsErrorDesc"), {
+          description: t("fetchDetailsError"),
+          duration: 5000,
+        });
+      }
+    }
+  };
+
   return (
-    <Card className="shadow-none">
-      <CardContent className="pt-2">
-        {coupons.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            {t("noCouponsFound")}
-          </div>
-        ) : (
-          <>
-            <div className="flex justify-end gap-2 mb-4">
-              <Button
-                variant="outline"
-                onClick={handleToggleSelectAll}
-                disabled={coupons.length === 0}
-                className="cursor-pointer"
-              >
-                {t(
-                  selectedCoupons.length === coupons.length &&
-                    coupons.length > 0
-                    ? "deselectAll"
-                    : "selectAll"
-                )}
-              </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    className="cursor-pointer"
-                    disabled={selectedCoupons.length === 0}
-                  >
-                    {t("deleteSelected")}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t("confirmDeleteTitle")}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t("confirmDeleteDesc", {
-                        count: selectedCoupons.length,
-                      })}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSelected}>
-                      {t("confirm")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+    <>
+      <CouponDetailsModal
+        coupon={selectedCoupon}
+        t={t}
+        open={isDetailsModalOpen}
+        onOpenChange={setIsDetailsModalOpen}
+        setGiftModalOpen={setIsGiftModalOpen}
+        setSelectedCouponId={setSelectedCouponId}
+        refreshCouponDetails={refreshCouponDetails}
+      />
+      <GiftProgramModal
+        couponId={selectedCouponId}
+        coupons={coupons}
+        t={t}
+        open={isGiftModalOpen}
+        onOpenChange={setIsGiftModalOpen}
+        refreshCoupons={() => fetchCoupons(currentPage, "", "")}
+      />
+      <Card className="shadow-none">
+        <CardContent className="pt-2">
+          {coupons.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              {t("noCouponsFound")}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {coupons.map((coupon) => (
-                <Card
-                  key={coupon.id}
-                  className="overflow-hidden shadow-none transition-shadow p-0"
+          ) : (
+            <>
+              <div className="flex justify-end gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  onClick={handleToggleSelectAll}
+                  disabled={coupons.length === 0}
+                  className="cursor-pointer"
                 >
-                  <div className="relative w-full h-32">
-                    <MyImage src={coupon.image} alt={coupon.name} />
-                    <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
-                      <span className="text-primary font-bold">
-                        {coupon.discount}
-                      </span>
-                    </div>
-                  </div>
-                  <CardHeader className="py-0 px-3">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={selectedCoupons.includes(coupon.id)}
-                        onCheckedChange={() => handleSelectCoupon(coupon.id)}
-                      />
-                      <CardTitle className="text-lg">
-                        {coupon.name}
-                      </CardTitle>
-                    </div>
-                    <CardDescription className="flex justify-between items-center text-xs">
-                      <span>{coupon.type}</span>
-                      <span
-                        className={`px-2 py-0.5 rounded-full ${
-                          coupon.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : coupon.status === "expired"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {t(coupon.status)}
-                      </span>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="py-1 px-3">
-                    <div className="flex justify-between text-xs">
-                      <span>
-                        {t("uses")}: {coupon.uses}
-                      </span>
-                      <span>
-                        {t("code")}: {coupon.code}
-                      </span>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="px-3 pb-3">
+                  {t(
+                    selectedCoupons.length === coupons.length &&
+                      coupons.length > 0
+                      ? "deselectAll"
+                      : "selectAll"
+                  )}
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
                     <Button
-                      variant="outline"
-                      className="w-full h-8 text-xs"
-                      asChild
+                      variant="destructive"
+                      className="cursor-pointer"
+                      disabled={selectedCoupons.length === 0}
                     >
-                      <Link href={`/dashboard/coupons/${coupon.id}`}>
-                        {t("viewDetails")}
-                      </Link>
+                      {t("deleteSelected")}
                     </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (currentPage > 1) setCurrentPage(currentPage - 1);
-                }}
-                className={
-                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                }
-              >
-                {t("previous")}
-              </PaginationPrevious>
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t("confirmDeleteTitle")}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t("confirmDeleteDesc", {
+                          count: selectedCoupons.length,
+                        })}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteSelected}>
+                        {t("confirm")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {coupons.map((coupon) => (
+                  <Card
+                    key={coupon.id}
+                    className="overflow-hidden shadow-none transition-shadow p-0"
+                  >
+                    <div className="relative w-full h-32">
+                      <MyImage src={coupon.image} alt={coupon.name} />
+                      <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
+                        <span className="text-primary font-bold">
+                          {coupon.discount}
+                        </span>
+                      </div>
+                    </div>
+                    <CardHeader className="py-0 px-3">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={selectedCoupons.includes(coupon.id)}
+                          onCheckedChange={() => handleSelectCoupon(coupon.id)}
+                        />
+                        <CardTitle className="text-lg">
+                          {coupon.name}
+                        </CardTitle>
+                      </div>
+                      <CardDescription className="flex justify-between items-center text-xs">
+                        <span>{coupon.type}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full ${
+                            coupon.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : coupon.status === "expired"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {t(coupon.status)}
+                        </span>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="py-1 px-3">
+                      <div className="flex justify-between text-xs">
+                        <span>
+                          {t("uses")}: {coupon.uses}
+                        </span>
+                        <span>
+                          {t("code")}: {coupon.code}
+                        </span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="px-3 pb-3">
+                      <Button
+                        variant="outline"
+                        className="w-full h-8 text-xs"
+                        onClick={() => handleViewDetails(coupon.id)}
+                      >
+                        {t("viewDetails")}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setCurrentPage(index + 1);
+                    if (currentPage > 1) setCurrentPage(currentPage - 1);
                   }}
-                  isActive={currentPage === index + 1}
+                  className={
+                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                  }
                 >
-                  {index + 1}
-                </PaginationLink>
+                  {t("previous")}
+                </PaginationPrevious>
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-                }}
-                className={
-                  currentPage >= totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              >
-                {t("next")}
-              </PaginationNext>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </CardFooter>
-    </Card>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(index + 1);
+                    }}
+                    isActive={currentPage === index + 1}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                  }}
+                  className={
+                    currentPage >= totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                >
+                  {t("next")}
+                </PaginationNext>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </CardFooter>
+      </Card>
+    </>
   );
 };
 
@@ -273,30 +619,31 @@ export default function AllCouponsPage() {
     }
   };
 
-  useEffect(() => {
-    const loadCoupons = async () => {
-      setIsLoading(true);
-      try {
-        const {
-          coupons,
-          totalPages,
-          currentPage: apiCurrentPage,
-        } = await fetchCoupons(currentPage, searchQuery, statusFilter);
-        setCoupons(coupons);
-        setTotalPages(totalPages);
-        if (apiCurrentPage !== currentPage) {
-          setCurrentPage(apiCurrentPage);
-        }
-      } catch (error) {
-        console.error("Error fetching coupons:", error);
-        toast.error(t("fetchErrorDesc"), {
-          description: t("fetchError"),
-          duration: 5000,
-        });
-      } finally {
-        setIsLoading(false);
+  const loadCoupons = async () => {
+    setIsLoading(true);
+    try {
+      const {
+        coupons,
+        totalPages,
+        currentPage: apiCurrentPage,
+      } = await fetchCoupons(currentPage, searchQuery, statusFilter);
+      setCoupons(coupons);
+      setTotalPages(totalPages);
+      if (apiCurrentPage !== currentPage) {
+        setCurrentPage(apiCurrentPage);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching coupons:", error);
+      toast.error(t("fetchErrorDesc"), {
+        description: t("fetchError"),
+        duration: 5000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadCoupons();
   }, [currentPage, searchQuery, statusFilter]);
 
@@ -329,7 +676,7 @@ export default function AllCouponsPage() {
         );
         setSelectedCoupons([]);
         setCurrentPage(1);
-        await fetchCoupons(currentPage, searchQuery, statusFilter);
+        await loadCoupons();
       }
     } catch (error) {
       const status = error.response?.status;
@@ -375,14 +722,11 @@ export default function AllCouponsPage() {
         </div>
       ) : (
         <>
-          {/* Section 1: Summary and Navigation */}
           <div className="flex flex-col lg:flex-row gap-4">
             <SummaryCards t={t} />
             <NavigationCards t={t} />
             <MobileSummaryCards t={t} />
           </div>
-
-          {/* Section 2: Header with Filter and New Coupon */}
           <Card className="shadow-none relative overflow-visible">
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>
@@ -449,8 +793,6 @@ export default function AllCouponsPage() {
               </div>
             </CardHeader>
           </Card>
-
-          {/* Section 3: Coupons Grid */}
           <CouponsGrid
             t={t}
             coupons={currentCoupons}

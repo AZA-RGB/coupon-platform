@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchCoupons = async (page = 1, search = '', status = '') => {
   try {
@@ -20,7 +21,7 @@ export const fetchCoupons = async (page = 1, search = '', status = '') => {
         discount: coupon.price ? `${parseFloat(coupon.price).toFixed(2)}` : '0.00',
         uses: Math.floor(Math.random() * 1000), // API doesn't provide uses, so keeping random for now
         status: coupon.coupon_status === 0 ? 'active' : coupon.coupon_status === 1 ? 'expired' : 'pending', // Map 0 to active, 1 to expired, 2 to pending
-        image: coupon.files.length > 0 ? coupon.files[0] : DEFAULT_IMAGE,
+        image: coupon.files.length > 0 ?CDN_BASE_URL+"/"+ coupon.files[0].path : DEFAULT_IMAGE,
         addDate: coupon.date ? new Date(coupon.date).toISOString() : new Date().toISOString(),
       })),
       totalPages: data.last_page,

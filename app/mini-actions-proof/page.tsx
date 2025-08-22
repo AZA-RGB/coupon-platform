@@ -27,7 +27,6 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -119,7 +118,9 @@ const MiniActionProofDetailsModal = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium">{t("customer")}</h4>
-              <p className="text-sm text-muted-foreground">{miniActionProof.customer.bank_id}</p>
+              <p className="text-sm text-muted-foreground">
+                {miniActionProof.customer?.bank_id ?? t("unknownCustomer")}
+              </p>
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("status")}</h4>
