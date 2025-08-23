@@ -33,7 +33,8 @@ import debounce from "lodash/debounce";
 import {
   fetchSeasonalEvents,
   fetchCoupons,
-  addCouponToEvent,
+  fetchPackages,
+  addItemToEvent,
 } from "./constants";
 import MyImage from "@/components/my-image";
 import {
@@ -66,8 +67,9 @@ import {
 
 const EVENTS_PER_PAGE = 10;
 
-const couponSchema = z.object({
-  coupon_id: z.string().min(1, { message: "couponRequired" }),
+const itemSchema = z.object({
+  type: z.enum(["coupon", "package"], { message: "typeRequired" }),
+  eventable_id: z.string().min(1, { message: "itemRequired" }),
   count: z
     .string()
     .min(1, { message: "countRequired" })
@@ -76,48 +78,55 @@ const couponSchema = z.object({
     }),
 });
 
-const AddCouponDialog = ({ eventId, refreshEvents, t }) => {
+const AddItemDialog = ({ eventId, refreshEvents, t }) => {
   const [coupons, setCoupons] = useState([]);
-  const [isLoadingCoupons, setIsLoadingCoupons] = useState(false);
+  const [packages, setPackages] = useState([]);
+  const [isLoadingItems, setIsLoadingItems] = useState(false);
 
-  const form = useForm<z.infer<typeof couponSchema>>({
-    resolver: zodResolver(couponSchema),
+  const form = useForm<z.infer<typeof itemSchema>>({
+    resolver: zodResolver(itemSchema),
     defaultValues: {
-      coupon_id: "",
+      type: "coupon",
+      eventable_id: "",
       count: "",
     },
   });
 
   useEffect(() => {
-    const loadCoupons = async () => {
-      setIsLoadingCoupons(true);
+    const loadItems = async () => {
+      setIsLoadingItems(true);
       try {
-        const fetchedCoupons = await fetchCoupons();
+        const [fetchedCoupons, fetchedPackages] = await Promise.all([
+          fetchCoupons(),
+          fetchPackages(),
+        ]);
         setCoupons(fetchedCoupons);
+        setPackages(fetchedPackages);
       } catch (error) {
-        toast.error(t("fetchCouponsErrorDesc"), {
-          description: t("fetchCouponsError"),
+        toast.error(t("fetchItemsErrorDesc"), {
+          description: t("fetchItemsError"),
         });
       } finally {
-        setIsLoadingCoupons(false);
+        setIsLoadingItems(false);
       }
     };
-    loadCoupons();
+    loadItems();
   }, [t]);
 
-  async function onSubmit(values: z.infer<typeof couponSchema>) {
+  async function onSubmit(values: z.infer<typeof itemSchema>) {
     try {
-      const couponData = {
+      const itemData = {
         seasonal_events_id: eventId,
-        coupon_id: parseInt(values.coupon_id),
+        eventable_id: parseInt(values.eventable_id),
+        eventable_type: values.type,
         count: parseInt(values.count),
       };
 
-      const { success, error } = await addCouponToEvent(eventId, couponData);
+      const { success, error } = await addItemToEvent(eventId, itemData);
 
       if (success) {
-        toast.success(t("addCouponSuccessDesc"), {
-          description: t("addCouponSuccess"),
+        toast.success(t("addItemSuccessDesc"), {
+          description: t("addItemSuccess"),
         });
         refreshEvents();
         form.reset();
@@ -126,11 +135,13 @@ const AddCouponDialog = ({ eventId, refreshEvents, t }) => {
       }
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error(t("addCouponErrorDesc"), {
-        description: t("addCouponError"),
+      toast.error(t("addItemErrorDesc"), {
+        description: t("addItemError"),
       });
     }
   }
+
+  const type = form.watch("type");
 
   return (
     <Dialog>
@@ -139,51 +150,81 @@ const AddCouponDialog = ({ eventId, refreshEvents, t }) => {
           variant="link"
           className="text-primary underline hover:text-primary/80 p-0 h-auto"
         >
-          {t("addCoupon")}
+          {t("addItem")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("addCoupon")}</DialogTitle>
-          <DialogDescription>{t("addCouponDesc")}</DialogDescription>
+          <DialogTitle>{t("addItem")}</DialogTitle>
+          <DialogDescription>{t("addItemDesc")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 ">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField
               control={form.control}
-              name="coupon_id"
+              name="type"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>{t("coupon")}</FormLabel>
+                  <FormLabel>{t("type")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
-                    disabled={isLoadingCoupons || coupons.length === 0}
+                    disabled={isLoadingItems}
                   >
                     <FormControl className="w-full">
-                      <SelectTrigger className="w-full" dir={'rtl'}>
-                        <SelectValue
-                        className="text-dirc"
-                          placeholder={t("selectCouponPlaceholder")}
-                        />
+                      <SelectTrigger
+                        className="w-full"
+                        dir={useLocale() === "ar" ? "rtl" : "ltr"}
+                      >
+                        <SelectValue placeholder={t("selectTypePlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {coupons.map((coupon) => (
-                        <SelectItem
-                          key={coupon.id}
-                          value={coupon.id.toString()}
-                        >
-                          {coupon.name} ({coupon.couponCode})
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="coupon">{t("coupon")}</SelectItem>
+                      <SelectItem value="package">{t("package")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="eventable_id"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>{t("item")}</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoadingItems || (type === "coupon" ? coupons.length === 0 : packages.length === 0)}
+                  >
+                    <FormControl className="w-full">
+                      <SelectTrigger
+                        className="w-full"
+                        dir={useLocale() === "ar" ? "rtl" : "ltr"}
+                      >
+                        <SelectValue placeholder={t("selectItemPlaceholder")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {type === "coupon"
+                        ? coupons.map((coupon) => (
+                            <SelectItem key={coupon.id} value={coupon.id.toString()}>
+                              {coupon.name} ({coupon.couponCode})
+                            </SelectItem>
+                          ))
+                        : packages.map((pkg) => (
+                            <SelectItem key={pkg.id} value={pkg.id.toString()}>
+                              {pkg.title} ({t("price")}: {pkg.total_price})
+                            </SelectItem>
+                          ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="count"
@@ -208,7 +249,7 @@ const AddCouponDialog = ({ eventId, refreshEvents, t }) => {
               </DialogTrigger>
               <Button
                 type="submit"
-                disabled={form.formState.isSubmitting || isLoadingCoupons}
+                disabled={form.formState.isSubmitting || isLoadingItems}
               >
                 {form.formState.isSubmitting ? (
                   <>
@@ -216,7 +257,7 @@ const AddCouponDialog = ({ eventId, refreshEvents, t }) => {
                     {t("submitting")}
                   </>
                 ) : (
-                  t("addCoupon")
+                  t("addItem")
                 )}
               </Button>
             </div>
@@ -232,13 +273,13 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
             <MyImage src={event.image} alt={event.title} />
           </div>
-          <DialogTitle>{event.title}</DialogTitle>
-          <DialogDescription>{event.description}</DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
@@ -275,12 +316,11 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
           </div>
           {event.coupons.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium">{t("coupons")}</h4>
+              <h4 className="text-sm font-medium">{t("items")}</h4>
               <ul className="text-sm text-muted-foreground">
-                {event.coupons.map((coupon) => (
-                  <li key={coupon.id}>
-                    {coupon.name} ({coupon.couponCode}) - {t("price")}:{" "}
-                    {coupon.price}
+                {event.coupons.map((item) => (
+                  <li key={item.id}>
+                    {item.name} ({t(item.couponCode === "N/A" ? "package" : "coupon")}: {item.couponCode !== "N/A" ? item.couponCode : t("price") + ": " + item.price})
                   </li>
                 ))}
               </ul>
@@ -337,7 +377,6 @@ const EventsTable = ({
         open={!!selectedEvent}
         onOpenChange={(open) => !open && setSelectedEvent(null)}
       />
-
       <Card className="shadow-none">
         <CardContent className="p-x-2">
           <div className="overflow-x-auto">
@@ -461,8 +500,6 @@ function renderTableCellContent(
       );
     case "title":
       return <span className="font-medium">{event.title}</span>;
-    case "userId":
-      return <span>{event.userId}</span>;
     case "dateRange":
       return (
         <span>
@@ -493,7 +530,7 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          <AddCouponDialog
+          <AddItemDialog
             eventId={event.id}
             refreshEvents={refreshEvents}
             t={t}

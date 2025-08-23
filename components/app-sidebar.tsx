@@ -121,6 +121,18 @@ export function AppSidebar() {
       icon: Tickets,
       roles: ["provider"],
     },
+        {
+      title: t("miniActions"),
+      url: "/mini-actions",
+      icon: Tickets,
+      roles: ["provider"],
+    },
+          {
+      title: t("miniActionsProof"),
+      url: "/mini-actions-proof",
+      icon: Tickets,
+      roles: ["provider"],
+    },
     {
       title: t("providers"),
       url: "/providers",

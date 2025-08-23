@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
@@ -90,19 +91,44 @@ export const fetchCoupons = async () => {
   }
 };
 
-export const addCouponToEvent = async (eventId, couponData) => {
+export const fetchPackages = async () => {
+  try {
+    const response = await axios.get(
+      `http://164.92.67.78:3002/api/packages/index`
+    );
+    const { data } = response.data;
+
+    if (!data || !Array.isArray(data.data)) {
+      console.error("Invalid packages API response structure:", response.data);
+      throw new Error(
+        "Invalid API response: packages data is missing or not an array"
+      );
+    }
+
+    return data.data.map((pkg) => ({
+      id: pkg.id,
+      title: pkg.title || "Unnamed Package",
+      total_price: pkg.total_price.toString() || "0",
+    }));
+  } catch (error) {
+    console.error("Error fetching packages:", error);
+    return [];
+  }
+};
+
+export const addItemToEvent = async (eventId, itemData) => {
   try {
     const response = await axios.post(
       `http://164.92.67.78:3002/api/seasonal-event-coupons/create`,
-      couponData,
+      itemData,
       {
         headers: { "Content-Type": "application/json" },
       }
     );
-    console.log(`Add coupon response for event ${eventId}:`, response);
+    console.log(`Add item response for event ${eventId}:`, response);
     return { success: true, response };
   } catch (error) {
-    console.error(`Error adding coupon to event ${eventId}:`, error);
+    console.error(`Error adding item to event ${eventId}:`, error);
     return { success: false, error };
   }
 };

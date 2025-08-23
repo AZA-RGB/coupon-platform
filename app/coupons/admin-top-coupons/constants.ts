@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
-
-
+const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchTopCoupons = async (page = 1, search = '', status = '') => {
   try {
@@ -21,8 +20,8 @@ export const fetchTopCoupons = async (page = 1, search = '', status = '') => {
         type: coupon.couponType?.name || 'Unknown',
         discount: coupon.price ? `${parseFloat(coupon.price).toFixed(2)}` : '0.00',
         uses: Math.floor(Math.random() * 1000), // API doesn't provide uses, so keeping random for now
-        status: coupon.coupon_status === 0 ? 'active' : coupon.coupon_status === 1 ? 'expired' : 'pending', // Map 0 to active, 1 to expired, 2 to pending
-        image: coupon.files.length > 0 ? coupon.files[0] : DEFAULT_IMAGE,
+        status: coupon.coupon_status === 0 ? 'active' : coupon.coupon_status === 1 ? 'expired' : 'pending',
+        image: coupon.files.length > 0 ? CDN_BASE_URL + "/" + coupon.files[0].path : DEFAULT_IMAGE,
         addDate: coupon.date ? new Date(coupon.date).toISOString() : new Date().toISOString(),
       })),
       totalPages: data.last_page,
@@ -34,3 +33,43 @@ export const fetchTopCoupons = async (page = 1, search = '', status = '') => {
   }
 };
 
+export const fetchCouponDetails = async (id: number) => {
+  try {
+    const response = await axios.get(`http://164.92.67.78:3002/api/coupons/${id}`);
+    const { data } = response.data;
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      price: data.price ? `${parseFloat(data.price).toFixed(2)}` : '0.00',
+      coupon_type: data.couponType?.name || 'Unknown',
+      category: data.category?.name || 'Unknown',
+      provider: data.provider?.name || 'Unknown',
+      provider_location: data.provider?.location || 'Unknown',
+      provider_email: data.provider?.user?.email || 'Unknown',
+      provider_phone: data.provider?.user?.phone_number || 'Unknown',
+      coupon_status: data.coupon_status === 0 ? 'active' : data.coupon_status === 1 ? 'expired' : 'pending',
+      coupon_code: data.coupon_code,
+      date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+      average_rating: data.average_rating,
+      files: data.files.map((file) => ({
+        id: file.id,
+        path: CDN_BASE_URL + "/" + file.path,
+        file_type: file.file_type,
+        name: file.name,
+        title: file.title || null,
+      })),
+      couponCriteria: data.couponCriteria.map((criteria) => ({
+        id: criteria.id,
+        criteria_id: criteria.criteria_id,
+        coupon_id: criteria.coupon_id,
+        value: criteria.value,
+        criteria_name: criteria.criteria?.name || 'Unknown',
+        criteria_type: criteria.criteria?.type || 'Unknown',
+      })),
+    };
+  } catch (error) {
+    console.error(`Error fetching coupon details for ID ${id}:`, error);
+    throw error;
+  }
+};
