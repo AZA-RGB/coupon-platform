@@ -65,7 +65,7 @@ export function middleware(request: NextRequest) {
     { path: "/categories", roles: ["admin"] },
     { path: "/admin-events", roles: ["admin"] },
     { path: "/provider-events", roles: ["provider"] },
-    { path: "/requests", roles: ["admin", "provider"] },
+    { path: "/requests", roles: ["admin"] },
     { path: "/reels", roles: ["admin", "provider"] },
     { path: "/add-criteria", roles: ["admin"] },
   ];

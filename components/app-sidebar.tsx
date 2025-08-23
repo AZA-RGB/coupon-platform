@@ -173,7 +173,7 @@ export function AppSidebar() {
       title: t("requests"),
       url: "/requests",
       icon: GitPullRequestArrow,
-      roles: ["admin", "provider"],
+      roles: ["admin"],
     },
     {
       title: t("reels"),
