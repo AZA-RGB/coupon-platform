@@ -45,6 +45,7 @@ const formSchema = z
     description: z.string().min(30).max(200),
     date: z.coerce.date(),
     price: z.coerce.number().min(1),
+    price: z.coerce.number().min(1),
     images: z.array(z.instanceof(File)).min(1),
     Type: z.string().min(1, "You must select type before adding new coupon"),
   })
@@ -82,6 +83,7 @@ export default function AddCoupon() {
       "description",
       "date",
       "price",
+      "amount",
       "images",
       "Type",
     ];
@@ -105,6 +107,7 @@ export default function AddCoupon() {
       name,
       description,
       price,
+      amount,
       images,
       ...rest
     } = values;
@@ -136,6 +139,8 @@ export default function AddCoupon() {
     try {
       const formData = new FormData();
       formData.append("date", date.toISOString());
+      formData.append("amount", amount);
+
       formData.append("coupon_type_id", String(Type));
       formData.append("name", name);
       formData.append("description", description);
@@ -331,6 +336,20 @@ export default function AddCoupon() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Price</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>amount</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
