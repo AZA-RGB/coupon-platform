@@ -35,7 +35,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -46,12 +45,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogFooter 
+  AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { fetchCustomers, deleteCustomer, fetchCustomerDetails, fetchCouponStats, blockCustomer } from "./constants";
-
+import {
+  fetchCustomers,
+  deleteCustomer,
+  fetchCustomerDetails,
+  fetchCouponStats,
+  blockCustomer,
+} from "./constants";
+import ReportGenerator from "@/components/reportGenerator";
 
 const SummaryCards = ({ t, summaries }) => {
   return (
@@ -141,7 +146,9 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
           </div>
           <div>
             <h4 className="text-sm font-medium">{t("purchasesCount")}</h4>
-            <p className="text-sm text-muted-foreground">{customer.purchasesCount}</p>
+            <p className="text-sm text-muted-foreground">
+              {customer.purchasesCount}
+            </p>
           </div>
         </div>
       </DialogContent>
@@ -176,12 +183,12 @@ const CustomersTable = ({
       { key: "banned", label: t("banned") || "Banned" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
-    [t]
+    [t],
   );
 
   const displayedData = useMemo(
     () => (isRTL ? [...customers].reverse() : customers),
-    [customers, isRTL]
+    [customers, isRTL],
   );
 
   const formatDate = (date) => {
@@ -193,8 +200,12 @@ const CustomersTable = ({
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = customers.every((customer) => selectedCustomers.includes(customer.id));
-    setSelectedCustomers(allSelected ? [] : customers.map((customer) => customer.id));
+    const allSelected = customers.every((customer) =>
+      selectedCustomers.includes(customer.id),
+    );
+    setSelectedCustomers(
+      allSelected ? [] : customers.map((customer) => customer.id),
+    );
   };
 
   const handleBlockCustomer = async (id, block) => {
@@ -213,7 +224,7 @@ const CustomersTable = ({
           {
             description: t("blockError"),
             duration: 7000,
-          }
+          },
         );
       }
     } catch (error) {
@@ -225,7 +236,7 @@ const CustomersTable = ({
         {
           description: t("blockError"),
           duration: 7000,
-        }
+        },
       );
     }
   };
@@ -248,9 +259,10 @@ const CustomersTable = ({
               className="cursor-pointer"
             >
               {t(
-                selectedCustomers.length === customers.length && customers.length > 0
+                selectedCustomers.length === customers.length &&
+                  customers.length > 0
                   ? "deselectAll"
-                  : "selectAll"
+                  : "selectAll",
               )}
             </Button>
             <AlertDialog>
@@ -267,7 +279,9 @@ const CustomersTable = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {t("confirmDeleteDesc", { count: selectedCustomers.length })}
+                    {t("confirmDeleteDesc", {
+                      count: selectedCustomers.length,
+                    })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -329,7 +343,7 @@ const CustomersTable = ({
                               setSelectedCustomer,
                               refreshCustomers,
                               selectedCustomers,
-                              handleBlockCustomer
+                              handleBlockCustomer,
                             )}
                           </TableCell>
                         ))}
@@ -393,7 +407,7 @@ function renderTableCellContent(
   setSelectedCustomer,
   refreshCustomers,
   selectedCustomers,
-  handleBlockCustomer
+  handleBlockCustomer,
 ) {
   switch (key) {
     case "select":
@@ -445,8 +459,8 @@ function renderTableCellContent(
             customer.status === "active"
               ? "bg-green-100 text-green-800"
               : customer.status === "banned"
-              ? "bg-red-100 text-red-800"
-              : "bg-blue-100 text-blue-800"
+                ? "bg-red-100 text-red-800"
+                : "bg-blue-100 text-blue-800"
           }`}
         >
           {t(`Status.${customer.status}`)}
@@ -464,7 +478,9 @@ function renderTableCellContent(
               ? "bg-red-500 text-white hover:bg-red-600"
               : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
-          onClick={() => handleBlockCustomer(customer.id, customer.status === "active")}
+          onClick={() =>
+            handleBlockCustomer(customer.id, customer.status === "active")
+          }
         >
           {t(customer.status === "active" ? "ban" : "unBan")}
         </Button>
@@ -472,6 +488,12 @@ function renderTableCellContent(
     case "actions":
       return (
         <div className="flex gap-2">
+          <ReportGenerator
+            variant="link"
+            object={customer}
+            object_type="customers"
+            key={customer.id}
+          />
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"
@@ -515,7 +537,9 @@ export default function AllCustomersDashboard() {
 
   const handleSelectCustomer = (id) => {
     setSelectedCustomers((prev) =>
-      prev.includes(id) ? prev.filter((customerId) => customerId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((customerId) => customerId !== id)
+        : [...prev, id],
     );
   };
 
@@ -548,7 +572,7 @@ export default function AllCustomersDashboard() {
         {
           description: t("fetchError"),
           duration: 5000,
-        }
+        },
       );
       setCustomers([]);
       setTotalPages(1);
@@ -593,10 +617,13 @@ export default function AllCustomersDashboard() {
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedCustomers.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedCustomers.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          },
+        );
         setSelectedCustomers([]);
         setCurrentPage(1);
         await fetchCustomersData();
@@ -610,7 +637,7 @@ export default function AllCustomersDashboard() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);
@@ -620,9 +647,15 @@ export default function AllCustomersDashboard() {
   const currentCustomers = useMemo(() => {
     return customers.sort((a, b) => {
       if (filterType === "newest") {
-        return new Date(b.subscribeDate).getTime() - new Date(a.subscribeDate).getTime();
+        return (
+          new Date(b.subscribeDate).getTime() -
+          new Date(a.subscribeDate).getTime()
+        );
       } else if (filterType === "oldest") {
-        return new Date(a.subscribeDate).getTime() - new Date(b.subscribeDate).getTime();
+        return (
+          new Date(a.subscribeDate).getTime() -
+          new Date(b.subscribeDate).getTime()
+        );
       }
       return 0;
     });
@@ -671,7 +704,8 @@ export default function AllCustomersDashboard() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value || statusFilter === item.value
+                            filterType === item.value ||
+                            statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}

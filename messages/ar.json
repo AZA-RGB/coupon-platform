@@ -240,7 +240,7 @@
     "coupons": "الكوبونات",
     "actions": "الإجراءات"
   },
-"Coupons": {
+  "Coupons": {
     "title": "الكوبونات",
     "description": "إدارة جميع الكوبونات",
     "noCouponsFound": "لم يتم العثور على كوبونات",
@@ -310,12 +310,12 @@
     "giftType": "نوع الهدية",
     "enterPoints": "ادخل النقاط",
     "points": "النقاط",
-    "removeGift":"حذف الهدية",
-    "selectGiftType":"اختر نوع الهدية",
-    "giftDeleteSuccess":"تم حذف الهدية بنجاح",
-    "giftDeleteSuccessDesc":"تم حذف الهدية بنجاح",
-    "topCouponsTitle":"الكوبونات الأكثر طلبا",
-    "topCouponsDesc":"الكوبونات الأكثر طلبا"
+    "removeGift": "حذف الهدية",
+    "selectGiftType": "اختر نوع الهدية",
+    "giftDeleteSuccess": "تم حذف الهدية بنجاح",
+    "giftDeleteSuccessDesc": "تم حذف الهدية بنجاح",
+    "topCouponsTitle": "الكوبونات الأكثر طلبا",
+    "topCouponsDesc": "الكوبونات الأكثر طلبا"
   },
   "Providers": {
     "export": "تصدير",
@@ -649,8 +649,8 @@
     "updateButton": "تحديث المعيار"
   },
   "Sidebar": {
-    "miniActions":"المهام المصغرة",
-    "miniActionsProof":"ادارة المهام المصغرة",
+    "miniActions": "المهام المصغرة",
+    "miniActionsProof": "ادارة المهام المصغرة",
     "criteria": "المعايير",
     "title": "لوحة التحكم",
     "navigation": "التنقل",
@@ -814,17 +814,22 @@
     "endDate": "تاريخ الانتهاء",
     "items": "العناصر",
     "price": "السعر"
-  }
- ,
+  },
   "SalesReport": {
-    "title": "تقرير المبيعات",
+    "title": "لمحة إحصائية",
     "export": "تصدير",
     "stats": {
-      "products_sold": "المنتجات المباعة",
-      "new_customers": "عملاء جدد",
-      "total_orders": "إجمالي الطلبات",
-      "total_sales": "إجمالي المبيعات",
-      "total_coupons": "إجمالي القسائم"
+      "total_spend": "إجمالي الإنفاق",
+      "total_purchases": "إجمالي المشتريات",
+      "average_order_value": "متوسط قيمة الطلب",
+      "redemption_rate": "معدل التنفيذ",
+      "last_purchase": "آخر عملية شراء",
+      "purchased_count": "عدد المشتريات",
+      "purchased_revenue": "إيرادات المشتريات",
+      "avg_redemption_latency": "متوسط وقت التنفيذ",
+      "average_rating": "متوسط التقييم",
+      "total_revenue": "إجمالي الإيرادات",
+      "unique_customers": "العملاء الفريدون"
     }
   },
   "Invoices": {
@@ -918,7 +923,7 @@
     "yes": "نعم",
     "no": "لا",
     "expiryDate": "تاريخ الانتهاء",
-    "seconds":"دقيقة",
+    "seconds": "دقيقة",
     "expectedTime": "الوقت المتوقع (دقيقة)",
     "expectedTimePlaceholder": "أدخل الوقت المتوقع",
     "content": "المحتوى",

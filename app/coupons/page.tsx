@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { fetchCoupons } from "./constants";
 import MyImage from "@/components/my-image";
 import { MobileSummaryCards, SummaryCards } from "./summary_cards";
+import ReportGenerator from "@/components/reportGenerator";
 
 const NavigationCards = ({ t }) => {
   return (
@@ -82,8 +83,8 @@ const CouponsGrid = ({
                         coupon.status === "active"
                           ? "bg-green-100 text-green-800"
                           : coupon.status === "expired"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
                       {t(coupon.status)}
@@ -100,10 +101,15 @@ const CouponsGrid = ({
                     </span>
                   </div>
                 </CardContent>
-                <CardFooter className="px-3 pb-3">
+                <CardFooter className="flex px-3 pb-3 gap-3">
+                  <ReportGenerator
+                    object={coupon}
+                    object_type="coupons"
+                    key={coupon.id}
+                  />
                   <Button
                     variant="outline"
-                    className="w-full h-8 text-xs"
+                    className="flex-1 h-8 text-xs"
                     asChild
                   >
                     <Link href={`/dashboard/coupons/${coupon.id}`}>

@@ -18,7 +18,7 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Filter, Search } from "lucide-react";
+import { CalendarIcon, Filter, Search } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useLocale, useTranslations } from "next-intl";
@@ -59,6 +59,14 @@ import {
   rejectRequest,
 } from "./constants";
 import MyImage from "@/components/my-image";
+import Router from "next/router";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import ReportGenerator from "@/components/reportGenerator";
 
 const PROVIDERS_PER_PAGE = 10;
 
@@ -378,6 +386,7 @@ const ProvidersTable = memo(
           open={!!selectedProvider}
           onOpenChange={(open) => !open && setSelectedProvider(null)}
         />
+
         <RequestDetailsModal
           request={selectedRequest}
           t={t}
@@ -470,7 +479,7 @@ const ProvidersTable = memo(
                                 isRTL ? "text-right" : "text-left"
                               }`}
                             >
-                              {renderTableCellContent(
+                              {RenderTableCellContent(
                                 provider,
                                 column.key,
                                 isRTL,
@@ -533,7 +542,7 @@ const ProvidersTable = memo(
   },
 );
 
-function renderTableCellContent(
+function RenderTableCellContent(
   provider,
   key,
   isRTL,
@@ -602,6 +611,13 @@ function renderTableCellContent(
     case "actions":
       return (
         <div className="flex gap-2">
+          <ReportGenerator
+            variant="link"
+            object={provider}
+            object_type="providers"
+            key={provider.id}
+          />
+
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"

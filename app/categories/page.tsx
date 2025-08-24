@@ -39,6 +39,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "./constants";
+import ReportGenerator from "@/components/reportGenerator";
 
 const CATEGORIES_PER_PAGE = 10;
 
@@ -56,7 +57,7 @@ const CategoriesGrid = ({
 
   const displayedData = useMemo(
     () => (isRTL ? [...categories].reverse() : categories),
-    [categories, isRTL]
+    [categories, isRTL],
   );
 
   return (
@@ -72,11 +73,16 @@ const CategoriesGrid = ({
             dir={isRTL ? "rtl" : "ltr"}
           >
             {displayedData.map((cat) => (
-              <Card key={cat.id} className="shadow-none flex flex-col">
+              <Card
+                key={cat.id}
+                className="shadow-none flex flex-col items-center gap-"
+              >
                 <CardContent className="px-4 flex-grow">
                   <div className="flex flex-col h-full">
                     <div className="min-h-[40px]">
-                      <h3 className="font-semibold text-lg line-clamp-2 overflow-hidden text-ellipsis">{cat.name}</h3>
+                      <h3 className="font-semibold text-lg line-clamp-2 overflow-hidden text-ellipsis">
+                        {cat.name}
+                      </h3>
                     </div>
                     <div className="flex-grow"></div>
                     <div className="text-sm text-muted-foreground pt-2">
@@ -84,7 +90,7 @@ const CategoriesGrid = ({
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between px-4 pt-0 border-t">
+                <CardFooter className="flex justify-between px-4 py-0 border-t gap-10">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -115,7 +121,7 @@ const CategoriesGrid = ({
                         <AlertDialogAction
                           onClick={() => {
                             const input = document.getElementById(
-                              `edit-category-name-${cat.id}`
+                              `edit-category-name-${cat.id}`,
                             );
                             if (input && input.value.trim()) {
                               handleEditCategory(cat.id, input.value.trim());
@@ -162,6 +168,13 @@ const CategoriesGrid = ({
                     </AlertDialogContent>
                   </AlertDialog>
                 </CardFooter>
+                <div className="p-0 -my-3">
+                  <ReportGenerator
+                    object={cat}
+                    object_type="categories"
+                    key={cat.id}
+                  />
+                </div>
               </Card>
             ))}
           </div>
@@ -223,7 +236,7 @@ export default function CategoriesPage() {
         setSearchTerm(value);
         setCurrentPage(1);
       }, 300),
-    []
+    [],
   );
 
   const fetchCategoriesData = useCallback(async () => {
@@ -237,7 +250,7 @@ export default function CategoriesPage() {
         currentPage,
         CATEGORIES_PER_PAGE,
         searchTerm,
-        filterType
+        filterType,
       );
 
       setCategories(categories);
@@ -294,7 +307,7 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error(
         `Error ${isDelete ? "deleting" : "updating"} category:`,
-        error
+        error,
       );
       toast.error(t(isDelete ? "deleteErrorDesc" : "editErrorDesc"));
     } finally {

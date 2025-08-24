@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Card } from "../ui/card";
 import { Avatar, AvatarImage } from "../ui/avatar";
 
-export function ProfileHeader() {
+export function ProfileHeader({ name }) {
   return (
     <Card className=" relative mb-4 rounded-2xl h-30 sm:h-40 lg:h-50 rtl:bg-gradient-to-r bg-gradient-to-l from-primary to-background    ">
       {/* Content Container */}
@@ -23,7 +23,7 @@ export function ProfileHeader() {
           className="font-extrabold bottom-0 absolute  lg:rtl:right-50 rtl:right-30 sm:rtl:right-40   left-50
           text-2xl ml-4 md:text-3xl mr-3 lg:text-4xl lg:ml-6 text-primary"
         >
-          الاسم
+          {name}
         </h1>
       </div>
     </Card>

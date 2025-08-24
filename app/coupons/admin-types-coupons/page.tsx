@@ -72,6 +72,7 @@ import useSWR from "swr";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
+import ReportGenerator from "@/components/reportGenerator";
 
 const COUPONS_PER_PAGE = 10;
 const FALLBACK_IMAGE =
@@ -208,11 +209,16 @@ const CouponTypesGrid = ({
                     </CardDescription>
                   </CardHeader>
                   <CardFooter className="px-3 pb-3 flex justify-center gap-2">
+                    <ReportGenerator
+                      object={type}
+                      object_type="coupon-types"
+                      key={type.id}
+                    />
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full"
+                          className="flex-1 h-8"
                           onClick={() => {
                             console.log(type);
                             setTypeIdDetails(type.id);

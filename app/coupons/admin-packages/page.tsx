@@ -66,6 +66,7 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
+import ReportGenerator from "@/components/reportGenerator";
 
 const PACKAGES_PER_PAGE = 10;
 
@@ -114,7 +115,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
 
       toast.success(t("editSuccessDesc"), {
@@ -132,7 +133,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
             `${t("editErrorDesc")}: ${
               error.response.data.message || t("editError")
             }`,
-            { duration: 7000 }
+            { duration: 7000 },
           );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
@@ -335,12 +336,12 @@ const PackagesTable = ({
       { key: "coupons", label: t("coupons") || "Coupons" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
-    [t]
+    [t],
   );
 
   const displayedData = useMemo(
     () => (isRTL ? [...packages].reverse() : packages),
-    [packages, isRTL]
+    [packages, isRTL],
   );
 
   const formatDate = (date) => {
@@ -353,7 +354,7 @@ const PackagesTable = ({
 
   const handleToggleSelectAll = () => {
     const allSelected = packages.every((pkg) =>
-      selectedPackages.includes(pkg.id)
+      selectedPackages.includes(pkg.id),
     );
     setSelectedPackages(allSelected ? [] : packages.map((pkg) => pkg.id));
   };
@@ -379,7 +380,7 @@ const PackagesTable = ({
                 selectedPackages.length === packages.length &&
                   packages.length > 0
                   ? "deselectAll"
-                  : "selectAll"
+                  : "selectAll",
               )}
             </Button>
             <AlertDialog>
@@ -457,7 +458,7 @@ const PackagesTable = ({
                               handleSelectPackage,
                               setSelectedPackage,
                               refreshPackages,
-                              selectedPackages
+                              selectedPackages,
                             )}
                           </TableCell>
                         ))}
@@ -522,7 +523,7 @@ function renderTableCellContent(
   handleSelectPackage,
   setSelectedPackage,
   refreshPackages,
-  selectedPackages
+  selectedPackages,
 ) {
   switch (key) {
     case "select":
@@ -560,8 +561,8 @@ function renderTableCellContent(
             pkg.status === "active"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
               : pkg.status === "expired"
-              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
           }`}
         >
           {t(pkg.status)}
@@ -583,6 +584,12 @@ function renderTableCellContent(
             pkg={pkg}
             refreshPackages={refreshPackages}
             t={t}
+          />
+          <ReportGenerator
+            variant="link"
+            object={pkg}
+            object_type="packages"
+            key={pkg.id}
           />
         </div>
       );
@@ -613,7 +620,7 @@ export default function PackagesAllPage() {
 
   const handleSelectPackage = (id) => {
     setSelectedPackages((prev) =>
-      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id],
     );
   };
 
@@ -685,7 +692,7 @@ export default function PackagesAllPage() {
           {
             description: t("deleteSuccess"),
             duration: 3000,
-          }
+          },
         );
         setSelectedPackages([]);
         setCurrentPage(1);
@@ -701,7 +708,7 @@ export default function PackagesAllPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);
