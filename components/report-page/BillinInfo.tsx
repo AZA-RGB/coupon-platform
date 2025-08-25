@@ -9,154 +9,127 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslations, useFormatter, useLocale } from "next-intl";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher"; // Assuming you have a pre-configured fetcher
+import { Spinner } from "../ui/spinner";
 
-const testData = [
-  {
-    billID: "#12345",
-    coupon: "shawarma coupon",
-    date: "15/3/2025",
-    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
-    price: "150",
-  },
-  {
-    billID: "#12346",
-    coupon: "10% discount",
-    date: "16/3/2025",
-    customers: ["Lina Mahmoud"],
-    price: "150",
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-];
+interface BillingInfoProps {
+  object_type: string;
+  object_id: number;
+  from: string;
+  to: string;
+}
 
-export default function BillingInfo() {
+interface Purchase {
+  id: number;
+  date: string;
+  paid_amount: string;
+  customer: {
+    name: string;
+  };
+  provider: {
+    name: string;
+  };
+  additionalCustomers: Array<{
+    name: string;
+  }>;
+  purchaseCoupons: Array<{
+    coupon: {
+      name: string;
+    };
+  }>;
+  purchasedItems: Array<{
+    name: string;
+  }>;
+}
+
+interface ApiResponse {
+  data: {
+    data: Purchase[];
+  };
+}
+
+export default function BillingInfo({
+  object_type,
+  object_id,
+  from,
+  to,
+}: BillingInfoProps) {
   const t = useTranslations("BillingInfo");
   const format = useFormatter();
   const locale = useLocale();
   const isRTL = locale === "ar";
-
+  console.log("from BillingInfo ", from);
+  console.log("from BillingInfo ", to);
+  // Build the API URL based on props
+  const apiUrl = `/purchases/index?${object_type.slice(0, -1)}_id=${object_id}&date=${from},${to}`;
+  console.log(apiUrl);
+  const { data, error, isLoading } = useSWR<ApiResponse>(apiUrl);
+  if (data) console.log(data);
   return (
     <Card
-      className={`md:col-span-2 col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh] ${isRTL ? "text-right" : "text-left"}`}
+      className={`md:col-span-2 col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[62vh] ${isRTL ? "text-right" : "text-left"}`}
     >
       <div className="row-span-1 flex flex-row place-content-between items-center">
         <div className="text-3xl ">{t("title")}</div>
         <Button variant="outline">{t("exportButton")}</Button>
       </div>
       <div className="row-span-5 overflow-auto rounded-2xl">
-        <Table>
-          <TableHeader className="bg-muted text-accent-foreground">
-            <TableRow>
-              <TableHead className="rtl:text-right text-muted-foreground">
-                {t("tableHeaders.billId")}
-              </TableHead>
-              <TableHead className="rtl:text-right text-muted-foreground">
-                {t("tableHeaders.coupon")}
-              </TableHead>
-              <TableHead className="rtl:text-right text-muted-foreground">
-                {t("tableHeaders.date")}
-              </TableHead>
-              <TableHead className="rtl:text-right text-muted-foreground">
-                {t("tableHeaders.customers")}
-              </TableHead>
-              <TableHead className="rtl:text-right text-muted-foreground">
-                {t("price")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {testData.map((bill, index) => {
-              return (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{bill.billID}</TableCell>
-                  <TableCell>{bill.coupon}</TableCell>
-                  <TableCell>{bill.date}</TableCell>
+        {isLoading && <Spinner className="amimate-spin" />}
+        {error && (
+          <span className="text-destructive">couldn't load purchases</span>
+        )}
+        {data && (
+          <Table>
+            <TableHeader className="bg-muted text-accent-foreground">
+              <TableRow>
+                <TableHead className="rtl:text-right text-muted-foreground">
+                  {t("tableHeaders.billId")}
+                </TableHead>
+                <TableHead className="rtl:text-right text-muted-foreground">
+                  {t("tableHeaders.coupon")}
+                </TableHead>
+                <TableHead className="rtl:text-right text-muted-foreground">
+                  {t("tableHeaders.date")}
+                </TableHead>
+                <TableHead className="rtl:text-right text-muted-foreground">
+                  {t("tableHeaders.customers")}
+                </TableHead>
+                <TableHead className="rtl:text-right text-muted-foreground">
+                  provider
+                </TableHead>
+                <TableHead className="rtl:text-right text-muted-foreground">
+                  {t("price")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.data.data.map((purchase) => (
+                <TableRow key={purchase.id}>
+                  <TableCell className="font-medium">#{purchase.id}</TableCell>
                   <TableCell>
-                    {bill.customers.map((customer, i) => (
-                      <div key={i}>{customer}</div>
+                    {purchase.purchaseCoupons?.[0]?.coupon?.name ||
+                      purchase.purchasedItems?.[0]?.name ||
+                      t("noCoupon")}
+                  </TableCell>
+                  <TableCell>{purchase.date}</TableCell>
+                  <TableCell>
+                    <div>{purchase.customer.name}</div>
+                    {purchase.additionalCustomers.map((customer, index) => (
+                      <div key={index}>{customer.name}</div>
                     ))}
                   </TableCell>
-                  <TableCell className="text-right">{bill.price}</TableCell>
+                  <TableCell className="text-right">
+                    {purchase.provider.name}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {purchase.paid_amount}
+                  </TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </Card>
   );

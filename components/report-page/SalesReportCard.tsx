@@ -24,7 +24,7 @@ const OBJECT_CONFIGS = {
     stats: (data) => [
       {
         title: "total_spend",
-        value: `$${data.total_spend || 0}`,
+        value: `$${(data.total_spend || 0).toFixed(1)}`,
         icon: DollarSign,
         bgColor: "dark:from-pink-600 bg-pink-400",
       },
@@ -36,13 +36,13 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "average_order_value",
-        value: `$${data.average_order_value || 0}`,
+        value: `$${(data.average_order_value || 0).toFixed(1)}`,
         icon: TrendingUp,
         bgColor: "dark:bg-teal-600 bg-primary",
       },
       {
         title: "redemption_rate",
-        value: `${data.redemption_rate || 0}%`,
+        value: `${(data.redemption_rate || 0).toFixed(1)}%`,
         icon: Tickets,
         bgColor: "dark:from-blue-800 bg-blue-400",
       },
@@ -68,25 +68,25 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "purchased_revenue",
-        value: `$${data.purchased_revenue || 0}`,
+        value: `$${(data.purchased_revenue || 0).toFixed(1)}`,
         icon: DollarSign,
         bgColor: "bg-violet-400 dark:from-violet-900",
       },
       {
         title: "redemption_rate",
-        value: `${data.redemption_rate || 0}%`,
+        value: `${(data.redemption_rate || 0).toFixed(1)}%`,
         icon: Tickets,
         bgColor: "dark:bg-teal-600 bg-primary",
       },
       {
         title: "avg_redemption_latency",
-        value: `${data.average_redemption_latency_days || 0}d`,
+        value: `${(data.average_redemption_latency_days || 0).toFixed(1)}d`,
         icon: Clock,
         bgColor: "dark:from-blue-800 bg-blue-400",
       },
       {
         title: "average_rating",
-        value: data.average_rating.toFixed(1) || 0,
+        value: (data.average_rating || 0).toFixed(1),
         icon: Star,
         bgColor: "dark:from-cyan-700 bg-cyan-500",
       },
@@ -98,7 +98,7 @@ const OBJECT_CONFIGS = {
     stats: (data) => [
       {
         title: "total_revenue",
-        value: `$${data.total_revenue || 0}`,
+        value: `$${(data.total_revenue || 0).toFixed(1)}`,
         icon: DollarSign,
         bgColor: "dark:from-pink-600 bg-pink-400",
       },
@@ -110,7 +110,7 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "average_order_value",
-        value: `$${data.average_order_value || 0}`,
+        value: `$${(data.average_order_value || 0).toFixed(1)}`,
         icon: TrendingUp,
         bgColor: "dark:bg-teal-600 bg-primary",
       },
@@ -122,7 +122,7 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "average_rating",
-        value: data.average_rating.toFixed(1) || 0,
+        value: (data.average_rating || 0).toFixed(1),
         icon: Star,
         bgColor: "dark:from-cyan-700 bg-cyan-500",
       },
@@ -134,7 +134,7 @@ const OBJECT_CONFIGS = {
     stats: (data) => [
       {
         title: "total_revenue",
-        value: `$${data.total_revenue || 0}`,
+        value: `$${(data.total_revenue || 0).toFixed(1)}`,
         icon: DollarSign,
         bgColor: "dark:from-pink-600 bg-pink-400",
       },
@@ -152,13 +152,13 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "redemption_rate",
-        value: `${data.redemption_rate || 0}%`,
+        value: `${(data.redemption_rate || 0).toFixed(1)}%`,
         icon: Tickets,
         bgColor: "dark:from-blue-800 bg-blue-400",
       },
       {
         title: "average_rating",
-        value: data.average_rating.toFixed(1) || 0,
+        value: (data.average_rating || 0).toFixed(1),
         icon: Star,
         bgColor: "dark:from-cyan-700 bg-cyan-500",
       },
@@ -171,7 +171,7 @@ const OBJECT_CONFIGS = {
     stats: (data) => [
       {
         title: "total_revenue",
-        value: `$${data.total_revenue || 0}`,
+        value: `$${(data.total_revenue || 0).toFixed(1)}`,
         icon: DollarSign,
         bgColor: "dark:from-pink-600 bg-pink-400",
       },
@@ -189,13 +189,13 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "redemption_rate",
-        value: `${data.redemption_rate || 0}%`,
+        value: `${(data.redemption_rate || 0).toFixed(1)}%`,
         icon: Tickets,
         bgColor: "dark:from-blue-800 bg-blue-400",
       },
       {
         title: "average_rating",
-        value: data.average_rating.toFixed(1) || 0,
+        value: (data.average_rating || 0).toFixed(1),
         icon: Star,
         bgColor: "dark:from-cyan-700 bg-cyan-500",
       },
@@ -214,25 +214,25 @@ const OBJECT_CONFIGS = {
       },
       {
         title: "purchased_revenue",
-        value: `$${data.purchased_revenue || 0}`,
+        value: `$${(data.purchased_revenue || 0).toFixed(1)}`,
         icon: DollarSign,
         bgColor: "bg-violet-400 dark:from-violet-900",
       },
       {
         title: "redemption_rate",
-        value: `${data.redemption_rate || 0}%`,
+        value: `${(data.redemption_rate || 0).toFixed(1)}%`,
         icon: Tickets,
         bgColor: "dark:bg-teal-600 bg-primary",
       },
       {
         title: "avg_redemption_latency",
-        value: `${data.average_redemption_latency_days || 0}d`,
+        value: `${(data.average_redemption_latency_days || 0).toFixed(1)}d`,
         icon: Clock,
         bgColor: "dark:from-blue-800 bg-blue-400",
       },
       {
         title: "average_rating",
-        value: data.average_rating.toFixed(1) || 0,
+        value: (data.average_rating || 0).toFixed(1),
         icon: Star,
         bgColor: "dark:from-cyan-700 bg-cyan-500",
       },

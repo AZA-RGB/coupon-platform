@@ -42,7 +42,7 @@ const chartConfig = {
 
 export default React.memo(function SalesOverviewChart() {
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer className="max-h-96" config={chartConfig}>
       <AreaChart data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
