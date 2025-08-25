@@ -318,6 +318,7 @@
     "topCouponsDesc": "الكوبونات الأكثر طلبا"
   },
   "Providers": {
+    "rejected": "مرفوض",
     "export": "تصدير",
     "topProviders": "المزودين الأكثر طلبا",
     "title": "جميع مقدمي الخدمات",
@@ -391,6 +392,8 @@
     "pending for approval": "معلق للقبول"
   },
   "Customers": {
+    "blockError": "خطاء في حظر العميل",
+    "blockErrorDesc": "حدث خطاء في حظر العميل",
     "banSuccess": "تم حظر العميل بنجاح",
     "title": "جميع العملاء",
     "description": "إدارة العملاء وعرض تفاصيلهم",
@@ -837,6 +840,7 @@
     "exportButton": "تصدير"
   },
   "BillingInfo": {
+    "noCoupons": "لا توجد كوبونات",
     "price": "السعر",
     "title": "معلومات الفواتير",
     "exportButton": "تصدير",

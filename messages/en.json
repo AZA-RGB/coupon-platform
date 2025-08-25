@@ -313,6 +313,7 @@
   },
 
   "Providers": {
+    "rejected": "Rejected",
     "topProvidersDesc": "Top Providers",
     "export": "Export",
     "title": "All Providers",
@@ -385,6 +386,8 @@
     "pending for approval": "Pending for Approval"
   },
   "Customers": {
+    "blockError": "Error blocking customer",
+    "blockErrorDesc": "An error occurred while blocking the customer",
     "banSuccess": "Customer banned successfully",
     "title": "All Customers",
     "description": "Manage customers and view their details",
@@ -842,6 +845,7 @@
     "price": "${price}"
   },
   "BillingInfo": {
+    "noCoupon": "No coupon",
     "price": "Price",
     "title": "Billing Information",
     "exportButton": "Export",

@@ -243,7 +243,7 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
             <MyImage src={event.image} alt={event.title} />

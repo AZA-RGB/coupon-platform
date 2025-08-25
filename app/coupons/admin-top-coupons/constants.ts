@@ -7,7 +7,7 @@ export const fetchTopCoupons = async (page = 1, search = '', status = '') => {
   try {
     let url = `http://164.92.67.78:3002/api/coupons/top-sells-coupon?page=${page}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
-    if (status !== '') url += `&coupon_status=${status}`;
+    if (status !== '') url += `&status=${status}`;
     
     const response = await axios.get(url);
     const { data } = response.data;
