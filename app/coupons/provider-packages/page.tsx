@@ -66,6 +66,13 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const PACKAGES_PER_PAGE = 10;
 
@@ -74,6 +81,12 @@ const editFormSchema = z.object({
   description: z.string().min(1, { message: "descriptionRequired" }),
   from_date: z.string().min(1, { message: "startDateRequired" }),
   to_date: z.string().min(1, { message: "endDateRequired" }),
+  max_providers: z.string().min(1, { message: "maxProvidersRequired" }),
+  max_price: z.string().min(1, { message: "maxPriceRequired" }),
+  max_amount: z.string().min(1, { message: "maxAmountRequired" }),
+  max_coupons_number: z
+    .string()
+    .min(1, { message: "maxCouponsNumberRequired" }),
   file: z
     .any()
     .optional()
@@ -82,8 +95,147 @@ const editFormSchema = z.object({
     }),
 });
 
+const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
+  const [coupons, setCoupons] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm({
+    resolver: zodResolver(
+      z.object({
+        coupon_id: z.string().min(1, { message: "couponRequired" }),
+        value: z.string().min(1, { message: "valueRequired" }),
+      })
+    ),
+    defaultValues: {
+      coupon_id: "",
+      value: "",
+    },
+  });
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await axios.get(
+          "http://164.92.67.78:3002/api/coupons/all"
+        );
+        const { data } = response.data;
+        if (data && Array.isArray(data)) {
+          setCoupons(data);
+        }
+      } catch (error) {
+        console.error("Error fetching coupons:", error);
+        toast.error(t("fetchCouponsError"), { duration: 5000 });
+      }
+    };
+    fetchCoupons();
+  }, [t]);
+
+  const onSubmit = async (values) => {
+    setIsLoading(true);
+    try {
+      await axios.post("http://164.92.67.78:3002/api/coupon_packages/create", {
+        package_id: pkg.id,
+        coupon_id: values.coupon_id,
+        value: values.value,
+      });
+      toast.success(t("addCouponSuccessDesc"), {
+        description: t("addCouponSuccess"),
+        duration: 3000,
+      });
+      refreshPackages();
+      form.reset();
+    } catch (error) {
+      console.error("Error adding coupon to package:", error);
+      toast.error(t("addCouponErrorDesc"), {
+        description: error.response?.data?.message || t("addCouponError"),
+        duration: 7000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">{t("addCoupon")}</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>{t("addCoupon")}</DialogTitle>
+          <DialogDescription>{t("addCouponDesc")}</DialogDescription>
+        </DialogHeader>
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+              <FormField
+                control={form.control}
+                name="coupon_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("coupon")}</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("selectCoupon")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {coupons.map((coupon) => (
+                            <SelectItem
+                              key={coupon.id}
+                              value={coupon.id.toString()}
+                            >
+                              {coupon.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="value"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("value")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("valuePlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-2">
+                <DialogTrigger asChild>
+                  <Button variant="outline">{t("cancel")}</Button>
+                </DialogTrigger>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("submitting")}
+                    </>
+                  ) : (
+                    t("addCoupon")
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
-  const form = useForm<z.infer<typeof editFormSchema>>({
+  const form = useForm({
     resolver: zodResolver(editFormSchema),
     defaultValues: {
       title: pkg?.title || "",
@@ -94,26 +246,39 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
       to_date: pkg?.toDate
         ? new Date(pkg.toDate).toISOString().split("T")[0]
         : "",
+      max_providers:
+        pkg?.package_settings?.find((s) => s.criteria.name === "MaxProviders")
+          ?.value || "",
+      max_price:
+        pkg?.package_settings?.find((s) => s.criteria.name === "MaxPrice")
+          ?.value || "",
+      max_amount:
+        pkg?.package_settings?.find((s) => s.criteria.name === "MaxAmount")
+          ?.value || "",
+      max_coupons_number:
+        pkg?.package_settings?.find(
+          (s) => s.criteria.name === "MaxCouponsNumber"
+        )?.value || "",
       file: null,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof editFormSchema>) {
+  async function onSubmit(values) {
     try {
-      const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("description", values.description);
-      formData.append("from_date", values.from_date);
-      formData.append("to_date", values.to_date);
-      if (values.file) {
-        formData.append("file", values.file);
-      }
+
 
       await axios.put(
         `http://164.92.67.78:3002/api/packages/${pkg.id}`,
-        formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          from_date: values.from_date,
+          to_date: values.to_date,
+          amount: values.amount,
+          status: values.status,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -128,6 +293,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
 
       if (axios.isAxiosError(error)) {
         if (error.response) {
+          console.log(error.response.data);
           toast.error(
             `${t("editErrorDesc")}: ${
               error.response.data.message || t("editError")
@@ -155,115 +321,213 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
           {t("editPackage")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{t("editPackage")}</DialogTitle>
           <DialogDescription>{t("editPackageDesc")}</DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("title")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("titlePlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("description")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("descriptionPlaceholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="from_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("startDate")}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="to_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("endDate")}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="file"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("file")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        field.onChange(e.target.files?.[0] || null)
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-2">
-              <DialogTrigger asChild>
-                <Button variant="outline">{t("cancel")}</Button>
-              </DialogTrigger>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("submitting")}
-                  </>
-                ) : (
-                  t("updatePackage")
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+              {/* Title */}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("title")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("titlePlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              />
+
+              {/* Description */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("description")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("descriptionPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* From Date */}
+              <FormField
+                control={form.control}
+                name="from_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("startDate")}</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* To Date */}
+              <FormField
+                control={form.control}
+                name="to_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("endDate")}</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Max Providers */}
+              <FormField
+                control={form.control}
+                name="max_providers"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("maxProviders")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder={t("maxProvidersPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Max Price */}
+              <FormField
+                control={form.control}
+                name="max_price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("maxPrice")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder={t("maxPricePlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Max Amount */}
+              <FormField
+                control={form.control}
+                name="max_amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("maxAmount")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder={t("maxAmountPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Max Coupons Number */}
+              <FormField
+                control={form.control}
+                name="max_coupons_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("maxCouponsNumber")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder={t("maxCouponsNumberPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* File */}
+              <FormField
+                control={form.control}
+                name="file"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("file")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          field.onChange(e.target.files?.[0] || null)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-2">
+                <DialogTrigger asChild>
+                  <Button variant="outline">{t("cancel")}</Button>
+                </DialogTrigger>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("submitting")}
+                    </>
+                  ) : (
+                    t("updatePackage")
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
-const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
+const PackageDetailsModal = ({
+  pkg,
+  t,
+  open,
+  onOpenChange,
+  refreshPackages,
+}) => {
   if (!pkg) return null;
+
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] flex flex-col overflow-y-auto">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
             <MyImage src={pkg.image} alt={pkg.title} />
@@ -271,36 +535,122 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
           <DialogTitle>{pkg.title}</DialogTitle>
           <DialogDescription>{pkg.description}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("provider")}</h4>
-              <p className="text-sm text-muted-foreground">{pkg.provider}</p>
+        <div className="flex-1 px-4 py-4">
+          <div className="grid gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-sm font-medium">{t("id")}</h4>
+                <p className="text-sm text-muted-foreground">{pkg.id}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium">{t("provider")}</h4>
+                <p className="text-sm text-muted-foreground">{pkg.provider}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-sm font-medium">{t("status")}</h4>
+                <p className="text-sm text-muted-foreground capitalize">
+                  {t(pkg.status)}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium">{t("startDate")}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {new Date(pkg.fromDate).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-sm font-medium">{t("endDate")}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {new Date(pkg.toDate).toLocaleDateString()}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium">{t("amount")}</h4>
+                <p className="text-sm text-muted-foreground">{pkg.amount}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-sm font-medium">{t("averageRating")}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {pkg.average_rating}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium">{t("totalPrice")}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {pkg.total_price}
+                </p>
+              </div>
             </div>
             <div>
-              <h4 className="text-sm font-medium">{t("status")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">
-                {t(pkg.status)}
-              </p>
+              <h4 className="text-sm font-medium">{t("coupons")}</h4>
+              {pkg.coupons.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("noCouponsFound")}
+                </p>
+              ) : (
+                <div className="mt-2 w-full overflow-x-auto">
+                  <Table dir={isRTL ? "rtl" : "ltr"} className="min-w-full">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t("couponName")}</TableHead>
+                        <TableHead>{t("description")}</TableHead>
+                        <TableHead>{t("price")}</TableHead>
+                        <TableHead>{t("amount")}</TableHead>
+                        <TableHead>{t("couponCode")}</TableHead>
+                        <TableHead>{t("date")}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pkg.coupons.map((coupon) => (
+                        <TableRow key={coupon.id}>
+                          <TableCell>{coupon.name}</TableCell>
+                          <TableCell>
+                            {coupon.description.length > 50
+                              ? coupon.description.slice(0, 50) + "..."
+                              : coupon.description}
+                          </TableCell>
+                          <TableCell>{coupon.price}</TableCell>
+                          <TableCell>{coupon.amount}</TableCell>
+                          <TableCell>{coupon.coupon_code}</TableCell>
+                          <TableCell>
+                            {new Date(coupon.date).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="text-sm font-medium">{t("startDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(pkg.fromDate).toLocaleDateString()}
-              </p>
+              <h4 className="text-sm font-medium">{t("packageSettings")}</h4>
+              {pkg.package_settings.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("noSettingsFound")}
+                </p>
+              ) : (
+                <ul className="text-sm text-muted-foreground">
+                  {pkg.package_settings.map((setting) => (
+                    <li key={setting.id}>
+                      {t(setting.criteria.name)}: {setting.value}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("endDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(pkg.toDate).toLocaleDateString()}
-              </p>
+            <div className="flex justify-start">
+              <AddCouponToPackageDialog
+                pkg={pkg}
+                refreshPackages={refreshPackages}
+                t={t}
+              />
             </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("coupons")}</h4>
-            <p className="text-sm text-muted-foreground">{pkg.couponsCount}</p>
           </div>
         </div>
       </DialogContent>
@@ -365,6 +715,7 @@ const PackagesTable = ({
         t={t}
         open={!!selectedPackage}
         onOpenChange={(open) => !open && setSelectedPackage(null)}
+        refreshPackages={refreshPackages}
       />
       <Card className="shadow-none">
         <CardContent className="p-x-2">
@@ -545,7 +896,6 @@ function renderTableCellContent(
           {pkg.title.length > 15 ? pkg.title.slice(0, 15) + "..." : pkg.title}
         </span>
       );
-
     case "provider":
       return <span>{pkg.provider}</span>;
     case "dateRange":
@@ -605,7 +955,7 @@ export default function PackagesAllPage() {
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearchKeyPress = (e) => {
     if (e.key === "Enter") {
       setSearchQuery(inputValue);
       setCurrentPage(1);

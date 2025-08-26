@@ -90,11 +90,7 @@ export const fetchTopCategories = async () => {
   } catch (error) {
     console.error("Error fetching top categories:", error);
     return [
-      { rank: 1, category: "Travel", sales: 15, popularity: 100 },
-      { rank: 2, category: "Restaurants", sales: 9, popularity: 60 },
-      { rank: 3, category: "Electronics", sales: 6, popularity: 40 },
-      { rank: 4, category: "Fashion", sales: 5, popularity: 33 },
-      { rank: 5, category: "Entertainment", sales: 4, popularity: 27 },
+ 
     ];
   }
 };

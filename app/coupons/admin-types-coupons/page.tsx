@@ -75,8 +75,6 @@ import { Badge } from "@/components/ui/badge";
 import ReportGenerator from "@/components/reportGenerator";
 
 const COUPONS_PER_PAGE = 10;
-const FALLBACK_IMAGE =
-  "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
 
 const CouponTypesGrid = ({
   t,
@@ -345,7 +343,7 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {topCategoriesData.slice(0, 5).map((row, index) => (
+            {topCategoriesData.slice(0, 3).map((row, index) => (
               <TableRow key={index} className="hover:bg-secondary">
                 <TableCell className="py-2 px-4">{row.rank}</TableCell>
                 <TableCell className="py-2 px-4">{row.category}</TableCell>
@@ -438,6 +436,21 @@ const ReportGeneratorCard = ({
         </Button>
       </div>
     </Card>
+  );
+};
+
+const NavigationCards = ({ t }) => {
+  return (
+    <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-1">
+      <Link href="/coupons/admin-top-coupons" className="block w-full">
+        <Card className="w-full hover:shadow-sm shadow-none transition-shadow h-full cursor-pointer p-6">
+          <CardTitle className="text-lg text-primary mb-1">
+            {t("seeTopCoupons")}
+          </CardTitle>
+          <CardDescription>{t("seeTopCouponsDesc")}</CardDescription>
+        </Card>
+      </Link>
+    </div>
   );
 };
 
@@ -596,14 +609,8 @@ export default function TypesAllCouponsPage() {
         <>
           <div className="flex flex-col lg:flex-row gap-4 w-full">
             <TopCategoriesCard t={t} topCategoriesData={topCategoriesData} />
-            <ReportGeneratorCard
-              t={t}
-              couponType={couponType}
-              setCouponType={setCouponType}
-              dateRange={dateRange}
-              setDateRange={setDateRange}
-              handleGenerateReport={handleGenerateReport}
-            />
+            <NavigationCards t={t} />
+
           </div>
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">

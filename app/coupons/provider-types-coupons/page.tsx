@@ -61,6 +61,20 @@ import useSWR from "swr";
 
 const COUPONS_PER_PAGE = 10;
 
+const NavigationCards = ({ t }) => {
+  return (
+    <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-1">
+      <Link href="/coupons/admin-top-coupons" className="block w-full">
+        <Card className="w-full hover:shadow-sm shadow-none transition-shadow h-full cursor-pointer p-6">
+          <CardTitle className="text-lg text-primary mb-1">
+            {t("seeTopCoupons")}
+          </CardTitle>
+          <CardDescription>{t("seeTopCouponsDesc")}</CardDescription>
+        </Card>
+      </Link>
+    </div>
+  );
+};
 const TopCouponsCard = ({ t, topCouponsData }) => {
   return (
     <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
@@ -108,79 +122,79 @@ const TopCouponsCard = ({ t, topCouponsData }) => {
   );
 };
 
-const ReportGeneratorCard = ({
-  t,
-  couponType,
-  setCouponType,
-  dateRange,
-  setDateRange,
-  handleGenerateReport,
-}) => {
-  return (
-    <Card className="w-full lg:w-2/5 p-4">
-      <CardTitle className="text-lg text-primary mb-1">
-        {t("generateReport")}
-      </CardTitle>
-      <div className="space-y-4">
-        <div className="space-y-4 w-full">
-          <Label htmlFor="couponType">{t("couponType")}</Label>
-          <Select onValueChange={setCouponType} value={couponType}>
-            <SelectTrigger className="w-full" id="couponType">
-              <SelectValue placeholder={t("selectType")} />
-            </SelectTrigger>
-            <SelectContent>
-              {couponTypeOptions.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-4">
-          <Label>{t("selectDate")}</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 opacity-70 shrink-0" />
-                {dateRange?.from ? (
-                  dateRange?.to ? (
-                    <>
-                      {format(dateRange.from, "MMM dd, yyyy")} -{" "}
-                      {format(dateRange.to, "MMM dd, yyyy")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "MMM dd, yyyy")
-                  )
-                ) : (
-                  <span className="text-muted-foreground">
-                    {t("selectDate")}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={dateRange}
-                onSelect={(range) =>
-                  range && setDateRange({ from: range.from, to: range.to })
-                }
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <Button className="w-full mt-2" onClick={handleGenerateReport}>
-          {t("generateReport")}
-        </Button>
-      </div>
-    </Card>
-  );
-};
+// const ReportGeneratorCard = ({
+//   t,
+//   couponType,
+//   setCouponType,
+//   dateRange,
+//   setDateRange,
+//   handleGenerateReport,
+// }) => {
+//   return (
+//     <Card className="w-full lg:w-2/5 p-4">
+//       <CardTitle className="text-lg text-primary mb-1">
+//         {t("generateReport")}
+//       </CardTitle>
+//       <div className="space-y-4">
+//         <div className="space-y-4 w-full">
+//           <Label htmlFor="couponType">{t("couponType")}</Label>
+//           <Select onValueChange={setCouponType} value={couponType}>
+//             <SelectTrigger className="w-full" id="couponType">
+//               <SelectValue placeholder={t("selectType")} />
+//             </SelectTrigger>
+//             <SelectContent>
+//               {couponTypeOptions.map((type) => (
+//                 <SelectItem key={type.value} value={type.value}>
+//                   {type.label}
+//                 </SelectItem>
+//               ))}
+//             </SelectContent>
+//           </Select>
+//         </div>
+//         <div className="space-y-4">
+//           <Label>{t("selectDate")}</Label>
+//           <Popover>
+//             <PopoverTrigger asChild>
+//               <Button
+//                 variant="outline"
+//                 className="w-full justify-start text-left font-normal"
+//               >
+//                 <CalendarIcon className="mr-2 h-4 w-4 opacity-70 shrink-0" />
+//                 {dateRange?.from ? (
+//                   dateRange?.to ? (
+//                     <>
+//                       {format(dateRange.from, "MMM dd, yyyy")} -{" "}
+//                       {format(dateRange.to, "MMM dd, yyyy")}
+//                     </>
+//                   ) : (
+//                     format(dateRange.from, "MMM dd, yyyy")
+//                   )
+//                 ) : (
+//                   <span className="text-muted-foreground">
+//                     {t("selectDate")}
+//                   </span>
+//                 )}
+//               </Button>
+//             </PopoverTrigger>
+//             <PopoverContent className="w-auto p-0" align="start">
+//               <Calendar
+//                 mode="range"
+//                 selected={dateRange}
+//                 onSelect={(range) =>
+//                   range && setDateRange({ from: range.from, to: range.to })
+//                 }
+//                 numberOfMonths={2}
+//               />
+//             </PopoverContent>
+//           </Popover>
+//         </div>
+//         <Button className="w-full mt-2" onClick={handleGenerateReport}>
+//           {t("generateReport")}
+//         </Button>
+//       </div>
+//     </Card>
+//   );
+// };
 
 const CouponTypesGrid = ({
   t,
@@ -197,7 +211,7 @@ const CouponTypesGrid = ({
     error: typeDetailsError,
     isLoading: loadingTypeDetails,
   } = useSWR(
-    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null,
+    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null
   );
 
   return (
@@ -233,8 +247,8 @@ const CouponTypesGrid = ({
                       type.status === "active"
                         ? "bg-green-100 text-green-800"
                         : type.status === "expired"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
                     {t(type.status)}
@@ -365,7 +379,7 @@ export default function TypesAllCouponsPage() {
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value: string) => setSearchTerm(value), 300),
-    [],
+    []
   );
 
   const filteredCouponTypes = useMemo(() => {
@@ -410,7 +424,7 @@ export default function TypesAllCouponsPage() {
   const totalPages = Math.ceil(filteredCouponTypes.length / COUPONS_PER_PAGE);
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
-    currentPage * COUPONS_PER_PAGE,
+    currentPage * COUPONS_PER_PAGE
   );
 
   const handleGenerateReport = () => {
@@ -430,14 +444,15 @@ export default function TypesAllCouponsPage() {
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
       <div className="flex flex-col lg:flex-row gap-4 w-full">
         <TopCouponsCard t={t} topCouponsData={topCouponsData} />
-        <ReportGeneratorCard
+        {/* <ReportGeneratorCard
           t={t}
           couponType={couponType}
           setCouponType={setCouponType}
           dateRange={dateRange}
           setDateRange={setDateRange}
           handleGenerateReport={handleGenerateReport}
-        />
+        /> */}
+        <NavigationCards t={t} />
       </div>
       <Card>
         <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">

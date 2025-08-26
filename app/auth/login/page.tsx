@@ -58,6 +58,8 @@ export default function LoginPage() {
 
       // // Extract tokens and role from response
       const role = response.data.role || null;
+      // const role = "admin";
+
       const { access_token, refresh_token } = response.data.data || {};
 
       if (!access_token || !refresh_token || !role) {
