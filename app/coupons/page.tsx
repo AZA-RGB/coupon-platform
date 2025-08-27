@@ -112,7 +112,7 @@ const CouponsGrid = ({
                     className="flex-1 h-8 text-xs"
                     asChild
                   >
-                    <Link href={`/dashboard/coupons/${coupon.id}`}>
+                    <Link href={`/coupons/${coupon.id}`}>
                       {t("viewDetails")}
                     </Link>
                   </Button>

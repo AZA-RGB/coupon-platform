@@ -243,7 +243,7 @@ const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <div className="relative w-full h-64 mt-4">
             <MyImage src={event.image} alt={event.title} />
@@ -339,7 +339,7 @@ const EventsTable = ({
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(isRTL ? "ar-SA" : "en-US", {
+    return new Date(date).toLocaleDateString( "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",

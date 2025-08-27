@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2022/04/22/01/04/ticket-7148607_1280.png";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchCoupons = async (page = 1, search = '', status = '') => {
@@ -33,6 +33,58 @@ export const fetchCoupons = async (page = 1, search = '', status = '') => {
   }
 };
 
+export const fetchCouponDetails = async (id: number) => {
+  try {
+    const response = await axios.get(`http://164.92.67.78:3002/api/coupons/${id}`);
+    const { data } = response.data;
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      price: data.price ? `${parseFloat(data.price).toFixed(2)}` : '0.00',
+      coupon_type: data.couponType?.name || 'Unknown',
+      category: data.category?.name || 'Unknown',
+      provider: data.provider?.name || 'Unknown',
+      provider_location: data.provider?.location || 'Unknown',
+      provider_email: data.provider?.user?.email || 'Unknown',
+      provider_phone: data.provider?.user?.phone_number || 'Unknown',
+      coupon_status: data.coupon_status === 0 ? 'active' : data.coupon_status === 1 ? 'expired' : 'pending',
+      coupon_code: data.coupon_code,
+      date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+      average_rating: data.average_rating,
+      files: data.files.map((file) => ({
+        id: file.id,
+        path: CDN_BASE_URL + "/" + file.path,
+        file_type: file.file_type,
+        name: file.name,
+        title: file.title || null,
+      })),
+      couponCriteria: data.couponCriteria.map((criteria) => ({
+        id: criteria.id,
+        criteria_id: criteria.criteria_id,
+        coupon_id: criteria.coupon_id,
+        value: criteria.value,
+        criteria_name: criteria.criteria?.name || 'Unknown',
+        criteria_type: criteria.criteria?.type || 'Unknown',
+      })),
+      giftPrograms: data.giftPrograms.map((gift) => ({
+        id: gift.id,
+        giftable_type: gift.giftable_type,
+        giftable_id: gift.giftable_id,
+        program_type: gift.program_type,
+        points_value: gift.points_value,
+        provider_id: gift.provider_id,
+        gift_coupon_id: gift.gift_coupon_id,
+        is_active: gift.is_active,
+        created_at: gift.created_at,
+        updated_at: gift.updated_at,
+      })),
+    };
+  } catch (error) {
+    console.error(`Error fetching coupon details for ID ${id}:`, error);
+    throw error;
+  }
+};
 export const fetchCouponStats = async () => {
   try {
     const response = await axios.get('http://164.92.67.78:3002/api/coupons/coupons-general-statistics');

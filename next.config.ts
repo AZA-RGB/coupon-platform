@@ -2,6 +2,7 @@ const nextConfig = {
   images: {
     domains: [
       "images.immediate.co.uk",
+      "cdn.pixabay.com",
       "img.youtube.com",
       "via.placeholder.com",
       "ecoupon-files.sfo3.cdn.digitaloceanspaces.com",

@@ -1,94 +1,60 @@
-export const couponTypesData = [
-  {
-    id: 1,
-    name: "Discount Coupon",
-    description: "Percentage or fixed amount discounts",
-    status: "active",
-    addDate: "2023-05-15",
-    couponsCount: 12,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 2,
-    name: "BOGO",
-    description: "Buy One Get One offers",
-    status: "active",
-    addDate: "2023-06-20",
-    couponsCount: 8,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 3,
-    name: "Free Shipping",
-    description: "Free delivery offers",
-    status: "active",
-    addDate: "2023-07-10",
-    couponsCount: 15,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 4,
-    name: "Seasonal Offer",
-    description: "Seasonal promotions",
-    status: "pending",
-    addDate: "2023-08-05",
-    couponsCount: 5,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-  {
-    id: 5,
-    name: "Referral Coupon",
-    description: "Referral rewards",
-    status: "expired",
-    addDate: "2023-04-12",
-    couponsCount: 7,
-    image:
-      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-  },
-];
+import axios from "axios";
 
-export const couponTypeOptions = [
-  { label: "Discount Coupon", value: "discount" },
-  { label: "BOGO", value: "bogo" },
-  { label: "Free Shipping", value: "free_shipping" },
-  { label: "Seasonal Offer", value: "seasonal" },
-  { label: "Referral Coupon", value: "referral" },
-  { label: "New Customer Coupon", value: "new_customer" },
-];
+export const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2018/04/18/18/56/percent-3331252_1280.png";
+export const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
-export const topCouponsData = [
-   {
-    rank: 1,
-    category: "Electronics",
-    sales: 1200,
-    popularity: 95,
-  },
-  {
-    rank: 2,
-    category: "Fashion",
-    sales: 850,
-    popularity: 80,
-  },
-  {
-    rank: 3,
-    category: "Home & Kitchen",
-    sales: 600,
-    popularity: 65,
-  },
-  {
-    rank: 4,
-    category: "Books",
-    sales: 450,
-    popularity: 50,
-  },
-  {
-    rank: 5,
-    category: "Sports & Outdoors",
-    sales: 300,
-    popularity: 40,
-  },
-];
+export const fetchCouponTypes = async (page = 1, search = '', status = '') => {
+  try {
+    let url = `http://164.92.67.78:3002/api/coupon-types/index?page=${page}&per_page=10`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status !== '') url += `&status=${status}`;
+
+    const response = await axios.get(url);
+    const { data } = response.data;
+
+    if (!data || !Array.isArray(data.data)) {
+      console.error("Invalid API response structure:", response.data);
+      throw new Error("Invalid API response: data is missing or not an array");
+    }
+
+    return {
+      couponTypes: data.data.map((type) => ({
+        id: type.id,
+        name: type.name || "Untitled",
+        description: type.description || "No description",
+        status: type.status || "pending",
+        couponsCount: type.coupons_count || 0,
+        image: type.files && type.files.length > 0 ? `${CDN_BASE_URL}/${type.files[0].path}` : DEFAULT_IMAGE,
+      })),
+      totalPages: data.last_page,
+      currentPage: data.current_page,
+    };
+  } catch (error) {
+    console.error("Error fetching coupon types:", error);
+    return { couponTypes: [], totalPages: 1, currentPage: 1 };
+  }
+};
+
+export const fetchTopCategories = async () => {
+  try {
+    const url = `http://164.92.67.78:3002/api/categories/top-selling-categories`;
+    const response = await axios.get(url);
+    const { data } = response.data;
+
+    if (!data || !Array.isArray(data)) {
+      console.error("Invalid API response structure:", response.data);
+      throw new Error("Invalid API response: data is missing or not an array");
+    }
+
+    return data.map((item, index) => ({
+      rank: index + 1,
+      category: item.name || "Unknown",
+      sales: item.sales_count || 0,
+      popularity: Math.min(95 - index * 10, 95),
+    })).slice(0, 5); // Limit to top 5 categories
+  } catch (error) {
+    console.error("Error fetching top categories:", error);
+    return [];
+  }
+};
+

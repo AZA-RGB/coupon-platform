@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2017/02/23/13/05/avatar-2092113_1280.png";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 const API_BASE_URL = "http://164.92.67.78:3002/api";
 
@@ -90,11 +90,7 @@ export const fetchTopCategories = async () => {
   } catch (error) {
     console.error("Error fetching top categories:", error);
     return [
-      { rank: 1, category: "Travel", sales: 15, popularity: 100 },
-      { rank: 2, category: "Restaurants", sales: 9, popularity: 60 },
-      { rank: 3, category: "Electronics", sales: 6, popularity: 40 },
-      { rank: 4, category: "Fashion", sales: 5, popularity: 33 },
-      { rank: 5, category: "Entertainment", sales: 4, popularity: 27 },
+ 
     ];
   }
 };

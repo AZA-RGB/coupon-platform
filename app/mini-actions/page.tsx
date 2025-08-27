@@ -622,69 +622,131 @@ const MiniActionDetailsModal = ({
 }) => {
   if (!miniAction) return null;
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Check for dark mode preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkMode(mediaQuery.matches);
+    
+    const handler = (e) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="relative w-full h-64 mt-4">
-            <MyImage src={miniAction.image} alt={miniAction.description} />
+      <DialogContent className={`sm:max-w-[650px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
+        {/* Header with teal accent */}
+        <div className="bg-[#00cbc1] h-2 w-full rounded-t-lg"></div>
+        
+        <DialogHeader className="px-6 pt-4 pb-2">
+          <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden shadow-md">
+            <MyImage 
+              src={miniAction.image} 
+              alt={miniAction.description} 
+              className="object-cover w-full h-full"
+            />
           </div>
-          <DialogTitle>{miniAction.description}</DialogTitle>
-          <DialogDescription>{miniAction.content}</DialogDescription>
+          <DialogTitle className={`text-2xl font-bold mt-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            {miniAction.description}
+          </DialogTitle>
+          <DialogDescription className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            {miniAction.content}
+          </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        
+        <div className="grid gap-4 px-6 py-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("provider")}</h4>
-              <p className="text-sm text-muted-foreground">{miniAction.provider}</p>
+            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("provider")}</h4>
+              <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                {miniAction.provider}
+              </p>
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("type")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">{t(miniAction.type)}</p>
+            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("type")}</h4>
+              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00cbc1] bg-opacity-15 text-[#00857e] mt-1 capitalize">
+                {t(miniAction.type)}
+              </div>
             </div>
           </div>
+          
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("points")}</h4>
-              <p className="text-sm text-muted-foreground">{miniAction.points}</p>
+            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("points")}</h4>
+              <div className="flex items-center mt-1">
+                <svg className="w-5 h-5 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className={`text-lg font-bold ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                  {miniAction.points}
+                </span>
+              </div>
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("isManual")}</h4>
-              <p className="text-sm text-muted-foreground">
+            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("isManual")}</h4>
+              <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                miniAction.isManual 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+              }`}>
                 {miniAction.isManual ? t("yes") : t("no")}
-              </p>
+              </div>
             </div>
           </div>
+          
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("expiryDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(miniAction.expiryDate).toLocaleDateString()}
-              </p>
+            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("expiryDate")}</h4>
+              <div className="flex items-center mt-1">
+                <svg className="w-4 h-4 mr-2 text-[#00cbc1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                  {new Date(miniAction.expiryDate).toLocaleDateString()}
+                </span>
+              </div>
             </div>
             {miniAction.type === "video" && (
-              <div>
-                <h4 className="text-sm font-medium">{t("expectedTime")}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {miniAction.expectedTime} {t("seconds")}
-                </p>
+              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("expectedTime")}</h4>
+                <div className="flex items-center mt-1">
+                  <svg className="w-4 h-4 mr-2 text-[#00cbc1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                    {miniAction.expectedTime} {t("seconds")}
+                  </span>
+                </div>
               </div>
             )}
           </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("actionRules")}</h4>
-            <p className="text-sm text-muted-foreground">{miniAction.actionRules}</p>
+          
+          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+            <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("actionRules")}</h4>
+            <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              {miniAction.actionRules}
+            </p>
           </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("usageNumber")}</h4>
-            <p className="text-sm text-muted-foreground">{miniAction.usageNumber}</p>
+          
+          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+            <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("usageNumber")}</h4>
+            <div className="flex items-center mt-1">
+              <svg className="w-4 h-4 mr-2 text-[#00cbc1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                {miniAction.usageNumber}
+              </span>
+            </div>
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 };
-
 const MiniActionsTable = ({
   t,
   miniActions,

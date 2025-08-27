@@ -268,70 +268,180 @@ const AddItemDialog = ({ eventId, refreshEvents, t }) => {
   );
 };
 
+
 const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Check for system preference and watch for changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkMode(mediaQuery.matches);
+    
+    const handleChange = (e) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
   if (!event) return null;
+
+  // Helper variables for dark/light mode
+  const bgColor = isDarkMode ? "bg-gray-900" : "bg-white";
+  const textColor = isDarkMode ? "text-gray-100" : "text-gray-800";
+  const textMutedColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-200";
+  const cardBgColor = isDarkMode ? "bg-gray-800" : "bg-gray-50";
+
+  const getStatusBadge = (status) => {
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
+    
+    switch (status) {
+      case "active":
+        return isDarkMode 
+          ? `${baseClasses} bg-green-900/30 text-green-300` 
+          : `${baseClasses} bg-green-100 text-green-800`;
+      case "inactive":
+        return isDarkMode 
+          ? `${baseClasses} bg-red-900/30 text-red-300` 
+          : `${baseClasses} bg-red-100 text-red-800`;
+      case "pending":
+        return isDarkMode 
+          ? `${baseClasses} bg-yellow-900/30 text-yellow-300` 
+          : `${baseClasses} bg-yellow-100 text-yellow-800`;
+      default:
+        return isDarkMode 
+          ? `${baseClasses} bg-gray-800 text-gray-300` 
+          : `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="relative w-full h-64 mt-4">
-            <MyImage src={event.image} alt={event.title} />
+      <DialogContent className={`sm:max-w-[650px] max-h-[85vh] overflow-y-auto p-0 ${bgColor}`}>
+        <div className="relative">
+          {/* Header with gradient background */}
+          <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-6 text-white">
+            <DialogHeader className="space-y-2">
+              <div className="flex justify-between items-start">
+                <DialogTitle className="text-2xl font-bold">{event.title}</DialogTitle>
+                <span className={getStatusBadge(event.status)}>
+                  {t(event.status)}
+                </span>
+              </div>
+              <DialogDescription className="text-teal-100">
+                {event.description}
+              </DialogDescription>
+            </DialogHeader>
           </div>
-          <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("userId")}</h4>
-              <p className="text-sm text-muted-foreground">{event.userId}</p>
+
+          <div className="p-6">
+            {/* Event Image */}
+            <div className="relative w-full h-72 rounded-lg overflow-hidden mb-6 shadow-md">
+              <MyImage 
+                src={event.image} 
+                alt={event.title} 
+                className="object-cover w-full h-full"
+              />
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("status")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">
-                {t(event.status)}
-              </p>
+
+            {/* Main Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+              <DetailCard 
+                title={t("userId")} 
+                value={event.userId} 
+                icon="fa-user"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard 
+                title={t("status")} 
+                value={t(event.status)} 
+                icon="fa-info-circle"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard 
+                title={t("startDate")} 
+                value={new Date(event.fromDate).toLocaleDateString()} 
+                icon="fa-calendar-day"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard 
+                title={t("endDate")} 
+                value={new Date(event.toDate).toLocaleDateString()} 
+                icon="fa-calendar-check"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard 
+                title={t("couponsCount")} 
+                value={event.couponsCount} 
+                icon="fa-ticket-alt"
+                isDarkMode={isDarkMode}
+              />
             </div>
+
+            {/* Coupons List */}
+            {event.coupons.length > 0 && (
+              <div className="mb-4">
+                <h4 className={`text-lg font-semibold mb-3 flex items-center ${textColor}`}>
+                  <i className="fas fa-tags mr-2 text-teal-500"></i>
+                  {t("items")}
+                </h4>
+                <div className="space-y-3">
+                  {event.coupons.map((item) => (
+                    <div key={item.id} className={`${cardBgColor} p-4 rounded-lg ${borderColor} border`}>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className={`font-medium ${textColor}`}>{item.name}</p>
+                          <div className="flex items-center mt-2">
+                            <span className={`text-sm ${item.couponCode === "N/A" ? 'bg-teal-500' : 'bg-teal-600'} text-white px-2 py-1 rounded-md mr-2`}>
+                              {t(item.couponCode === "N/A" ? "package" : "coupon")}
+                            </span>
+                            {item.couponCode !== "N/A" ? (
+                              <span className={`text-sm ${textMutedColor}`}>
+                                {item.couponCode}
+                              </span>
+                            ) : (
+                              <span className={`text-sm ${textMutedColor}`}>
+                                {t("price")}: {item.price}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <i className={`fas ${item.couponCode === "N/A" ? 'fa-box' : 'fa-ticket-alt'} text-teal-500`}></i>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("startDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(event.fromDate).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("endDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(event.toDate).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("couponsCount")}</h4>
-            <p className="text-sm text-muted-foreground">
-              {event.couponsCount}
-            </p>
-          </div>
-          {event.coupons.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium">{t("items")}</h4>
-              <ul className="text-sm text-muted-foreground">
-                {event.coupons.map((item) => (
-                  <li key={item.id}>
-                    {item.name} ({t(item.couponCode === "N/A" ? "package" : "coupon")}: {item.couponCode !== "N/A" ? item.couponCode : t("price") + ": " + item.price})
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 };
 
+// Helper component for detail items
+const DetailCard = ({ title, value, icon, isDarkMode = false }) => {
+  const cardBgColor = isDarkMode ? "bg-gray-800" : "bg-gray-50";
+  const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
+  const textMutedColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+  
+  return (
+    <div className={`${cardBgColor} p-4 rounded-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}>
+      <div className="flex items-center mb-2">
+        <div className="bg-teal-100 text-teal-600 p-2 rounded-md mr-3">
+          <i className={`fas ${icon} text-sm`}></i>
+        </div>
+        <h4 className={`text-sm font-medium ${textMutedColor}`}>{title}</h4>
+      </div>
+      <p className={`text-base font-semibold ${textColor} pl-11`}>{value || "N/A"}</p>
+    </div>
+  );
+};
 const EventsTable = ({
   t,
   events,
@@ -362,7 +472,7 @@ const EventsTable = ({
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(isRTL ? "ar-SA" : "en-US", {
+    return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",

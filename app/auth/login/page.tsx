@@ -58,6 +58,8 @@ export default function LoginPage() {
 
       // // Extract tokens and role from response
       const role = response.data.role || null;
+      // const role = "admin";
+
       const { access_token, refresh_token } = response.data.data || {};
 
       if (!access_token || !refresh_token || !role) {
@@ -68,9 +70,9 @@ export default function LoginPage() {
       console.log("Role:", role);
 
       // // Save tokens and role to localStorage
-      Cookies.set("token", access_token, { expires: 7 }); // expires in 7 days
-      Cookies.set("refreshToken", refresh_token, { expires: 30 }); // expires in 30 days
-      Cookies.set("userRole", role, { expires: 7 }); // expires in 7 days
+      Cookies.set("token", access_token, { expires: 30 }); // expires in 30 days
+      Cookies.set("refreshToken", refresh_token, { expires: 90 }); // expires in 90 days
+      Cookies.set("userRole", role, { expires: 30 }); // expires in 30 days
 
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),

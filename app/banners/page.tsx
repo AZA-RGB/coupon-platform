@@ -41,9 +41,8 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
-import { fetchPackages, deletePackage } from "./constants";
+import { fetchBanners, createBanner, updateBanner, deleteBanner } from "./constants";
 import MyImage from "@/components/my-image";
-import AddTypeDialog from "@/components/AddType";
 import {
   Dialog,
   DialogContent,
@@ -52,7 +51,6 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import AddPackageDialog from "@/components/AddPackage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -66,15 +64,12 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
-import ReportGenerator from "@/components/reportGenerator";
 
-const PACKAGES_PER_PAGE = 10;
+const BANNERS_PER_PAGE = 10;
 
-const editFormSchema = z.object({
-  title: z.string().min(1, { message: "titleRequired" }),
+const formSchema = z.object({
+  name: z.string().min(1, { message: "nameRequired" }),
   description: z.string().min(1, { message: "descriptionRequired" }),
-  from_date: z.string().min(1, { message: "startDateRequired" }),
-  to_date: z.string().min(1, { message: "endDateRequired" }),
   file: z
     .any()
     .optional()
@@ -83,57 +78,155 @@ const editFormSchema = z.object({
     }),
 });
 
-const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
-  const form = useForm<z.infer<typeof editFormSchema>>({
-    resolver: zodResolver(editFormSchema),
+const AddBannerDialog = ({ refreshBanners, t }) => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      title: pkg?.title || "",
-      description: pkg?.description || "",
-      from_date: pkg?.fromDate
-        ? new Date(pkg.fromDate).toISOString().split("T")[0]
-        : "",
-      to_date: pkg?.toDate
-        ? new Date(pkg.toDate).toISOString().split("T")[0]
-        : "",
+      name: "",
+      description: "",
       file: null,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof editFormSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("description", values.description);
-      formData.append("from_date", values.from_date);
-      formData.append("to_date", values.to_date);
-      if (values.file) {
-        formData.append("file", values.file);
+      const result = await createBanner(values);
+      if (result.success) {
+        toast.success(t("addSuccessDesc"), {
+          description: t("addSuccess"),
+          duration: 3000,
+        });
+        refreshBanners();
+        form.reset();
+      } else {
+        throw result.error;
       }
-
-      await axios.put(
-        `http://164.92.67.78:3002/api/packages/${pkg.id}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-      );
-
-      toast.success(t("editSuccessDesc"), {
-        description: t("editSuccess"),
-        duration: 3000,
-      });
-      refreshPackages();
-      form.reset();
     } catch (error) {
       console.error("Form submission error", error);
-
       if (axios.isAxiosError(error)) {
         if (error.response) {
           toast.error(
-            `${t("editErrorDesc")}: ${
-              error.response.data.message || t("editError")
-            }`,
-            { duration: 7000 },
+            `${t("addErrorDesc")}: ${error.response.data.message || t("addError")}`,
+            { duration: 7000 }
+          );
+        } else if (error.request) {
+          toast.error(t("networkError"), { duration: 7000 });
+        } else {
+          toast.error(t("requestError"), { duration: 7000 });
+        }
+      } else {
+        toast.error(t("unexpectedError"), { duration: 7000 });
+      }
+    }
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm">{t("addBanner")}</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{t("addBanner")}</DialogTitle>
+          <DialogDescription>{t("addBannerDesc")}</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("name")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("namePlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("description2")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("file")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end gap-2">
+              <DialogTrigger asChild>
+                <Button variant="outline">{t("cancel")}</Button>
+              </DialogTrigger>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("submitting")}
+                  </>
+                ) : (
+                  t("addBanner")
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const EditBannerDialog = ({ banner, refreshBanners, t }) => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: banner?.name || "",
+      description: banner?.description || "",
+      file: null,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const result = await updateBanner(banner.id, values);
+      if (result.success) {
+        toast.success(t("editSuccessDesc"), {
+          description: t("editSuccess"),
+          duration: 3000,
+        });
+        refreshBanners();
+        form.reset();
+      } else {
+        throw result.error;
+      }
+    } catch (error) {
+      console.error("Form submission error", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          toast.error(
+            `${t("editErrorDesc")}: ${error.response.data.message || t("editError")}`,
+            { duration: 7000 }
           );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
@@ -153,24 +246,24 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
           variant="link"
           className="text-primary underline hover:text-primary/80 p-0 h-auto"
         >
-          {t("editPackage")}
+          {t("editBanner")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("editPackage")}</DialogTitle>
-          <DialogDescription>{t("editPackageDesc")}</DialogDescription>
+          <DialogTitle>{t("editBanner")}</DialogTitle>
+          <DialogDescription>{t("editBannerDesc")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField
               control={form.control}
-              name="title"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("title")}</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("titlePlaceholder")} {...field} />
+                    <Input placeholder={t("namePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -181,38 +274,9 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("description")}</FormLabel>
+                  <FormLabel>{t("description2")}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("descriptionPlaceholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="from_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("startDate")}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="to_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("endDate")}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
+                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -228,9 +292,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <Input
                       type="file"
                       accept="image/*"
-                      onChange={(e) =>
-                        field.onChange(e.target.files?.[0] || null)
-                      }
+                      onChange={(e) => field.onChange(e.target.files?.[0] || null)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -248,7 +310,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     {t("submitting")}
                   </>
                 ) : (
-                  t("updatePackage")
+                  t("updateBanner")
                 )}
               </Button>
             </div>
@@ -259,95 +321,25 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
   );
 };
 
-const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
-  if (!pkg) return null;
-
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Detect system dark mode
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDarkMode(mediaQuery.matches);
-    const handleChange = (e) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  const bgColor = isDarkMode ? "bg-gray-900" : "bg-white";
-  const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
-  const textMutedColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+const BannerDetailsModal = ({ banner, t, open, onOpenChange }) => {
+  if (!banner) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-[650px] max-h-[85vh] flex flex-col rounded-xl ${bgColor} overflow-y-auto`}>
-        {/* Header + Image */}
-        <div className="relative flex-shrink-0">
-          <div className="w-full h-56 relative overflow-hidden">
-            <MyImage 
-              src={pkg.image} 
-              alt={pkg.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+      <DialogContent className="sm:max-w-[625px]">
+        <DialogHeader>
+          <div className="relative w-full h-64 mt-4">
+            <MyImage src={banner.image} alt={banner.name} />
           </div>
-          <div className="absolute -bottom-6 left-6">
-            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shadow-lg border-2 border-background">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Scrollable content */}
-        <div className="px-6 pt-8 pb-6  flex-1">
-          <DialogHeader>
-            <DialogTitle className={`text-2xl font-bold ${textColor}`}>{pkg.title}</DialogTitle>
-            <DialogDescription className={`text-base mt-2 ${textMutedColor}`}>{pkg.description}</DialogDescription>
-          </DialogHeader>
-
-          {/* Details Grid */}
-          <div className="grid gap-5 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
-                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("provider")}</h4>
-                <p className={`text-sm font-medium ${textColor}`}>{pkg.provider}</p>
-              </div>
-              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
-                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("status")}</h4>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  pkg.status === 'active'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : pkg.status === 'pending'
-                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                }`}>
-                  {t(pkg.status)}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
-                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("startDate")}</h4>
-                <p className={`text-sm font-medium ${textColor}`}>{new Date(pkg.fromDate).toLocaleDateString()}</p>
-              </div>
-              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
-                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("endDate")}</h4>
-                <p className={`text-sm font-medium ${textColor}`}>{new Date(pkg.toDate).toLocaleDateString()}</p>
-              </div>
-            </div>
-
-            <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
-              <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("coupons")}</h4>
-              <p className={`text-2xl font-bold mt-1 ${textColor}`}>{pkg.couponsCount}</p>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>{t("close")}</Button>
-            <Button className="bg-primary hover:bg-primary/90">{t("viewDetails")}</Button>
+          <DialogTitle>{banner.name}</DialogTitle>
+          <DialogDescription>{banner.description}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div>
+            <h4 className="text-sm font-medium">{t("createdAt")}</h4>
+            <p className="text-sm text-muted-foreground">
+              {new Date(banner.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
       </DialogContent>
@@ -355,39 +347,37 @@ const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
   );
 };
 
-const PackagesTable = ({
+const BannersTable = ({
   t,
-  packages,
+  banners,
   currentPage,
   setCurrentPage,
   totalPages,
-  selectedPackages,
-  setSelectedPackages,
+  selectedBanners,
+  setSelectedBanners,
   handleDeleteSelected,
-  handleSelectPackage,
-  refreshPackages,
+  handleSelectBanner,
+  refreshBanners,
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [selectedBanner, setSelectedBanner] = useState(null);
 
   const columns = useMemo(
     () => [
       { key: "select", label: t("select") || "Select" },
       { key: "image", label: t("image") || "Image" },
-      { key: "title", label: t("title") || "Title" },
-      { key: "provider", label: t("provider") || "Provider" },
-      { key: "dateRange", label: t("dateRange") || "Date Range" },
-      { key: "status", label: t("status") || "Status" },
-      { key: "coupons", label: t("coupons") || "Coupons" },
+      { key: "name", label: t("name") || "Name" },
+      { key: "description", label: t("description2") || "Description" },
+      { key: "createdAt", label: t("createdAt") || "Created At" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
-    [t],
+    [t]
   );
 
   const displayedData = useMemo(
-    () => (isRTL ? [...packages].reverse() : packages),
-    [packages, isRTL],
+    () => (isRTL ? [...banners].reverse() : banners),
+    [banners, isRTL]
   );
 
   const formatDate = (date) => {
@@ -399,19 +389,19 @@ const PackagesTable = ({
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = packages.every((pkg) =>
-      selectedPackages.includes(pkg.id),
+    const allSelected = banners.every((banner) =>
+      selectedBanners.includes(banner.id)
     );
-    setSelectedPackages(allSelected ? [] : packages.map((pkg) => pkg.id));
+    setSelectedBanners(allSelected ? [] : banners.map((banner) => banner.id));
   };
 
   return (
     <>
-      <PackageDetailsModal
-        pkg={selectedPackage}
+      <BannerDetailsModal
+        banner={selectedBanner}
         t={t}
-        open={!!selectedPackage}
-        onOpenChange={(open) => !open && setSelectedPackage(null)}
+        open={!!selectedBanner}
+        onOpenChange={(open) => !open && setSelectedBanner(null)}
       />
       <Card className="shadow-none">
         <CardContent className="p-x-2">
@@ -419,14 +409,13 @@ const PackagesTable = ({
             <Button
               variant="outline"
               onClick={handleToggleSelectAll}
-              disabled={packages.length === 0}
+              disabled={banners.length === 0}
               className="cursor-pointer"
             >
               {t(
-                selectedPackages.length === packages.length &&
-                  packages.length > 0
+                selectedBanners.length === banners.length && banners.length > 0
                   ? "deselectAll"
-                  : "selectAll",
+                  : "selectAll"
               )}
             </Button>
             <AlertDialog>
@@ -434,7 +423,7 @@ const PackagesTable = ({
                 <Button
                   variant="destructive"
                   className="cursor-pointer"
-                  disabled={selectedPackages.length === 0}
+                  disabled={selectedBanners.length === 0}
                 >
                   {t("deleteSelected")}
                 </Button>
@@ -443,7 +432,7 @@ const PackagesTable = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {t("confirmDeleteDesc", { count: selectedPackages.length })}
+                    {t("confirmDeleteDesc", { count: selectedBanners.length })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -479,32 +468,32 @@ const PackagesTable = ({
                         colSpan={columns.length}
                         className="text-center py-8 text-muted-foreground"
                       >
-                        {t("noPackagesFound")}
+                        {t("noBannersFound")}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    displayedData.map((pkg) => (
+                    displayedData.map((banner) => (
                       <TableRow
-                        key={pkg.id}
+                        key={banner.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         {columns.map((column) => (
                           <TableCell
-                            key={`${pkg.id}-${column.key}`}
+                            key={`${banner.id}-${column.key}`}
                             className={`px-4 py-3 ${
                               isRTL ? "text-right" : "text-left"
                             }`}
                           >
                             {renderTableCellContent(
-                              pkg,
+                              banner,
                               column.key,
                               isRTL,
                               t,
                               formatDate,
-                              handleSelectPackage,
-                              setSelectedPackage,
-                              refreshPackages,
-                              selectedPackages,
+                              handleSelectBanner,
+                              setSelectedBanner,
+                              refreshBanners,
+                              selectedBanners
                             )}
                           </TableCell>
                         ))}
@@ -519,15 +508,11 @@ const PackagesTable = ({
         <CardFooter className="pt-4">
           <Pagination className="w-full">
             <PaginationContent
-              className={`w-full ${
-                isRTL ? "justify-center" : "justify-center"
-              }`}
+              className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}
             >
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() =>
-                    currentPage > 1 && setCurrentPage(currentPage - 1)
-                  }
+                  onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
                   className="cursor-pointer"
                   disabled={currentPage === 1}
                 />
@@ -561,82 +546,58 @@ const PackagesTable = ({
 };
 
 function renderTableCellContent(
-  pkg,
+  banner,
   key,
   isRTL,
   t,
   formatDate,
-  handleSelectPackage,
-  setSelectedPackage,
-  refreshPackages,
-  selectedPackages,
+  handleSelectBanner,
+  setSelectedBanner,
+  refreshBanners,
+  selectedBanners
 ) {
   switch (key) {
     case "select":
       return (
         <Checkbox
           className="mx-6"
-          checked={selectedPackages.includes(pkg.id)}
-          onCheckedChange={() => handleSelectPackage(pkg.id)}
+          checked={selectedBanners.includes(banner.id)}
+          onCheckedChange={() => handleSelectBanner(banner.id)}
         />
       );
     case "image":
       return (
         <div className="relative w-9 h-10 cursor-pointer">
-          <MyImage src={pkg.image} alt={pkg.title} />
+          <MyImage src={banner.image} alt={banner.name} />
         </div>
       );
-    case "title":
+    case "name":
       return (
         <span className="font-medium">
-          {pkg.title.length > 15 ? pkg.title.slice(0, 15) + "..." : pkg.title}
+          {banner.name.length > 15 ? banner.name.slice(0, 15) + "..." : banner.name}
         </span>
       );
-    case "provider":
-      return <span>{pkg.provider}</span>;
-    case "dateRange":
+    case "description":
       return (
         <span>
-          {formatDate(pkg.fromDate)} - {formatDate(pkg.toDate)}
+          {banner.description.length > 20
+            ? banner.description.slice(0, 20) + "..."
+            : banner.description}
         </span>
       );
-    case "status":
-      return (
-        <span
-          className={`px-2 py-0.5 rounded-full text-xs ${
-            pkg.status === "active"
-              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-              : pkg.status === "expired"
-                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-          }`}
-        >
-          {t(pkg.status)}
-        </span>
-      );
-    case "coupons":
-      return <span>{pkg.couponsCount}</span>;
+    case "createdAt":
+      return <span>{formatDate(banner.createdAt)}</span>;
     case "actions":
       return (
         <div className="flex gap-2">
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"
-            onClick={() => setSelectedPackage(pkg)}
+            onClick={() => setSelectedBanner(banner)}
           >
             {t("viewDetails")}
           </Button>
-          <EditPackageDialog
-            pkg={pkg}
-            refreshPackages={refreshPackages}
-            t={t}
-          />
-          <ReportGenerator
-            variant="link"
-            object={pkg}
-            object_type="packages"
-            key={pkg.id}
-          />
+          <EditBannerDialog banner={banner} refreshBanners={refreshBanners} t={t} />
         </div>
       );
     default:
@@ -644,14 +605,13 @@ function renderTableCellContent(
   }
 }
 
-export default function PackagesAllPage() {
-  const t = useTranslations("Packages");
+export default function BannersAllPage() {
+  const t = useTranslations("Banners");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-  const [selectedPackages, setSelectedPackages] = useState([]);
-  const [packages, setPackages] = useState([]);
+  const [selectedBanners, setSelectedBanners] = useState([]);
+  const [banners, setBanners] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -664,30 +624,29 @@ export default function PackagesAllPage() {
     }
   };
 
-  const handleSelectPackage = (id) => {
-    setSelectedPackages((prev) =>
-      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id],
+  const handleSelectBanner = (id) => {
+    setSelectedBanners((prev) =>
+      prev.includes(id) ? prev.filter((bannerId) => bannerId !== id) : [...prev, id]
     );
   };
 
-  const fetchPackagesData = async () => {
+  const fetchBannersData = async () => {
     setIsLoading(true);
     try {
-      const {
-        packages,
-        totalPages,
-        currentPage: apiCurrentPage,
-      } = await fetchPackages(currentPage, searchQuery, statusFilter);
-      if (!Array.isArray(packages)) {
-        throw new Error("Packages data is not an array");
+      const { banners, totalPages, currentPage: apiCurrentPage } = await fetchBanners(
+        currentPage,
+        searchQuery
+      );
+      if (!Array.isArray(banners)) {
+        throw new Error("Banners data is not an array");
       }
-      setPackages(packages);
+      setBanners(banners);
       setTotalPages(totalPages || 1);
       if (apiCurrentPage !== currentPage) {
         setCurrentPage(apiCurrentPage || 1);
       }
     } catch (error) {
-      console.error("Error in fetchPackagesData:", {
+      console.error("Error in fetchBannersData:", {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
@@ -702,7 +661,7 @@ export default function PackagesAllPage() {
         description: t("fetchError"),
         duration: 5000,
       });
-      setPackages([]);
+      setBanners([]);
       setTotalPages(1);
     } finally {
       setIsLoading(false);
@@ -710,13 +669,13 @@ export default function PackagesAllPage() {
   };
 
   useEffect(() => {
-    fetchPackagesData();
-  }, [currentPage, searchQuery, statusFilter]);
+    fetchBannersData();
+  }, [currentPage, searchQuery]);
 
   const handleDeleteSelected = async () => {
     setIsLoading(true);
     try {
-      const deletePromises = selectedPackages.map((id) => deletePackage(id));
+      const deletePromises = selectedBanners.map((id) => deleteBanner(id));
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
@@ -724,60 +683,50 @@ export default function PackagesAllPage() {
           const error = result.error;
           const status = error.response?.status;
           const message = error.response?.data?.message || error.message;
-          return `Package ID ${result.id}: ${
-            status ? `Status ${status} - ` : ""
-          }${message}`;
+          return `Banner ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
         });
         toast.error(t("deleteFailedDesc"), {
           description: errorMessages.join("; ") || t("deleteFailed"),
           duration: 7000,
         });
       } else {
-        toast.success(
-          t("deleteSuccessDesc", { count: selectedPackages.length }),
-          {
-            description: t("deleteSuccess"),
-            duration: 3000,
-          },
-        );
-        setSelectedPackages([]);
+        toast.success(t("deleteSuccessDesc", { count: selectedBanners.length }), {
+          description: t("deleteSuccess"),
+          duration: 3000,
+        });
+        setSelectedBanners([]);
         setCurrentPage(1);
-        await fetchPackagesData();
+        await fetchBannersData();
       }
     } catch (error) {
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
       toast.error(
-        `${t("deleteErrorDesc")} ${
-          status ? `(Status ${status})` : ""
-        }: ${message}`,
+        `${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
         {
           description: t("deleteError"),
           duration: 7000,
-        },
+        }
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-  const currentPackages = useMemo(() => {
-    return packages.sort((a, b) => {
+  const currentBanners = useMemo(() => {
+    return banners.sort((a, b) => {
       if (filterType === "newest") {
-        return new Date(b.fromDate).getTime() - new Date(a.fromDate).getTime();
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       } else if (filterType === "oldest") {
-        return new Date(a.fromDate).getTime() - new Date(b.fromDate).getTime();
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
       return 0;
     });
-  }, [packages, filterType]);
+  }, [banners, filterType]);
 
   const filterOptions = [
     { label: t("newest"), value: "newest" },
     { label: t("oldest"), value: "oldest" },
-    { label: t("active"), value: "0" },
-    { label: t("expired"), value: "1" },
-    { label: t("pending"), value: "2" },
   ];
 
   return (
@@ -795,7 +744,7 @@ export default function PackagesAllPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2 relative z-50">
-                <AddPackageDialog refreshPackages={fetchPackagesData} />
+                <AddBannerDialog refreshBanners={fetchBannersData} t={t} />
                 <div className="relative">
                   <Button
                     variant="outline"
@@ -812,19 +761,10 @@ export default function PackagesAllPage() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value ||
-                            statusFilter === item.value
-                              ? "bg-gray-200 dark:bg-gray-600"
-                              : ""
+                            filterType === item.value ? "bg-gray-200 dark:bg-gray-600" : ""
                           }`}
                           onClick={() => {
-                            if (["newest", "oldest"].includes(item.value)) {
-                              setFilterType(item.value);
-                              setStatusFilter("");
-                            } else {
-                              setStatusFilter(item.value);
-                              setFilterType("");
-                            }
+                            setFilterType(item.value);
                             setCurrentPage(1);
                             setIsFilterMenuOpen(false);
                           }}
@@ -849,17 +789,17 @@ export default function PackagesAllPage() {
               </div>
             </CardHeader>
           </Card>
-          <PackagesTable
+          <BannersTable
             t={t}
-            packages={currentPackages}
+            banners={currentBanners}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
-            selectedPackages={selectedPackages}
-            setSelectedPackages={setSelectedPackages}
+            selectedBanners={selectedBanners}
+            setSelectedBanners={setSelectedBanners}
             handleDeleteSelected={handleDeleteSelected}
-            handleSelectPackage={handleSelectPackage}
-            refreshPackages={fetchPackagesData}
+            handleSelectBanner={handleSelectBanner}
+            refreshBanners={fetchBannersData}
           />
         </>
       )}

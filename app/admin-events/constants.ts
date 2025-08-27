@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE =
+  "https://cdn.pixabay.com/photo/2017/06/10/06/39/calender-2389150_1280.png";
 
 export const fetchSeasonalEvents = async (page = 1, perPage = 10) => {
   try {
