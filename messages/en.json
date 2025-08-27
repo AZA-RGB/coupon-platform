@@ -242,7 +242,7 @@
     "backToCoupons": "Back to Coupons",
     "loading": "Loading...",
     "details": "Details",
-"giftCoupon": "Gift Coupon",
+    "giftCoupon": "Gift Coupon",
     "type": "Type",
 
     "averageRating": "Average Rating",
@@ -419,7 +419,7 @@
     "pending for approval": "Pending for Approval"
   },
   "Customers": {
-     "close": "Close",
+    "close": "Close",
     "bronze": "Bronze",
     "loyaltyTier": "Loyalty Tier",
     "totalPurchases": "Total Purchases",
@@ -541,13 +541,16 @@
   },
   "CouponsTable": {
     "topCoupons": "Top Coupons",
-    "billID": "Bill ID",
-    "coupon": "Coupon",
-    "date": "Date",
-    "customers": "Customers",
-    "top10Coupons": "top 10 coupons",
+    "top10Coupons": "Top 10 most popular coupons",
     "forMe": "For me",
-    "forAll": "For all"
+    "forAll": "For all",
+    "couponCode": "Code",
+    "couponName": "Coupon",
+    "category": "Category",
+    "price": "Price",
+    "amount": "Amount",
+    "date": "Date",
+    "provider": "Provider"
   },
   "addCoverImage": "Add cover image",
   "pickDate": "pick a date",
