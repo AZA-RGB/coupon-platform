@@ -4,7 +4,7 @@ import QRCode from "react-qr-code";
 import useSWR from "swr";
 import { Spinner } from "../ui/spinner";
 import { useEffect, useState } from "react";
-
+import Cookies from "js-cookie";
 export default function QRCodeComp({ size }) {
   const [rand, setRand] = useState(0);
   useEffect(() => {
@@ -18,6 +18,9 @@ export default function QRCodeComp({ size }) {
 
   if (isLoading) return <Spinner className={`animate-spin h-${size + 10}`} />;
   if (error) return <Spinner className="animate-spin" />;
+  if (data) {
+    Cookies.set("id", data.data.user_id);
+  }
   return (
     <div className="border-8 rounded-xl border-white">
       <QRCode
