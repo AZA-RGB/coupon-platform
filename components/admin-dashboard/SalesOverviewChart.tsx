@@ -1,49 +1,50 @@
 "use client";
 
 import React from "react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  defs,
-  linearGradient,
-  stop,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+import useSWR from "swr";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#00cbc1",
-  },
-  mobile: {
-    label: "Mobile",
+  total_purchases: {
+    label: "Purchases",
     color: "#00cbc1",
   },
 } satisfies ChartConfig;
 
-export default React.memo(function SalesOverviewChart() {
+const SalesOverviewChart = React.memo(function SalesOverviewChart() {
+  const { data, error } = useSWR("/providers/charts");
+
+  if (error) return <div>Error loading data</div>;
+  if (!data) return <div>Loading...</div>;
+
+  const chartData = data.data.purchases_summary.map((item: any) => ({
+    month: item.month,
+    total_purchases: item.total_purchases,
+  }));
+
   return (
-    <ChartContainer className="max-h-96" config={chartConfig}>
-      <AreaChart data={chartData}>
+    <ChartContainer config={chartConfig} className="min-h-full w-full">
+      <AreaChart accessibilityLayer data={chartData}>
+        <defs>
+          <linearGradient id="fillGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="0%"
+              stopColor="var(--color-total_purchases)"
+              stopOpacity={0.8}
+            />
+            <stop
+              offset="100%"
+              stopColor="var(--color-total_purchases)"
+              stopOpacity={0}
+            />
+          </linearGradient>
+        </defs>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="month"
@@ -52,30 +53,25 @@ export default React.memo(function SalesOverviewChart() {
           axisLine={false}
           tickFormatter={(value) => value.slice(0, 3)}
         />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        <defs>
-          <linearGradient id="desktopGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--color-desktop)"
-              stopOpacity={0.8}
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(label, payload) => {
+                const item = payload[0]?.payload;
+                return `${item?.month}`;
+              }}
             />
-            <stop
-              offset="95%"
-              stopColor="var(--color-desktop)"
-              stopOpacity={0}
-            />
-          </linearGradient>
-        </defs>
+          }
+        />
         <Area
           type="monotone"
-          dataKey="desktop"
-          stroke="var(--color-desktop)"
-          fill="url(#desktopGradient)"
-          radius={10}
+          dataKey="total_purchases"
+          fill="url(#fillGradient)"
+          stroke="var(--color-total_purchases)"
         />
       </AreaChart>
     </ChartContainer>
   );
 });
+
+export default SalesOverviewChart;

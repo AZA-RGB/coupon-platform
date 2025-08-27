@@ -1,52 +1,34 @@
 "use client";
 
-import React from "react"; // Import React
+import React from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "April", desktop: 73, mobile: 190 },
-];
+import useSWR from "swr";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#00cbc1",
-  },
-  mobile: {
-    label: "Mobile",
+  count: {
+    label: "Purchases",
     color: "#00cbc1",
   },
 } satisfies ChartConfig;
 
 export const ProviderChart = React.memo(function ProviderChart() {
+  const { data, error } = useSWR("/providers/charts");
+
+  if (error) return <div>Error loading data</div>;
+  if (!data) return <div>Loading...</div>;
+
+  const chartData = data.data.purchases_per_month.map((item: any) => ({
+    month: item.month,
+    count: item.count,
+    provider: item.provider,
+  }));
+
   return (
     <ChartContainer config={chartConfig} className="min-h-full w-full ">
       <BarChart accessibilityLayer data={chartData}>
@@ -58,8 +40,17 @@ export const ProviderChart = React.memo(function ProviderChart() {
           axisLine={false}
           tickFormatter={(value) => value.slice(0, 3)}
         />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(label, payload) => {
+                const item = payload[0]?.payload;
+                return `(${item?.provider})`;
+              }}
+            />
+          }
+        />
+        <Bar dataKey="count" fill="var(--color-count)" radius={4} />
       </BarChart>
     </ChartContainer>
   );
