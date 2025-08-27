@@ -818,6 +818,14 @@
   "SalesReport": {
     "title": "لمحة إحصائية",
     "export": "تصدير",
+    "Rating_distribution": {
+      "ratingDistribution": "توزيع التقييمات",
+      "rate": "التقييم",
+      "count": "العدد",
+      "percentage": "النسبة",
+      "totalRatings": "إجمالي التقييمات",
+      "averageRating": "متوسط التقييم"
+    },
     "stats": {
       "total_spend": "إجمالي الإنفاق",
       "total_purchases": "إجمالي المشتريات",

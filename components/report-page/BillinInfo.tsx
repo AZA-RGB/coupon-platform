@@ -49,6 +49,21 @@ interface ApiResponse {
   };
 }
 
+const formatDate = (dateString) => {
+  try {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${hours}:${minutes}    ${year}/${month}/${day}`;
+  } catch (error) {
+    return dateString; // fallback to original string if parsing fails
+  }
+};
+
 export default function BillingInfo({
   object_type,
   object_id,
@@ -59,13 +74,12 @@ export default function BillingInfo({
   const format = useFormatter();
   const locale = useLocale();
   const isRTL = locale === "ar";
-  console.log("from BillingInfo ", from);
-  console.log("from BillingInfo ", to);
+
   // Build the API URL based on props
   const apiUrl = `/purchases/index?${object_type.slice(0, -1)}_id=${object_id}&date=${from},${to}`;
   console.log(apiUrl);
   const { data, error, isLoading } = useSWR<ApiResponse>(apiUrl);
-  if (data) console.log(data);
+  // if (data) console.log(data);
   return (
     <Card
       className={`md:col-span-2 col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[62vh] ${isRTL ? "text-right" : "text-left"}`}
@@ -112,7 +126,7 @@ export default function BillingInfo({
                       purchase.purchasedItems?.[0]?.name ||
                       t("noCoupon")}
                   </TableCell>
-                  <TableCell>{purchase.date}</TableCell>
+                  <TableCell>{formatDate(purchase.date)}</TableCell>
                   <TableCell>
                     <div>{purchase.customer.name}</div>
                     {purchase.additionalCustomers.map((customer, index) => (

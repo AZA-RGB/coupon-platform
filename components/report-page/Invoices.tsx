@@ -26,6 +26,97 @@ const testData = [
     customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
     price: "150",
   },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
+  {
+    billID: "#12345",
+    coupon: "shawarma coupon",
+    date: "15/3/2025",
+    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
+    price: "150",
+  },
   // ... rest of your test data
 ];
 
@@ -33,7 +124,7 @@ export default function TopThree({ title }) {
   const t = useTranslations("Invoices");
 
   return (
-    <Card className="col-span-1  gap-0 px-3  h-auto">
+    <Card className="col-span-1  gap-0 px-3  max-h-[90vh]">
       <CardTitle className="text-2xl text-primary">{title}</CardTitle>
 
       <div className="row-span-5 overflow-auto">

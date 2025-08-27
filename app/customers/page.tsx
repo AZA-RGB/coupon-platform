@@ -494,7 +494,7 @@ function renderTableCellContent(
             object_type="customers"
             key={customer.id}
           />
-          {customer.id}
+
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"
@@ -502,7 +502,6 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          {customer.id}
         </div>
       );
     default:

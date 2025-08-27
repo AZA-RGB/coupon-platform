@@ -822,6 +822,14 @@
   "SalesReport": {
     "title": "Statistical overview",
     "export": "Export",
+    "ratingDist": {
+      "ratingDistribution": "Rating Distribution",
+      "rate": "Rating",
+      "count": "Count",
+      "percentage": "Percentage",
+      "totalRatings": "Total Ratings",
+      "averageRating": "Average Rating"
+    },
     "stats": {
       "total_spend": "Total Spend",
       "total_purchases": "Total Purchases",
