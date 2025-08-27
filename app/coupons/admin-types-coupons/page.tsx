@@ -70,7 +70,6 @@ import useSWR from "swr";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
-import ReportGenerator from "@/components/reportGenerator";
 
 const COUPONS_PER_PAGE = 10;
 
@@ -92,18 +91,20 @@ const CouponTypesGrid = ({
     isLoading: loadingTypeDetails,
     mutate,
   } = useSWR(
-    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null
+    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null,
   );
 
   const handleSelectType = (id) => {
     setSelectedTypes((prev) =>
-      prev.includes(id) ? prev.filter((typeId) => typeId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((typeId) => typeId !== id)
+        : [...prev, id],
     );
   };
 
   const handleToggleSelectAll = () => {
     const allSelected = couponTypes.every((type) =>
-      selectedTypes.includes(type.id)
+      selectedTypes.includes(type.id),
     );
     setSelectedTypes(allSelected ? [] : couponTypes.map((type) => type.id));
   };
@@ -140,7 +141,7 @@ const CouponTypesGrid = ({
                   selectedTypes.length === couponTypes.length &&
                     couponTypes.length > 0
                     ? "deselectAll"
-                    : "selectAll"
+                    : "selectAll",
                 )}
               </Button>
               <AlertDialog>
@@ -200,8 +201,8 @@ const CouponTypesGrid = ({
                           type.status === "active"
                             ? "bg-green-100 text-green-800"
                             : type.status === "expired"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
                         {t(type.status)}
@@ -209,11 +210,6 @@ const CouponTypesGrid = ({
                     </CardDescription>
                   </CardHeader>
                   <CardFooter className="px-3 pb-3 flex justify-center gap-2">
-                    <ReportGenerator
-                      object={type}
-                      object_type="coupon-types"
-                      key={type.id}
-                    />
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -321,10 +317,11 @@ const CouponTypesGrid = ({
 };
 
 const TopCategoriesCard = ({ t }) => {
-  const { data: topCategories, error, isLoading } = useSWR(
-    "/categories/top-selling-categories",
-    fetchTopCategories
-  );
+  const {
+    data: topCategories,
+    error,
+    isLoading,
+  } = useSWR("/categories/top-selling-categories", fetchTopCategories);
 
   if (isLoading) {
     return (
@@ -361,10 +358,18 @@ const TopCategoriesCard = ({ t }) => {
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
-              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("rank")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("category")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("sales")}
+              </TableHead>
+              <TableHead className="py-2 px-4 text-start">
+                {t("popularity")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -496,7 +501,7 @@ export default function TypesAllCouponsPage() {
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value) => setSearchTerm(value), 300),
-    []
+    [],
   );
 
   const fetchCouponTypesData = async () => {
@@ -566,7 +571,7 @@ export default function TypesAllCouponsPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);
@@ -575,7 +580,10 @@ export default function TypesAllCouponsPage() {
 
   const filteredCouponTypes = useMemo(() => {
     if (!Array.isArray(couponTypes)) {
-      console.error("filteredCouponTypes: couponTypes is not an array:", couponTypes);
+      console.error(
+        "filteredCouponTypes: couponTypes is not an array:",
+        couponTypes,
+      );
       return [];
     }
     return couponTypes;
@@ -583,7 +591,7 @@ export default function TypesAllCouponsPage() {
 
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
-    currentPage * COUPONS_PER_PAGE
+    currentPage * COUPONS_PER_PAGE,
   );
 
   const handleGenerateReport = () => {
