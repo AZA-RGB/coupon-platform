@@ -2,7 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 const FALLBACK_IMAGE =
-  "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+  "https://cdn.pixabay.com/photo/2022/04/22/01/04/ticket-7148607_960_720.png";
 
 export default function MyImage({ src, alt }) {
   const [imgSrc, setImgSrc] = useState(src || FALLBACK_IMAGE);

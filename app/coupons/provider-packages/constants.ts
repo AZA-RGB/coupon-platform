@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2016/04/01/08/32/carry-1298786_1280.png";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2012/04/14/16/52/tickets-34588_960_720.png";
 export const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchPackages = async (page = 1, search = '', status = '') => {

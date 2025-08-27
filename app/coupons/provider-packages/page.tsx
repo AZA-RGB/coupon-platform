@@ -234,6 +234,224 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
   );
 };
 
+const AddGiftToPackageDialog = ({ pkg, refreshPackages, t }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [giftType, setGiftType] = useState<"coupon" | "points">("coupon");
+  const [selectedGiftCouponId, setSelectedGiftCouponId] = useState("");
+  const [pointsValue, setPointsValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDarkMode(mediaQuery.matches);
+    const handleChange = (e) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await axios.get(
+          "http://164.92.67.78:3002/api/coupons/all"
+        );
+        const { data } = response.data;
+        if (data && Array.isArray(data)) {
+          setCoupons(data);
+        }
+      } catch (error) {
+        console.error("Error fetching coupons:", error);
+        toast.error(t("fetchCouponsError"), { duration: 5000 });
+      }
+    };
+    fetchCoupons();
+  }, [t]);
+
+  const handleSubmit = async () => {
+    if (giftType === "coupon" && !selectedGiftCouponId) {
+      toast.error(t("selectCouponError"), {
+        description: t("selectCouponErrorDesc"),
+        duration: 5000,
+      });
+      return;
+    }
+    if (giftType === "points" && (!pointsValue || parseInt(pointsValue) <= 0)) {
+      toast.error(t("invalidPointsError"), {
+        description: t("invalidPointsErrorDesc"),
+        duration: 5000,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const giftData = {
+        type: "package",
+        giftable_id: pkg.id,
+        ...(giftType === "coupon"
+          ? { coupon_id: parseInt(selectedGiftCouponId) }
+          : { points: parseInt(pointsValue) }),
+      };
+      const response = await axios.post(
+        "http://164.92.67.78:3002/api/gift-programs/create",
+        giftData
+      );
+      if (response.data.success) {
+        toast.success(t("giftSuccess"), {
+          description: t("giftSuccessDesc"),
+          duration: 3000,
+        });
+        refreshPackages();
+      } else {
+        throw new Error(response.data.message || t("giftError"));
+      }
+    } catch (error) {
+      console.error("Error creating gift program:", error);
+      toast.error(t("giftErrorDesc"), {
+        description: error.response?.data?.message || t("giftError"),
+        duration: 7000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const bgColor = isDarkMode ? "bg-gray-900" : "bg-white";
+  const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
+  const textMutedColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+  const primaryColor = "#00cbc1";
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">{t("addGift")}</Button>
+      </DialogTrigger>
+      <DialogContent className={`sm:max-w-[500px] p-0 overflow-hidden ${bgColor}`}>
+        <div
+          className="p-6 text-white"
+          style={{ background: `linear-gradient(to right, ${primaryColor}, ${primaryColor})` }}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center">
+              <i className="fas fa-gift mr-2" style={{ color: "#fff" }}></i>
+              {t("addGift")}
+            </DialogTitle>
+            <DialogDescription className="text-white/80">
+              {t("addGiftDesc")}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+        <div className="p-6 space-y-5">
+          <div>
+            <label className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}>
+              <i className="fas fa-list mr-2" style={{ color: primaryColor }}></i>
+              {t("giftType")}
+            </label>
+            <Select
+              value={giftType}
+              onValueChange={(value) => setGiftType(value)}
+            >
+              <SelectTrigger className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+                <SelectValue placeholder={t("selectGiftType")} />
+              </SelectTrigger>
+              <SelectContent className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+                <SelectItem value="coupon" className="flex items-center">
+                  <i className="fas fa-ticket-alt mr-2" style={{ color: primaryColor }}></i>
+                  {t("couponGift")}
+                </SelectItem>
+                <SelectItem value="points" className="flex items-center">
+                  <i className="fas fa-coins mr-2 text-yellow-500"></i>
+                  {t("pointsGift")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {giftType === "coupon" ? (
+            <div>
+              <label className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}>
+                <i className="fas fa-ticket-alt mr-2" style={{ color: primaryColor }}></i>
+                {t("selectGiftCoupon")}
+              </label>
+              <Select value={selectedGiftCouponId} onValueChange={setSelectedGiftCouponId}>
+                <SelectTrigger className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+                  <SelectValue placeholder={t("selectCoupon")} />
+                </SelectTrigger>
+                <SelectContent className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+                  {coupons.map((coupon) => (
+                    <SelectItem
+                      key={coupon.id}
+                      value={coupon.id.toString()}
+                      className={isDarkMode ? "hover:bg-gray-700" : ""}
+                    >
+                      <div className="flex items-center">
+                        <div
+                          className={`p-1 rounded mr-2`}
+                          style={{
+                            backgroundColor: isDarkMode ? "rgba(0,203,193,0.3)" : "rgba(0,203,193,0.2)",
+                            color: primaryColor,
+                          }}
+                        >
+                          <i className="fas fa-ticket-alt text-xs"></i>
+                        </div>
+                        <div>
+                          <p className={`font-medium ${textColor}`}>{coupon.name}</p>
+                          <p className={`text-xs ${textMutedColor}`}>{coupon.coupon_code}</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div>
+              <label className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}>
+                <i className="fas fa-coins mr-2 text-yellow-500"></i>
+                {t("points")}
+              </label>
+              <div className="relative">
+                <Input
+                  type="number"
+                  placeholder={t("enterPoints")}
+                  value={pointsValue}
+                  onChange={(e) => setPointsValue(e.target.value)}
+                  min="1"
+                  className={`pl-10 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : ""}`}
+                />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i className="fas fa-coins text-yellow-500"></i>
+                </div>
+              </div>
+            </div>
+          )}
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full py-2"
+            style={{
+              backgroundColor: primaryColor,
+              color: "#fff",
+            }}
+          >
+            {isSubmitting ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                {t("submitting")}
+              </>
+            ) : (
+              <>
+                <i className="fas fa-plus-circle mr-2"></i>
+                {t("submit")}
+              </>
+            )}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
   const form = useForm({
     resolver: zodResolver(editFormSchema),
@@ -265,8 +483,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
 
   async function onSubmit(values) {
     try {
-
-
       await axios.put(
         `http://164.92.67.78:3002/api/packages/${pkg.id}`,
         {
@@ -329,7 +545,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         <div className="flex-1 overflow-y-auto px-4 py-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              {/* Title */}
               <FormField
                 control={form.control}
                 name="title"
@@ -343,8 +558,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -361,8 +574,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* From Date */}
               <FormField
                 control={form.control}
                 name="from_date"
@@ -376,8 +587,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* To Date */}
               <FormField
                 control={form.control}
                 name="to_date"
@@ -391,8 +600,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Providers */}
               <FormField
                 control={form.control}
                 name="max_providers"
@@ -410,8 +617,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Price */}
               <FormField
                 control={form.control}
                 name="max_price"
@@ -429,8 +634,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Amount */}
               <FormField
                 control={form.control}
                 name="max_amount"
@@ -448,8 +651,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Coupons Number */}
               <FormField
                 control={form.control}
                 name="max_coupons_number"
@@ -467,8 +668,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* File */}
               <FormField
                 control={form.control}
                 name="file"
@@ -488,8 +687,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Buttons */}
               <div className="flex justify-end gap-2">
                 <DialogTrigger asChild>
                   <Button variant="outline">{t("cancel")}</Button>
@@ -526,7 +723,6 @@ const PackageDetailsModal = ({
   const isRTL = locale === "ar";
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Check for dark mode preference
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDarkMode(mediaQuery.matches);
@@ -540,7 +736,6 @@ const PackageDetailsModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`sm:max-w-[700px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
-        {/* Header with teal accent */}
         <div className="bg-[#00cbc1] h-2 w-full rounded-t-lg"></div>
         
         <DialogHeader className="px-6 pt-4 pb-2">
@@ -557,7 +752,6 @@ const PackageDetailsModal = ({
         
         <div className="flex-1 px-6 py-4">
           <div className="grid gap-6">
-            {/* Package details grid */}
             <div className="grid grid-cols-2 gap-4">
               <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                 <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("id")}</h4>
@@ -619,7 +813,6 @@ const PackageDetailsModal = ({
               </div>
             </div>
             
-            {/* Coupons section */}
             <div className={`rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} border`}>
               <div className={`px-4 py-3 border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
                 <h4 className={`text-sm font-medium flex items-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -684,7 +877,6 @@ const PackageDetailsModal = ({
               </div>
             </div>
             
-            {/* Package settings section */}
             <div className={`rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} border`}>
               <div className={`px-4 py-3 border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
                 <h4 className={`text-sm font-medium flex items-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -715,9 +907,13 @@ const PackageDetailsModal = ({
               </div>
             </div>
             
-            {/* Add coupon button */}
-            <div className="flex justify-start">
+            <div className="flex justify-start gap-2">
               <AddCouponToPackageDialog
+                pkg={pkg}
+                refreshPackages={refreshPackages}
+                t={t}
+              />
+              <AddGiftToPackageDialog
                 pkg={pkg}
                 refreshPackages={refreshPackages}
                 t={t}
