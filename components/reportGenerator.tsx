@@ -25,7 +25,7 @@ const ReportGenerator = ({ object, object_type, variant }) => {
         >
           {" "}
           <CalendarIcon />
-          <span>generate report</span>
+          <span>انشاء تقرير</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 flex flex-col content-start items-end">

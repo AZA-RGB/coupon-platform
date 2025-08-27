@@ -112,49 +112,165 @@ const NavigationCards = ({ t }) => {
 const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
   if (!customer) return null;
 
+  // Calculate age from birth date
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const customerAge = calculateAge(customer.birthDate);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
-          <div className="relative w-full h-64 mt-4">
-            <Image
-              src={customer.image}
-              alt={customer.name}
-              fill
-              className="object-cover rounded-md"
-            />
+      <DialogContent className="sm:max-w-[650px] max-h-[85vh] p-0 bg-background border-border rounded-xl overflow-y-auto">
+        <div className="relative">
+          {/* Header with background */}
+          <div className="bg-gradient-to-r from-primary/20 to-primary/5 py-6 px-6 border-b border-border">
+            <DialogHeader className="text-left">
+              <div className="flex items-start gap-4">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-background/80 bg-background shadow-lg">
+                    <Image
+                      src={customer.image}
+                      alt={customer.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-background">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-primary-foreground" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <DialogTitle className="text-2xl font-bold text-foreground">
+                      {customer.name}
+                    </DialogTitle>
+                  </div>
+
+                  <DialogDescription className="text-muted-foreground flex items-center gap-2 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {customer.location}
+                  </DialogDescription>
+
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      {customerAge} {t('yearsOld')}
+                    </div>
+
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                      {customer.purchasesCount} {t('purchases')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </DialogHeader>
           </div>
-          <DialogTitle>{customer.name}</DialogTitle>
-          <DialogDescription>{customer.location}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("email")}</h4>
-              <p className="text-sm text-muted-foreground">{customer.email}</p>
+
+          <div className="px-6 py-5">
+            <div className="grid gap-5">
+              {/* Contact Information Card */}
+              <div className="bg-muted/40 p-5 rounded-xl">
+                <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 pb-2 border-border border-b">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {t("contactInformation")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      {t("email")}
+                    </p>
+                    <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                      {customer.email}
+                      <button className="text-primary hover:text-primary/80">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                      </button>
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      {t("phone")}
+                    </p>
+                    <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                      {customer.phone}
+                      <button className="text-primary hover:text-primary/80">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                      </button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Personal Details Card */}
+              <div className="bg-muted/40 p-5 rounded-xl">
+                <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 pb-2 border-border border-b">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {t("personalDetails")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">{t("birthDate")}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {new Date(customer.birthDate).toLocaleDateString()} ({customerAge} {t('yearsOld')})
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">{t("memberSince")}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {new Date(customer.createdAt || new Date().setFullYear(new Date().getFullYear() - 1)).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-6">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="border-border">
+                  {t("close")}
+                </Button>
+              </div>
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("phone")}</h4>
-              <p className="text-sm text-muted-foreground">{customer.phone}</p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("birthDate")}</h4>
-            <p className="text-sm text-muted-foreground">
-              {new Date(customer.birthDate).toLocaleDateString()}
-            </p>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("purchasesCount")}</h4>
-            <p className="text-sm text-muted-foreground">
-              {customer.purchasesCount}
-            </p>
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 };
+
 
 const CustomersTable = ({
   t,
@@ -192,7 +308,7 @@ const CustomersTable = ({
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(isRTL ? "ar-SA" : "en-US", {
+    return new Date(date).toLocaleDateString( "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",

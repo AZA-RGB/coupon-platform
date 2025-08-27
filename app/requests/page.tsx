@@ -51,60 +51,133 @@ import { fetchRequests, approveRequest, rejectRequest } from "../providers/const
 
 const REQUESTS_PER_PAGE = 10;
 
-const RequestDetailsModal = ({ request, t, open, onOpenChange }) => {
+const RequestDetailsModal = ({ request, t, open, onOpenChange, }) => {
   if (!request) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{t("requestDetails")}: {request.name}</DialogTitle>
-          <DialogDescription>{t("requestId")}: {request.id}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("userId")}</h4>
-              <p className="text-sm text-muted-foreground">{request.userId}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("email")}</h4>
-              <p className="text-sm text-muted-foreground">{request.email}</p>
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-hidden p-0 bg-background border-border">
+        <div className="relative">
+          <div className="bg-primary/10 py-4 px-6 border-b border-border">
+            <DialogHeader className="text-left">
+              <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {t("requestDetails")}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                {request.name} • {t("requestId")}: <span className="font-mono text-primary">{request.id}</span>
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          <div className="overflow-y-auto max-h-[calc(85vh-140px)] px-6 py-5">
+            <div className="grid gap-5">
+              {/* Header Info Card */}
+              <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-medium text-foreground">{request.name}</h3>
+                    <p className="text-sm text-muted-foreground">{request.email}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">{new Date(request.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs text-primary font-medium">{request.userId}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Contact Information */}
+                <div className="bg-muted/40 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    {t("contactInfo")}
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t("phone")}</p>
+                      <p className="text-sm font-medium text-foreground">{request.phone || t("notProvided")}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t("location")}</p>
+                      <p className="text-sm font-medium text-foreground">{request.location || t("notProvided")}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Request Details */}
+                <div className="bg-muted/40 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    {t("requestInfo")}
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t("bankId")}</p>
+                      <p className="text-sm font-medium text-foreground">{request.bankId || t("notProvided")}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t("categoryId")}</p>
+                      <p className="text-sm font-medium text-foreground">{request.categoryId || t("notProvided")}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Description */}
+              <div className="bg-muted/40 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                  </svg>
+                  {t("description")}
+                </h3>
+                <div className="bg-background p-3 rounded border border-border">
+                  <p className="text-sm text-foreground whitespace-pre-wrap">
+                    {request.description || t("noDescription")}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Security Information */}
+              <div className="bg-muted/40 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  {t("securityInfo")}
+                </h3>
+                <div className="flex items-center justify-between bg-background p-3 rounded border border-border">
+                  <p className="text-sm font-mono text-foreground/80">{request.secretKey}</p>
+                  <button className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    {t("copy")}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("phone")}</h4>
-              <p className="text-sm text-muted-foreground">{request.phone}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("createdAt")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(request.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("location")}</h4>
-            <p className="text-sm text-muted-foreground">{request.location}</p>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("description")}</h4>
-            <p className="text-sm text-muted-foreground">{request.description}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("bankId")}</h4>
-              <p className="text-sm text-muted-foreground">{request.bankId}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("categoryId")}</h4>
-              <p className="text-sm text-muted-foreground">{request.categoryId}</p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("secretKey")}</h4>
-            <p className="text-sm text-muted-foreground">{request.secretKey}</p>
+          
+          {/* Footer with Actions */}
+          <div className="border-t border-border px-6 py-4 bg-muted/20 flex justify-end gap-3">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-border">
+              {t("close")}
+            </Button>
+            {/* <Button className="bg-primary hover:bg-primary/90" onClick={handleApproveRequest}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+
+              {t("approveRequest")}
+            </Button> */}
           </div>
         </div>
       </DialogContent>

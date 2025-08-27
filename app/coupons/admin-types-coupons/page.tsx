@@ -17,7 +17,6 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
-import Image from "next/image";
 import {
   Table,
   TableBody,
@@ -52,7 +51,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Divide, Filter, Search } from "lucide-react";
+import { CalendarIcon, Filter, Search } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -60,10 +59,9 @@ import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import debounce from "lodash/debounce";
 import {
-  couponTypeOptions,
-  topCategoriesData,
   fetchCouponTypes,
   deleteCouponType,
+  fetchTopCategories,
 } from "./constants";
 import MyImage from "@/components/my-image";
 import AddTypeDialog from "@/components/AddType";
@@ -86,7 +84,7 @@ const CouponTypesGrid = ({
   setSelectedTypes,
   handleDeleteSelected,
 }) => {
-  const [typeIdDetails, setTypeIdDetails] = useState(null); // Use state for typeIdDetails
+  const [typeIdDetails, setTypeIdDetails] = useState(null);
 
   const {
     data: typeDetails,
@@ -94,20 +92,18 @@ const CouponTypesGrid = ({
     isLoading: loadingTypeDetails,
     mutate,
   } = useSWR(
-    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null,
+    typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null
   );
 
   const handleSelectType = (id) => {
     setSelectedTypes((prev) =>
-      prev.includes(id)
-        ? prev.filter((typeId) => typeId !== id)
-        : [...prev, id],
+      prev.includes(id) ? prev.filter((typeId) => typeId !== id) : [...prev, id]
     );
   };
 
   const handleToggleSelectAll = () => {
     const allSelected = couponTypes.every((type) =>
-      selectedTypes.includes(type.id),
+      selectedTypes.includes(type.id)
     );
     setSelectedTypes(allSelected ? [] : couponTypes.map((type) => type.id));
   };
@@ -144,7 +140,7 @@ const CouponTypesGrid = ({
                   selectedTypes.length === couponTypes.length &&
                     couponTypes.length > 0
                     ? "deselectAll"
-                    : "selectAll",
+                    : "selectAll"
                 )}
               </Button>
               <AlertDialog>
@@ -182,7 +178,13 @@ const CouponTypesGrid = ({
                   className="overflow-hidden hover:shadow-md transition-shadow p-0"
                 >
                   <div className="relative w-full h-32">
-                    <MyImage src={""} alt={type.name} />
+                    <MyImage
+                      src={type.image}
+                      alt={type.name || "Coupon Image"}
+                      width={300}
+                      height={128}
+                      className="object-cover w-full h-full"
+                    />
                   </div>
                   <CardHeader className="py-0 px-3">
                     <div className="flex items-center gap-2">
@@ -198,8 +200,8 @@ const CouponTypesGrid = ({
                           type.status === "active"
                             ? "bg-green-100 text-green-800"
                             : type.status === "expired"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
                         {t(type.status)}
@@ -225,7 +227,7 @@ const CouponTypesGrid = ({
                           {t("details")}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className=" p-0">
+                      <PopoverContent className="p-0">
                         <ScrollArea className="max-h-[200px] w-auto overflow-auto rounded-md border p-3">
                           {loadingTypeDetails ? (
                             <div>
@@ -234,7 +236,7 @@ const CouponTypesGrid = ({
                           ) : typeDetailsError ? (
                             <div>Error loading details</div>
                           ) : typeDetails &&
-                            typeDetails.data?.by_type?.length > 0 ? ( //TODO: replace with by_type
+                            typeDetails.data?.by_type?.length > 0 ? (
                             typeDetails.data.by_type.map((criterion, index) => (
                               <div key={index}>
                                 <div className="flex space-x-4 place-content-between">
@@ -318,7 +320,38 @@ const CouponTypesGrid = ({
   );
 };
 
-const TopCategoriesCard = ({ t, topCategoriesData }) => {
+const TopCategoriesCard = ({ t }) => {
+  const { data: topCategories, error, isLoading } = useSWR(
+    "/categories/top-selling-categories",
+    fetchTopCategories
+  );
+
+  if (isLoading) {
+    return (
+      <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
+        <CardTitle className="text-lg text-primary mb-1">
+          {t("topCategories")}
+        </CardTitle>
+        <div className="flex justify-center items-center h-32">
+          <Spinner className="animate-spin" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (error || !topCategories || topCategories.length === 0) {
+    return (
+      <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
+        <CardTitle className="text-lg text-primary mb-1">
+          {t("topCategories")}
+        </CardTitle>
+        <div className="text-center py-8 text-muted-foreground">
+          {t("noCategoriesFound")}
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
       <CardTitle className="text-lg text-primary mb-1">
@@ -328,22 +361,14 @@ const TopCategoriesCard = ({ t, topCategoriesData }) => {
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">
-                {t("rank")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("category")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("sales")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("popularity")}
-              </TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {topCategoriesData.slice(0, 3).map((row, index) => (
+            {topCategories.slice(0, 3).map((row, index) => (
               <TableRow key={index} className="hover:bg-secondary">
                 <TableCell className="py-2 px-4">{row.rank}</TableCell>
                 <TableCell className="py-2 px-4">{row.category}</TableCell>
@@ -471,7 +496,7 @@ export default function TypesAllCouponsPage() {
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value) => setSearchTerm(value), 300),
-    [],
+    []
   );
 
   const fetchCouponTypesData = async () => {
@@ -481,7 +506,7 @@ export default function TypesAllCouponsPage() {
         couponTypes,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchCouponTypes(currentPage, COUPONS_PER_PAGE);
+      } = await fetchCouponTypes(currentPage, searchTerm, filterType);
       console.log("Setting couponTypes:", couponTypes);
       setCouponTypes(couponTypes);
       setTotalPages(totalPages);
@@ -502,7 +527,7 @@ export default function TypesAllCouponsPage() {
 
   useEffect(() => {
     fetchCouponTypesData();
-  }, [currentPage]);
+  }, [currentPage, searchTerm, filterType]);
 
   const handleDeleteSelected = async () => {
     console.log("Selected Coupon Types:", selectedTypes);
@@ -541,7 +566,7 @@ export default function TypesAllCouponsPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        },
+        }
       );
     } finally {
       setIsLoading(false);
@@ -550,40 +575,15 @@ export default function TypesAllCouponsPage() {
 
   const filteredCouponTypes = useMemo(() => {
     if (!Array.isArray(couponTypes)) {
-      console.error(
-        "filteredCouponTypes: couponTypes is not an array:",
-        couponTypes,
-      );
+      console.error("filteredCouponTypes: couponTypes is not an array:", couponTypes);
       return [];
     }
-
-    return couponTypes
-      .filter((type) => {
-        if (searchTerm) {
-          const lowerSearch = searchTerm.toLowerCase();
-          return type.name.toLowerCase().includes(lowerSearch);
-        }
-        return true;
-      })
-      .filter((type) => {
-        if (["active", "expired", "pending"].includes(filterType)) {
-          return type.status === filterType;
-        }
-        return true;
-      })
-      .sort((a, b) => {
-        if (filterType === "newest") {
-          return b.id - a.id; // Simulate newest by ID (no addDate)
-        } else if (filterType === "oldest") {
-          return a.id - b.id; // Simulate oldest by ID (no addDate)
-        }
-        return 0;
-      });
-  }, [couponTypes, searchTerm, filterType]);
+    return couponTypes;
+  }, [couponTypes]);
 
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
-    currentPage * COUPONS_PER_PAGE,
+    currentPage * COUPONS_PER_PAGE
   );
 
   const handleGenerateReport = () => {
@@ -608,9 +608,8 @@ export default function TypesAllCouponsPage() {
       ) : (
         <>
           <div className="flex flex-col lg:flex-row gap-4 w-full">
-            <TopCategoriesCard t={t} topCategoriesData={topCategoriesData} />
+            <TopCategoriesCard t={t} />
             <NavigationCards t={t} />
-
           </div>
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">

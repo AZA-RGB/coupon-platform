@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2022/04/22/01/04/ticket-7148607_1280.png";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchCoupons = async (page = 1, search = '', status = '') => {
   try {
+        //     let url = `http://164.92.67.78:3002/api/providers/my-coupons?current_page=${page}&&per_page=12`;
+
     let url = `http://164.92.67.78:3002/api/coupons/index?page=${page}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (status !== '') url += `&coupon_status=${status}`;

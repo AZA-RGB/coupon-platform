@@ -262,46 +262,92 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
 const PackageDetailsModal = ({ pkg, t, open, onOpenChange }) => {
   if (!pkg) return null;
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Detect system dark mode
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDarkMode(mediaQuery.matches);
+    const handleChange = (e) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  const bgColor = isDarkMode ? "bg-gray-900" : "bg-white";
+  const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
+  const textMutedColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
-          <div className="relative w-full h-64 mt-4">
-            <MyImage src={pkg.image} alt={pkg.title} />
+      <DialogContent className={`sm:max-w-[650px] max-h-[85vh] flex flex-col rounded-xl ${bgColor} overflow-y-auto`}>
+        {/* Header + Image */}
+        <div className="relative flex-shrink-0">
+          <div className="w-full h-56 relative overflow-hidden">
+            <MyImage 
+              src={pkg.image} 
+              alt={pkg.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
           </div>
-          <DialogTitle>{pkg.title}</DialogTitle>
-          <DialogDescription>{pkg.description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("provider")}</h4>
-              <p className="text-sm text-muted-foreground">{pkg.provider}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("status")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">
-                {t(pkg.status)}
-              </p>
+          <div className="absolute -bottom-6 left-6">
+            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shadow-lg border-2 border-background">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+              </svg>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("startDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(pkg.fromDate).toLocaleDateString()}
-              </p>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="px-6 pt-8 pb-6  flex-1">
+          <DialogHeader>
+            <DialogTitle className={`text-2xl font-bold ${textColor}`}>{pkg.title}</DialogTitle>
+            <DialogDescription className={`text-base mt-2 ${textMutedColor}`}>{pkg.description}</DialogDescription>
+          </DialogHeader>
+
+          {/* Details Grid */}
+          <div className="grid gap-5 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
+                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("provider")}</h4>
+                <p className={`text-sm font-medium ${textColor}`}>{pkg.provider}</p>
+              </div>
+              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
+                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("status")}</h4>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  pkg.status === 'active'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    : pkg.status === 'pending'
+                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                }`}>
+                  {t(pkg.status)}
+                </span>
+              </div>
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("endDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(pkg.toDate).toLocaleDateString()}
-              </p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
+                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("startDate")}</h4>
+                <p className={`text-sm font-medium ${textColor}`}>{new Date(pkg.fromDate).toLocaleDateString()}</p>
+              </div>
+              <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
+                <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("endDate")}</h4>
+                <p className={`text-sm font-medium ${textColor}`}>{new Date(pkg.toDate).toLocaleDateString()}</p>
+              </div>
+            </div>
+
+            <div className={`p-3 rounded-lg transition-colors ${isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"}`}>
+              <h4 className={`text-sm font-medium mb-1 flex items-center gap-1 ${textMutedColor}`}>{t("coupons")}</h4>
+              <p className={`text-2xl font-bold mt-1 ${textColor}`}>{pkg.couponsCount}</p>
             </div>
           </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("coupons")}</h4>
-            <p className="text-sm text-muted-foreground">{pkg.couponsCount}</p>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>{t("close")}</Button>
+            <Button className="bg-primary hover:bg-primary/90">{t("viewDetails")}</Button>
           </div>
         </div>
       </DialogContent>

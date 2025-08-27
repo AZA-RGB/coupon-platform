@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2022/04/22/01/04/ticket-7148607_1280.png";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchTopCoupons = async (page = 1, search = '', status = '') => {

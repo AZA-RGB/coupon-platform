@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2017/02/23/13/05/avatar-2092113_1280.png";
 const API_BASE_URL = "http://164.92.67.78:3002/api";
 
 export const fetchCustomers = async (page = 1, search = '', status = '') => {

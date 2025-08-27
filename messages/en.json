@@ -162,8 +162,8 @@
     }
   },
   "Types": {
-    "seeTopCoupons":"Top Coupons",
-    "seeTopCouponsDesc":"View the most popular coupons",
+    "seeTopCoupons": "Top Coupons",
+    "seeTopCouponsDesc": "View the most popular coupons",
     "noTypesFound": "No coupon types found for this page.",
     "deleteSuccess": "Coupon Types Deleted",
     "deleteSuccessDesc": "Successfully deleted {count} coupon type(s).",
@@ -237,6 +237,29 @@
     "actions": "Actions"
   },
   "Coupons": {
+    "noCouponFound": "No coupon found with the provided ID.",
+    "error": "Error",
+    "backToCoupons": "Back to Coupons",
+    "loading": "Loading...",
+    "details": "Details",
+"giftCoupon": "Gift Coupon",
+    "type": "Type",
+
+    "averageRating": "Average Rating",
+    "addedDate": "Added Date",
+    "criteria": "Usage Criteria",
+    "programType": "Program Type",
+    "pointsValue": "Points Value",
+    "isActive": "Active",
+    "yes": "Yes",
+    "no": "No",
+    "yourCouponCode": "Your Coupon Code",
+    "useAtCheckout": "Use this code at checkout",
+    "offerDetails": "Offer Details",
+    "providerInfo": "Provider Information",
+    "useCoupon": "Use This Coupon",
+
+    "upcoming": "Upcoming",
     "title": "Coupons",
     "description": "Manage all coupons",
     "noCouponsFound": "No coupons found",
@@ -315,6 +338,14 @@
   },
 
   "Providers": {
+    "verified": "Verified",
+    "contactInformation": "Contact Information",
+    "copy": "Copy",
+    "close": "Close",
+    "approveRequest": "Approve Request",
+    "securityInfo": "Security Info",
+    "requestInfo": "Request Info",
+    "contactInfo": "Contact Info",
     "rejected": "Rejected",
     "topProvidersDesc": "Top Providers",
     "export": "Export",
@@ -388,6 +419,16 @@
     "pending for approval": "Pending for Approval"
   },
   "Customers": {
+     "close": "Close",
+    "bronze": "Bronze",
+    "loyaltyTier": "Loyalty Tier",
+    "totalPurchases": "Total Purchases",
+    "purchaseHistory": "Purchase History",
+    "memberSince": "Member Since",
+    "yearsOld": "Years Old",
+    "personalDetails": "Personal Details",
+    "contactInformation": "Contact Information",
+    "purchases": "Purchases",
     "blockError": "Error blocking customer",
     "blockErrorDesc": "An error occurred while blocking the customer",
     "banSuccess": "Customer banned successfully",
@@ -521,6 +562,7 @@
     "status": "Status",
     "coupons": "Coupons",
     "actions": "Actions",
+    "close": "Close",
     "addPackage": "Add Package",
     "addPackageDesc": "Create a new package with the required details.",
     "editPackage": "Edit Package",
@@ -613,7 +655,7 @@
     "endDate": "End Date",
     "startDate": "Start Date",
     "id": "Id",
-    "noCouponsFound":"No coupons found"
+    "noCouponsFound": "No coupons found"
   },
   "Categories": {
     "title": "All Categories",

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -42,17 +42,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon, Filter, Search } from "lucide-react";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
-import {
-  couponTypesData,
-  couponTypeOptions,
-  topCouponsData,
-} from "./constants";
+import { fetchCouponTypes, fetchTopCategories } from "./constants";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -75,7 +71,39 @@ const NavigationCards = ({ t }) => {
     </div>
   );
 };
-const TopCouponsCard = ({ t, topCouponsData }) => {
+
+const TopCouponsCard = ({ t }) => {
+  const { data: topCategories, error, isLoading } = useSWR(
+    "/categories/top-selling-categories",
+    fetchTopCategories
+  );
+
+  if (isLoading) {
+    return (
+      <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
+        <CardTitle className="text-lg text-primary mb-1">
+          {t("topCoupons")}
+        </CardTitle>
+        <div className="flex justify-center items-center h-32">
+          <Spinner className="animate-spin" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (error || !topCategories || topCategories.length === 0) {
+    return (
+      <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
+        <CardTitle className="text-lg text-primary mb-1">
+          {t("topCoupons")}
+        </CardTitle>
+        <div className="text-center py-8 text-muted-foreground">
+          {t("noCategoriesFound")}
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
       <CardTitle className="text-lg text-primary mb-1">
@@ -85,22 +113,14 @@ const TopCouponsCard = ({ t, topCouponsData }) => {
         <Table className="min-w-full text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="py-2 px-4 text-start">
-                {t("rank")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("category")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("sales")}
-              </TableHead>
-              <TableHead className="py-2 px-4 text-start">
-                {t("popularity")}
-              </TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("rank")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("category")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("sales")}</TableHead>
+              <TableHead className="py-2 px-4 text-start">{t("popularity")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {topCouponsData.map((row, index) => (
+            {topCategories.slice(0, 3).map((row, index) => (
               <TableRow key={index} className="hover:bg-secondary">
                 <TableCell className="py-2 px-4">{row.rank}</TableCell>
                 <TableCell className="py-2 px-4">{row.category}</TableCell>
@@ -122,80 +142,6 @@ const TopCouponsCard = ({ t, topCouponsData }) => {
   );
 };
 
-// const ReportGeneratorCard = ({
-//   t,
-//   couponType,
-//   setCouponType,
-//   dateRange,
-//   setDateRange,
-//   handleGenerateReport,
-// }) => {
-//   return (
-//     <Card className="w-full lg:w-2/5 p-4">
-//       <CardTitle className="text-lg text-primary mb-1">
-//         {t("generateReport")}
-//       </CardTitle>
-//       <div className="space-y-4">
-//         <div className="space-y-4 w-full">
-//           <Label htmlFor="couponType">{t("couponType")}</Label>
-//           <Select onValueChange={setCouponType} value={couponType}>
-//             <SelectTrigger className="w-full" id="couponType">
-//               <SelectValue placeholder={t("selectType")} />
-//             </SelectTrigger>
-//             <SelectContent>
-//               {couponTypeOptions.map((type) => (
-//                 <SelectItem key={type.value} value={type.value}>
-//                   {type.label}
-//                 </SelectItem>
-//               ))}
-//             </SelectContent>
-//           </Select>
-//         </div>
-//         <div className="space-y-4">
-//           <Label>{t("selectDate")}</Label>
-//           <Popover>
-//             <PopoverTrigger asChild>
-//               <Button
-//                 variant="outline"
-//                 className="w-full justify-start text-left font-normal"
-//               >
-//                 <CalendarIcon className="mr-2 h-4 w-4 opacity-70 shrink-0" />
-//                 {dateRange?.from ? (
-//                   dateRange?.to ? (
-//                     <>
-//                       {format(dateRange.from, "MMM dd, yyyy")} -{" "}
-//                       {format(dateRange.to, "MMM dd, yyyy")}
-//                     </>
-//                   ) : (
-//                     format(dateRange.from, "MMM dd, yyyy")
-//                   )
-//                 ) : (
-//                   <span className="text-muted-foreground">
-//                     {t("selectDate")}
-//                   </span>
-//                 )}
-//               </Button>
-//             </PopoverTrigger>
-//             <PopoverContent className="w-auto p-0" align="start">
-//               <Calendar
-//                 mode="range"
-//                 selected={dateRange}
-//                 onSelect={(range) =>
-//                   range && setDateRange({ from: range.from, to: range.to })
-//                 }
-//                 numberOfMonths={2}
-//               />
-//             </PopoverContent>
-//           </Popover>
-//         </div>
-//         <Button className="w-full mt-2" onClick={handleGenerateReport}>
-//           {t("generateReport")}
-//         </Button>
-//       </div>
-//     </Card>
-//   );
-// };
-
 const CouponTypesGrid = ({
   t,
   couponTypes,
@@ -204,7 +150,7 @@ const CouponTypesGrid = ({
   totalPages,
   locale,
 }) => {
-  const [typeIdDetails, setTypeIdDetails] = useState(null); // Use state for typeIdDetails
+  const [typeIdDetails, setTypeIdDetails] = useState(null);
 
   const {
     data: typeDetails,
@@ -214,106 +160,131 @@ const CouponTypesGrid = ({
     typeIdDetails ? `/criterias/for-add-Coupon/list/${typeIdDetails}` : null
   );
 
+  const isValidDate = (date) => {
+    const parsedDate = new Date(date);
+    return isValid(parsedDate) && !isNaN(parsedDate);
+  };
+
+  if (!Array.isArray(couponTypes)) {
+    console.error("CouponTypes is not an array:", couponTypes);
+    return (
+      <Card>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">
+            {t("noTypesFound")}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardContent className="pt-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {couponTypes.map((type) => (
-            <Card
-              key={type.id}
-              className="overflow-hidden hover:shadow-md transition-shadow p-0"
-            >
-              <div className="relative w-full h-32">
-                <Image
-                  src={type.image}
-                  alt={type.name}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
-                  <span className="text-primary font-bold">
-                    {type.couponsCount} {t("coupons")}
-                  </span>
+        {couponTypes.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            {t("noTypesFound")}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {couponTypes.map((type) => (
+              <Card
+                key={type.id}
+                className="overflow-hidden hover:shadow-md transition-shadow p-0"
+              >
+                <div className="relative w-full h-32">
+                  <Image
+                    src={type.image}
+                    alt={type.name || "Coupon Image"}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute bottom-1 left-1 bg-background/90 px-2 py-0.5 rounded text-xs">
+                    <span className="text-primary font-bold">
+                      {type.couponsCount} {t("coupons")}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <CardHeader className="py-0 px-3">
-                <CardTitle className="text-lg">{type.name}</CardTitle>
-                <CardDescription className="flex justify-between items-center text-xs">
-                  <span className="line-clamp-1 text-ellipsis overflow-hidden">
-                    {type.description}
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full ${
-                      type.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : type.status === "expired"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {t(type.status)}
-                  </span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-1 px-3">
-                <div className="flex justify-between text-xs">
-                  <span>
-                    {t("added")}:{" "}
-                    {format(new Date(type.addDate), "MMM dd, yyyy")}
-                  </span>
-                </div>
-              </CardContent>
-              <CardFooter className="px-3 pb-3 flex place-content-between gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className=""
-                      onClick={() => {
-                        setTypeIdDetails(type.id);
-                      }}
+                <CardHeader className="py-0 px-3">
+                  <CardTitle className="text-lg">{type.name}</CardTitle>
+                  <CardDescription className="flex justify-between items-center text-xs">
+                    <span className="line-clamp-1 text-ellipsis overflow-hidden">
+                      {type.description}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full ${
+                        type.status === "active"
+                          ? "bg-green-100 text-green-800"
+                          : type.status === "expired"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
                     >
-                      {t("details")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <ScrollArea className="max-h-[200px] w-auto overflow-auto rounded-md border p-3">
-                      {loadingTypeDetails ? (
-                        <div>
-                          <Spinner className="animate-spin" />
-                        </div>
-                      ) : typeDetailsError ? (
-                        <div>Error loading details</div>
-                      ) : typeDetails &&
-                        typeDetails.data?.by_type?.length > 0 ? ( //TODO: replace with by_type
-                        typeDetails.data.by_type.map((criterion, index) => (
-                          <div key={index}>
-                            <div className="flex space-x-4 place-content-between">
-                              <div className="text-sm">
-                                {criterion.name || "Unnamed criterion"}
-                              </div>
-                              <Badge variant="secondary" className="text-sm">
-                                {criterion.type || "Unnamed criterion"}
-                              </Badge>
-                            </div>
-                            <Separator className="my-2" />
+                      {t(type.status)}
+                    </span>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="py-1 px-3">
+                  <div className="flex justify-between text-xs">
+                    <span>
+                      {t("added")}:{" "}
+                      {type.addDate && isValidDate(type.addDate)
+                        ? format(new Date(type.addDate), "MMM dd, yyyy")
+                        : "N/A"}
+                    </span>
+                  </div>
+                </CardContent>
+                <CardFooter className="px-3 pb-3 flex place-content-between gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className=""
+                        onClick={() => {
+                          setTypeIdDetails(type.id);
+                        }}
+                      >
+                        {t("details")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <ScrollArea className="max-h-[200px] w-auto overflow-auto rounded-md border p-3">
+                        {loadingTypeDetails ? (
+                          <div>
+                            <Spinner className="animate-spin" />
                           </div>
-                        ))
-                      ) : (
-                        <div>No details available</div>
-                      )}
-                    </ScrollArea>
-                  </PopoverContent>
-                </Popover>
-                <Button className="w-1/2 h-8 text-xs" asChild>
-                  <Link href={`/coupons/AddCoupon?typeId=${type.id}`}>
-                    {t("addCoupon")}
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                        ) : typeDetailsError ? (
+                          <div>Error loading details</div>
+                        ) : typeDetails && typeDetails.data?.by_type?.length > 0 ? (
+                          typeDetails.data.by_type.map((criterion, index) => (
+                            <div key={index}>
+                              <div className="flex space-x-4 place-content-between">
+                                <div className="text-sm">
+                                  {criterion.name || "Unnamed criterion"}
+                                </div>
+                                <Badge variant="secondary" className="text-sm">
+                                  {criterion.type || "Unnamed criterion"}
+                                </Badge>
+                              </div>
+                              <Separator className="my-2" />
+                            </div>
+                          ))
+                        ) : (
+                          <div>No details available</div>
+                        )}
+                      </ScrollArea>
+                    </PopoverContent>
+                  </Popover>
+                  <Button className="w-1/2 h-8 text-xs" asChild>
+                    <Link href={`/coupons/AddCoupon?typeId=${type.id}`}>
+                      {t("addCoupon")}
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-center">
         <Pagination>
@@ -369,59 +340,56 @@ export default function TypesAllCouponsPage() {
   const [couponType, setCouponType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [dateRange, setDateRange] = useState({
     from: undefined,
     to: undefined,
   });
+  const [couponTypes, setCouponTypes] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSetSearchTerm = useMemo(
-    () => debounce((value: string) => setSearchTerm(value), 300),
+    () => debounce((value) => setSearchTerm(value), 300),
     []
   );
 
-  const filteredCouponTypes = useMemo(() => {
-    return couponTypesData
-      .filter((type) => {
-        // Search filter
-        if (searchTerm) {
-          const lowerSearch = searchTerm.toLowerCase();
-          return (
-            type.name.toLowerCase().includes(lowerSearch) ||
-            type.description.toLowerCase().includes(lowerSearch)
-          );
-        }
-        return true;
-      })
-      .filter((type) => {
-        // Date range filter
-        if (dateRange.from && dateRange.to) {
-          const addDate = new Date(type.addDate);
-          return addDate >= dateRange.from && addDate <= dateRange.to;
-        }
-        return true;
-      })
-      .filter((type) => {
-        // Status filter
-        if (["active", "expired", "pending"].includes(filterType)) {
-          return type.status === filterType;
-        }
-        return true;
-      })
-      .sort((a, b) => {
-        // Sort filter
-        if (filterType === "newest") {
-          return new Date(b.addDate).getTime() - new Date(a.addDate).getTime();
-        } else if (filterType === "oldest") {
-          return new Date(a.addDate).getTime() - new Date(b.addDate).getTime();
-        }
-        return 0;
-      });
-  }, [searchTerm, dateRange, filterType]);
+  const { data: fetchedCouponTypes, error: fetchError } = useSWR(
+    ["/coupon-types/index", currentPage, searchTerm, filterType],
+    () => fetchCouponTypes(currentPage, searchTerm, filterType)
+  );
 
-  const totalPages = Math.ceil(filteredCouponTypes.length / COUPONS_PER_PAGE);
+  useEffect(() => {
+    if (fetchedCouponTypes) {
+      setCouponTypes(fetchedCouponTypes.couponTypes);
+      setTotalPages(fetchedCouponTypes.totalPages);
+      setCurrentPage(fetchedCouponTypes.currentPage);
+    }
+    if (fetchError) {
+      console.error("Error fetching coupon types:", fetchError);
+      toast.error(t("fetchErrorDesc"), {
+        description: t("fetchError"),
+        duration: 5000,
+      });
+      setCouponTypes([]);
+      setTotalPages(1);
+    }
+    setIsLoading(false);
+  }, [fetchedCouponTypes, fetchError, t]);
+
+  const filteredCouponTypes = useMemo(() => {
+    if (!Array.isArray(couponTypes)) {
+      console.error("filteredCouponTypes: couponTypes is not an array:", couponTypes);
+      return [];
+    }
+    return couponTypes.filter((type) => {
+      if (dateRange.from && dateRange.to && type.addDate) {
+        const addDate = new Date(type.addDate);
+        return isValid(addDate) && addDate >= dateRange.from && addDate <= dateRange.to;
+      }
+      return true;
+    });
+  }, [couponTypes, dateRange]);
+
   const currentCouponTypes = filteredCouponTypes.slice(
     (currentPage - 1) * COUPONS_PER_PAGE,
     currentPage * COUPONS_PER_PAGE
@@ -442,86 +410,86 @@ export default function TypesAllCouponsPage() {
 
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <TopCouponsCard t={t} topCouponsData={topCouponsData} />
-        {/* <ReportGeneratorCard
-          t={t}
-          couponType={couponType}
-          setCouponType={setCouponType}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          handleGenerateReport={handleGenerateReport}
-        /> */}
-        <NavigationCards t={t} />
-      </div>
-      <Card>
-        <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <div>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col lg:flex-row gap-4 w-full">
+            <TopCouponsCard t={t} />
+            <NavigationCards t={t} />
           </div>
-          <div className="flex space-x-2">
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer text-muted-foreground"
-                onClick={() => {
-                  const el = document.getElementById("filter-menu");
-                  if (el) el.classList.toggle("hidden");
-                }}
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                {t("filter")}
-              </Button>
-              <div
-                id="filter-menu"
-                className="cursor-pointer absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
-              >
-                {[
-                  { label: t("newest"), value: "newest" },
-                  { label: t("oldest"), value: "oldest" },
-                  { label: t("active"), value: "active" },
-                  { label: t("expired"), value: "expired" },
-                  { label: t("pending"), value: "pending" },
-                ].map((item) => (
-                  <button
-                    key={item.value}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 ${
-                      filterType === item.value ? "bg-gray-200" : ""
-                    }`}
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+              <div>
+                <CardTitle>{t("title")}</CardTitle>
+                <CardDescription>{t("description")}</CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <div className="relative">
+                  {/* <Button
+                    variant="outline"
+                    size="sm"
+                    className="cursor-pointer text-muted-foreground"
                     onClick={() => {
-                      setFilterType(item.value);
-                      setCurrentPage(1);
                       const el = document.getElementById("filter-menu");
-                      if (el) el.classList.add("hidden");
+                      if (el) el.classList.toggle("hidden");
                     }}
                   >
-                    {item.label}
-                  </button>
-                ))}
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t("filter")}
+                  </Button> */}
+                  <div
+                    id="filter-menu"
+                    className="cursor-pointer absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
+                  >
+                    {[
+                      { label: t("newest"), value: "newest" },
+                      { label: t("oldest"), value: "oldest" },
+                      { label: t("active"), value: "active" },
+                      { label: t("expired"), value: "expired" },
+                      { label: t("pending"), value: "pending" },
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 ${
+                          filterType === item.value ? "bg-gray-200" : ""
+                        }`}
+                        onClick={() => {
+                          setFilterType(item.value);
+                          setCurrentPage(1);
+                          const el = document.getElementById("filter-menu");
+                          if (el) el.classList.add("hidden");
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder={t("search")}
+                    className="h-8 max-w-[200px]"
+                    onChange={(e) => debouncedSetSearchTerm(e.target.value)}
+                  />
+                  <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
+                </div>
               </div>
-            </div>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder={t("search")}
-                className="h-8 max-w-[200px]"
-                onChange={(e) => debouncedSetSearchTerm(e.target.value)}
-              />
-              <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-      <CouponTypesGrid
-        t={t}
-        couponTypes={currentCouponTypes}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPages={totalPages}
-        locale={locale}
-      />
+            </CardHeader>
+          </Card>
+          <CouponTypesGrid
+            t={t}
+            couponTypes={currentCouponTypes}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+            locale={locale}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -17,14 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  MultiSelector,
-  MultiSelectorContent,
-  MultiSelectorInput,
-  MultiSelectorItem,
-  MultiSelectorList,
-  MultiSelectorTrigger,
-} from "@/components/ui/multi-select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -40,12 +32,18 @@ import useSWR from "swr";
 import { Textarea } from "./ui/textarea";
 
 const formSchema = z.object({
-  type_name: z.string().min(1),
+  type_name: z.string().min(1, "اسم النوع مطلوب"),
   type_description: z.string(),
   criteria_list: z
     .array(z.string())
     .nonempty("الرجاء اختيار عنصر واحد على الأقل")
     .optional(),
+  image: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.type.startsWith("image/"), {
+      message: "يجب أن يكون الملف صورة",
+    }),
 });
 
 export default function AddTypeDialog({ refreshTypes }) {
@@ -56,30 +54,43 @@ export default function AddTypeDialog({ refreshTypes }) {
         toast.error("فشل تحميل قائمة المعايير");
         console.error("Error fetching criteria:", err);
       },
-    },
+    }
   );
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      type_name: "",
+      type_description: "",
       criteria_list: [],
+      image: null,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values) {
     try {
       // Map selected criteria names to their IDs
-      const criteriaIds = data.data.data
-        .filter((criterion) => values.criteria_list?.includes(criterion.name)) //get selected criteria (complete object)
-        .map((criterion) => criterion.id); // get the id of it only
+      const criteriaIds =
+        data?.data?.data
+          ?.filter((criterion) =>
+            values.criteria_list?.includes(criterion.name)
+          )
+          .map((criterion) => criterion.id) || [];
 
-      const payload = {
-        name: values.type_name,
-        criteriaIds,
-        description: values.type_description,
-      };
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append("name", values.type_name);
+      formData.append("description", values.type_description);
+      criteriaIds.forEach((id) => formData.append("criteriaIds[]", id));
+      if (values.image) {
+        formData.append("file", values.image);
+      }
 
-      const response = await api.post("/coupon-types/create", payload);
+      const response = await api.post("/coupon-types/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       toast.success("تم إنشاء نوع الكوبون بنجاح!");
       console.log("Response:", response.data);
@@ -90,19 +101,15 @@ export default function AddTypeDialog({ refreshTypes }) {
 
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          // Server responded with a status code outside 2xx
           toast.error(
-            `خطأ: ${error.response.data.message || "فشل في إنشاء نوع الكوبون"}`,
+            `خطأ: ${error.response.data.message || "فشل في إنشاء نوع الكوبون"}`
           );
         } else if (error.request) {
-          // Request was made but no response received
           toast.error("خطأ في الشبكة - يرجى التحقق من اتصالك");
         } else {
-          // Something happened in setting up the request
           toast.error("خطأ في الطلب - يرجى المحاولة مرة أخرى");
         }
       } else {
-        // Non-axios error
         toast.error("حدث خطأ غير متوقع");
       }
     }
@@ -116,7 +123,7 @@ export default function AddTypeDialog({ refreshTypes }) {
           إضافة نوع جديد
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-card">
+      <DialogContent className="sm:max-w-[425px] bg-card max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>إنشاء نوع كوبون جديد</DialogTitle>
           <DialogDescription>
@@ -156,6 +163,27 @@ export default function AddTypeDialog({ refreshTypes }) {
 
             <FormField
               control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>صورة النوع</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files[0])}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    اختر صورة لنوع الكوبون (اختياري)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="criteria_list"
               render={({ field }) => (
                 <FormItem>
@@ -182,33 +210,24 @@ export default function AddTypeDialog({ refreshTypes }) {
                         </Button>
                       </div>
                     ) : (
-                      <MultiSelector
-                        values={field.value}
-                        onValuesChange={field.onChange}
-                        loop
+                      <select
+                        multiple
+                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(
+                            Array.from(e.target.selectedOptions).map(
+                              (option) => option.value
+                            )
+                          )
+                        }
+                        className="w-full border rounded-md p-2"
                       >
-                        <MultiSelectorTrigger>
-                          <MultiSelectorInput
-                            placeholder={
-                              isLoading
-                                ? "جاري تحميل المعايير..."
-                                : "اختر المعايير..."
-                            }
-                          />
-                        </MultiSelectorTrigger>
-                        <MultiSelectorContent>
-                          <MultiSelectorList>
-                            {data?.data?.data?.map((criterion) => (
-                              <MultiSelectorItem
-                                key={criterion.id}
-                                value={criterion.name}
-                              >
-                                {criterion.name}
-                              </MultiSelectorItem>
-                            ))}
-                          </MultiSelectorList>
-                        </MultiSelectorContent>
-                      </MultiSelector>
+                        {data?.data?.data?.map((criterion) => (
+                          <option key={criterion.id} value={criterion.name}>
+                            {criterion.name}
+                          </option>
+                        ))}
+                      </select>
                     )}
                   </FormControl>
                   <FormDescription>تعيين معايير لهذا النوع</FormDescription>

@@ -1,78 +1,71 @@
-import api from "@/lib/api";
+import axios from "axios";
 
-export const fetchCouponTypes = async (page = 1, limit = 10) => {
+export const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2018/04/18/18/56/percent-3331252_1280.png";
+export const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
+
+export const fetchCouponTypes = async (page = 1, search = '', status = '') => {
   try {
-    const response = await api.get("/coupon-types/index", {
-      params: { page, per_page: limit },
-    });
-    console.log("Raw fetch coupon types response:", response.data);
-    const couponTypes = Array.isArray(response.data.data.data)
-      ? response.data.data.data
-      : [];
+    let url = `http://164.92.67.78:3002/api/coupon-types/index?page=${page}&per_page=10`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status !== '') url += `&status=${status}`;
+
+    const response = await axios.get(url);
+    const { data } = response.data;
+
+    if (!data || !Array.isArray(data.data)) {
+      console.error("Invalid API response structure:", response.data);
+      throw new Error("Invalid API response: data is missing or not an array");
+    }
+
     return {
-      couponTypes,
-      totalPages: response.data.data.last_page || 1,
-      currentPage: response.data.data.current_page || page,
+      couponTypes: data.data.map((type) => ({
+        id: type.id,
+        name: type.name || "Untitled",
+        description: type.description || "No description",
+        status: type.status || "pending",
+        couponsCount: type.coupons_count || 0,
+        image: type.files && type.files.length > 0 ? `${CDN_BASE_URL}/${type.files[0].path}` : DEFAULT_IMAGE,
+      })),
+      totalPages: data.last_page,
+      currentPage: data.current_page,
     };
   } catch (error) {
     console.error("Error fetching coupon types:", error);
-    return {
-      couponTypes: [],
-      totalPages: 1,
-      currentPage: page,
-    };
+    return { couponTypes: [], totalPages: 1, currentPage: 1 };
   }
 };
 
 export const deleteCouponType = async (id) => {
   try {
-    const response = await api.delete(`/coupon-types/${id}`);
-    console.log(`Delete response for coupon type ${id}:`, response.data);
-    return { success: true, response: response.data };
+    const response = await axios.delete(`http://164.92.67.78:3002/api/coupon-types/${id}`);
+    console.log(`Delete response for coupon type ${id}:`, response);
+    return { success: true, response };
   } catch (error) {
     console.error(`Error deleting coupon type ${id}:`, error);
-    return { success: false, error, id };
+    return { success: false, error };
   }
 };
 
-export const couponTypeOptions = [
-  { label: "Discount Coupon", value: "discount" },
-  { label: "BOGO", value: "bogo" },
-  { label: "Free Shipping", value: "free_shipping" },
-  { label: "Seasonal Offer", value: "seasonal" },
-  { label: "Referral Coupon", value: "referral" },
-  { label: "New Customer Coupon", value: "new_customer" },
-];
+export const fetchTopCategories = async () => {
+  try {
+    const url = `http://164.92.67.78:3002/api/categories/top-selling-categories`;
+    const response = await axios.get(url);
+    const { data } = response.data;
 
-export const topCategoriesData = [
-  {
-    rank: 1,
-    category: "Electronics",
-    sales: 1200,
-    popularity: 95,
-  },
-  {
-    rank: 2,
-    category: "Fashion",
-    sales: 850,
-    popularity: 80,
-  },
-  {
-    rank: 3,
-    category: "Home & Kitchen",
-    sales: 600,
-    popularity: 65,
-  },
-  {
-    rank: 4,
-    category: "Books",
-    sales: 450,
-    popularity: 50,
-  },
-  {
-    rank: 5,
-    category: "Sports & Outdoors",
-    sales: 300,
-    popularity: 40,
-  },
-];
+    if (!data || !Array.isArray(data)) {
+      console.error("Invalid API response structure:", response.data);
+      throw new Error("Invalid API response: data is missing or not an array");
+    }
+
+    return data.map((item, index) => ({
+      rank: index + 1,
+      category: item.name || "Unknown",
+      sales: item.sales_count || 0,
+      popularity: Math.min(95 - index * 10, 95),
+    })).slice(0, 5); // Limit to top 5 categories
+  } catch (error) {
+    console.error("Error fetching top categories:", error);
+    return [];
+  }
+};
+
