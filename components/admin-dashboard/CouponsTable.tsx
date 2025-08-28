@@ -86,13 +86,10 @@ export default function TopCouponsTable() {
     <Card className="col-span-2 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
       <div className="row-span-1 flex flex-row place-content-between items-center">
         <div>
-          <div className="text-2xl  ">{t("topCoupons")}</div>
-          <div className="text-sm text-muted-foreground">
-            {t("top10Coupons")}
-          </div>
+          <div className="text-2xl text-primary  ">{t("topCoupons")}</div>
         </div>
       </div>
-      <div className="row-span-5 overflow-auto">
+      <div className="row-span-5 overflow-auto  rounded-2xl">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>

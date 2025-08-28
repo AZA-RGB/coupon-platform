@@ -12,8 +12,12 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-
+import RefreshToken from "../auth/TokenRefresher";
+import PurchasesOverTime from "@/components/report-page/PurchasesOverTime";
+// import Cookies from "js-cookies";
+// import useSWR from "swr";
 export default function Dashboard() {
+  // RefreshToken();
   const t = useTranslations();
 
   // const testData = [
@@ -83,19 +87,13 @@ export default function Dashboard() {
           <EventsCarousel />
         </div>
         <Card className="flex-1 flex items-center justify-center p-4 ">
-          <QRCodeComp value="1/22:09" size={180} />
+          <QRCodeComp size={180} />
         </Card>
       </div>
 
       {/* tables - responsive layout */}
-      <div className="flex flex-col lg:flex-row gap-3 sm:gap-5">
-        <div className="lg:w-1/2">
-          <TopProvidersTable />
-        </div>
-        <div className="lg:w-1/2">
-          <TopCouponsTable />
-        </div>
-      </div>
+
+      <TopProvidersTable />
     </div>
   );
 }

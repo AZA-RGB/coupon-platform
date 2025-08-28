@@ -1,4 +1,5 @@
 "use client"
+import RequestDetailsModal from "@/components/dashboard/requestDialog";
 import RequestReviewDialog from "@/components/RequestReviewDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -46,7 +47,7 @@ interface RequestsCardProps {
                   <TableCell className="py-2 px-4">{row.user.name}</TableCell>
                   <TableCell className="py-2 px-4">
                     <div className="flex gap-2 justify-center">
-                      <RequestReviewDialog providerData={row} updateRequests={mutate} />
+                      <RequestDetailsModal request={row} updateRequests={mutate}  key={row.id}/>
                     </div>
                   </TableCell>
                 </TableRow>

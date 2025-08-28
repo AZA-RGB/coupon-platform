@@ -27,6 +27,7 @@ import { Spinner } from "@/components/ui/spinner";
 import RequestsCard from "./RequestsCard";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
+import GeneralStatisticsCards from "@/components/dashboard/GeneralStatistcsCard";
 
 const AdminDashboardPage = () => {
   const t = useTranslations();
@@ -61,22 +62,7 @@ const AdminDashboardPage = () => {
   return (
     <div className="p-4 sm:p-2 lg:p-4 space-y-6">
       {/* Top statistics cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {cardData.map((card, index) => (
-          <Card
-            key={index}
-            className="flex flex-row justify-between items-center p-4"
-          >
-            <div>
-              <div className="text-muted-foreground text-sm">{card.title}</div>
-              <div className="text-sm sm:text-base">{card.value}</div>
-            </div>
-            <div className="bg-primary text-white rounded-lg p-3">
-              {card.icon}
-            </div>
-          </Card>
-        ))}
-      </div>
+      <GeneralStatisticsCards />
 
       {/* Main cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
