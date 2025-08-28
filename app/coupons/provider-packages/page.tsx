@@ -73,8 +73,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Cookies from "js-cookie";
 
-const PACKAGES_PER_PAGE = 10;
+const idUser = Cookies.get("id");
 
 const editFormSchema = z.object({
   title: z.string().min(1, { message: "titleRequired" }),
@@ -234,6 +235,262 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
   );
 };
 
+const AddGiftToPackageDialog = ({ pkg, refreshPackages, t }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [giftType, setGiftType] = useState<"coupon" | "points">("coupon");
+  const [selectedGiftCouponId, setSelectedGiftCouponId] = useState("");
+  const [pointsValue, setPointsValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDarkMode(mediaQuery.matches);
+    const handleChange = (e) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await axios.get(
+          "http://164.92.67.78:3002/api/coupons/all"
+        );
+        const { data } = response.data;
+        if (data && Array.isArray(data)) {
+          setCoupons(data);
+        }
+      } catch (error) {
+        console.error("Error fetching coupons:", error);
+        toast.error(t("fetchCouponsError"), { duration: 5000 });
+      }
+    };
+    fetchCoupons();
+  }, [t]);
+
+  const handleSubmit = async () => {
+    if (giftType === "coupon" && !selectedGiftCouponId) {
+      toast.error(t("selectCouponError"), {
+        description: t("selectCouponErrorDesc"),
+        duration: 5000,
+      });
+      return;
+    }
+    if (giftType === "points" && (!pointsValue || parseInt(pointsValue) <= 0)) {
+      toast.error(t("invalidPointsError"), {
+        description: t("invalidPointsErrorDesc"),
+        duration: 5000,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const giftData = {
+        type: "package",
+        giftable_id: pkg.id,
+        ...(giftType === "coupon"
+          ? { coupon_id: parseInt(selectedGiftCouponId) }
+          : { points: parseInt(pointsValue) }),
+      };
+      const response = await axios.post(
+        "http://164.92.67.78:3002/api/gift-programs/create",
+        giftData
+      );
+      if (response.data.success) {
+        toast.success(t("giftSuccess"), {
+          description: t("giftSuccessDesc"),
+          duration: 3000,
+        });
+        refreshPackages();
+      } else {
+        throw new Error(response.data.message || t("giftError"));
+      }
+    } catch (error) {
+      console.error("Error creating gift program:", error);
+      toast.error(t("giftErrorDesc"), {
+        description: error.response?.data?.message || t("giftError"),
+        duration: 7000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const bgColor = isDarkMode ? "bg-gray-900" : "bg-white";
+  const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
+  const textMutedColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+  const primaryColor = "#00cbc1";
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">{t("addGift")}</Button>
+      </DialogTrigger>
+      <DialogContent
+        className={`sm:max-w-[500px] p-0 overflow-hidden ${bgColor}`}
+      >
+        <div
+          className="p-6 text-white"
+          style={{
+            background: `linear-gradient(to right, ${primaryColor}, ${primaryColor})`,
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center">
+              <i className="fas fa-gift mr-2" style={{ color: "#fff" }}></i>
+              {t("addGift")}
+            </DialogTitle>
+            <DialogDescription className="text-white/80">
+              {t("addGiftDesc")}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+        <div className="p-6 space-y-5">
+          <div>
+            <label
+              className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}
+            >
+              <i
+                className="fas fa-list mr-2"
+                style={{ color: primaryColor }}
+              ></i>
+              {t("giftType")}
+            </label>
+            <Select
+              value={giftType}
+              onValueChange={(value) => setGiftType(value)}
+            >
+              <SelectTrigger
+                className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+              >
+                <SelectValue placeholder={t("selectGiftType")} />
+              </SelectTrigger>
+              <SelectContent
+                className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+              >
+                <SelectItem value="coupon" className="flex items-center">
+                  <i
+                    className="fas fa-ticket-alt mr-2"
+                    style={{ color: primaryColor }}
+                  ></i>
+                  {t("couponGift")}
+                </SelectItem>
+                <SelectItem value="points" className="flex items-center">
+                  <i className="fas fa-coins mr-2 text-yellow-500"></i>
+                  {t("pointsGift")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {giftType === "coupon" ? (
+            <div>
+              <label
+                className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}
+              >
+                <i
+                  className="fas fa-ticket-alt mr-2"
+                  style={{ color: primaryColor }}
+                ></i>
+                {t("selectGiftCoupon")}
+              </label>
+              <Select
+                value={selectedGiftCouponId}
+                onValueChange={setSelectedGiftCouponId}
+              >
+                <SelectTrigger
+                  className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+                >
+                  <SelectValue placeholder={t("selectCoupon")} />
+                </SelectTrigger>
+                <SelectContent
+                  className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+                >
+                  {coupons.map((coupon) => (
+                    <SelectItem
+                      key={coupon.id}
+                      value={coupon.id.toString()}
+                      className={isDarkMode ? "hover:bg-gray-700" : ""}
+                    >
+                      <div className="flex items-center">
+                        <div
+                          className={`p-1 rounded mr-2`}
+                          style={{
+                            backgroundColor: isDarkMode
+                              ? "rgba(0,203,193,0.3)"
+                              : "rgba(0,203,193,0.2)",
+                            color: primaryColor,
+                          }}
+                        >
+                          <i className="fas fa-ticket-alt text-xs"></i>
+                        </div>
+                        <div>
+                          <p className={`font-medium ${textColor}`}>
+                            {coupon.name}
+                          </p>
+                          <p className={`text-xs ${textMutedColor}`}>
+                            {coupon.coupon_code}
+                          </p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div>
+              <label
+                className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}
+              >
+                <i className="fas fa-coins mr-2 text-yellow-500"></i>
+                {t("points")}
+              </label>
+              <div className="relative">
+                <Input
+                  type="number"
+                  placeholder={t("enterPoints")}
+                  value={pointsValue}
+                  onChange={(e) => setPointsValue(e.target.value)}
+                  min="1"
+                  className={`pl-10 ${
+                    isDarkMode ? "bg-gray-800 border-gray-700 text-white" : ""
+                  }`}
+                />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i className="fas fa-coins text-yellow-500"></i>
+                </div>
+              </div>
+            </div>
+          )}
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full py-2"
+            style={{
+              backgroundColor: primaryColor,
+              color: "#fff",
+            }}
+          >
+            {isSubmitting ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                {t("submitting")}
+              </>
+            ) : (
+              <>
+                <i className="fas fa-plus-circle mr-2"></i>
+                {t("submit")}
+              </>
+            )}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
   const form = useForm({
     resolver: zodResolver(editFormSchema),
@@ -265,8 +522,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
 
   async function onSubmit(values) {
     try {
-
-
       await axios.put(
         `http://164.92.67.78:3002/api/packages/${pkg.id}`,
         {
@@ -329,7 +584,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         <div className="flex-1 overflow-y-auto px-4 py-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              {/* Title */}
               <FormField
                 control={form.control}
                 name="title"
@@ -343,8 +597,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -361,8 +613,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* From Date */}
               <FormField
                 control={form.control}
                 name="from_date"
@@ -376,8 +626,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* To Date */}
               <FormField
                 control={form.control}
                 name="to_date"
@@ -391,8 +639,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Providers */}
               <FormField
                 control={form.control}
                 name="max_providers"
@@ -410,8 +656,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Price */}
               <FormField
                 control={form.control}
                 name="max_price"
@@ -429,8 +673,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Amount */}
               <FormField
                 control={form.control}
                 name="max_amount"
@@ -448,8 +690,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Max Coupons Number */}
               <FormField
                 control={form.control}
                 name="max_coupons_number"
@@ -467,8 +707,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* File */}
               <FormField
                 control={form.control}
                 name="file"
@@ -488,8 +726,6 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   </FormItem>
                 )}
               />
-
-              {/* Buttons */}
               <div className="flex justify-end gap-2">
                 <DialogTrigger asChild>
                   <Button variant="outline">{t("cancel")}</Button>
@@ -526,153 +762,415 @@ const PackageDetailsModal = ({
   const isRTL = locale === "ar";
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Check for dark mode preference
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkMode(mediaQuery.matches);
-    
+
     const handler = (e) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    
-    return () => mediaQuery.removeEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
+
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-[700px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
-        {/* Header with teal accent */}
+      <DialogContent
+        className={`sm:max-w-[700px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${
+          isDarkMode
+            ? "bg-gray-900 border-gray-700"
+            : "bg-white border-gray-200"
+        }`}
+      >
         <div className="bg-[#00cbc1] h-2 w-full rounded-t-lg"></div>
-        
+
         <DialogHeader className="px-6 pt-4 pb-2">
           <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden shadow-md">
-            <MyImage src={pkg.image} alt={pkg.title} className="object-cover w-full h-full" />
+            <MyImage
+              src={pkg.image}
+              alt={pkg.title}
+              className="object-cover w-full h-full"
+            />
           </div>
-          <DialogTitle className={`text-2xl font-bold mt-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <DialogTitle
+            className={`text-2xl font-bold mt-4 ${
+              isDarkMode ? "text-white" : "text-gray-800"
+            }`}
+          >
             {pkg.title}
           </DialogTitle>
-          <DialogDescription className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <DialogDescription
+            className={`mt-2 text-base ${
+              isDarkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             {pkg.description}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="flex-1 px-6 py-4">
           <div className="grid gap-6">
-            {/* Package details grid */}
             <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("id")}</h4>
-                <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{pkg.id}</p>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("id")}
+                </h4>
+                <p
+                  className={`text-sm font-semibold mt-1 ${
+                    isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+                >
+                  {pkg.id}
+                </p>
               </div>
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("provider")}</h4>
-                <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{pkg.provider}</p>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("provider")}
+                </h4>
+                <p
+                  className={`text-sm font-semibold mt-1 ${
+                    isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+                >
+                  {pkg.provider}
+                </p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("status")}</h4>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("status")}
+                </h4>
                 <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00cbc1] bg-opacity-15 text-[#00857e] mt-1 capitalize">
                   {t(pkg.status)}
                 </div>
               </div>
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("startDate")}</h4>
-                <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("startDate")}
+                </h4>
+                <p
+                  className={`text-sm font-semibold mt-1 ${
+                    isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+                >
                   {new Date(pkg.fromDate).toLocaleDateString()}
                 </p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("endDate")}</h4>
-                <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("endDate")}
+                </h4>
+                <p
+                  className={`text-sm font-semibold mt-1 ${
+                    isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+                >
                   {new Date(pkg.toDate).toLocaleDateString()}
                 </p>
               </div>
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("amount")}</h4>
-                <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{pkg.amount}</p>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("amount")}
+                </h4>
+                <p
+                  className={`text-sm font-semibold mt-1 ${
+                    isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+                >
+                  {pkg.amount}
+                </p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("averageRating")}</h4>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("averageRating")}
+                </h4>
                 <div className="flex items-center mt-1">
-                  <span className={`text-sm font-semibold mr-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                  <span
+                    className={`text-sm font-semibold mr-2 ${
+                      isDarkMode ? "text-gray-200" : "text-gray-800"
+                    }`}
+                  >
                     {pkg.average_rating}
                   </span>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <svg key={i} className={`w-4 h-4 ${i < Math.floor(pkg.average_rating) ? 'text-yellow-400' : isDarkMode ? 'text-gray-600' : 'text-gray-300'}`} viewBox="0 0 24 24" fill="currentColor">
+                      <svg
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < Math.floor(pkg.average_rating)
+                            ? "text-yellow-400"
+                            : isDarkMode
+                            ? "text-gray-600"
+                            : "text-gray-300"
+                        }`}
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
                         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                       </svg>
                     ))}
                   </div>
                 </div>
               </div>
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("totalPrice")}</h4>
-                <p className="text-lg font-bold text-[#00cbc1] mt-1">{pkg.total_price}</p>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("totalPrice")}
+                </h4>
+                <p className="text-lg font-bold text-[#00cbc1] mt-1">
+                  {pkg.total_price}
+                </p>
               </div>
             </div>
-            
-            {/* Coupons section */}
-            <div className={`rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} border`}>
-              <div className={`px-4 py-3 border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium flex items-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <svg className="w-5 h-5 text-[#00cbc1] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+
+            <div
+              className={`rounded-lg overflow-hidden ${
+                isDarkMode
+                  ? "border-gray-700 bg-gray-800"
+                  : "border-gray-200 bg-white"
+              } border`}
+            >
+              <div
+                className={`px-4 py-3 border-b ${
+                  isDarkMode
+                    ? "border-gray-700 bg-gray-800"
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium flex items-center ${
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  <svg
+                    className="w-5 h-5 text-[#00cbc1] mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+                    ></path>
                   </svg>
                   {t("coupons")}
                 </h4>
               </div>
               <div className="p-4">
                 {pkg.coupons.length === 0 ? (
-                  <div className={`text-center py-6 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  <div
+                    className={`text-center py-6 ${
+                      isDarkMode ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  >
+                    <svg
+                      className="w-12 h-12 mx-auto text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
                     </svg>
                     <p className="mt-2">{t("noCouponsFound")}</p>
                   </div>
                 ) : (
                   <div className="mt-2 w-full overflow-x-auto rounded-lg border border-gray-200">
                     <Table dir={isRTL ? "rtl" : "ltr"} className="min-w-full">
-                      <TableHeader className={isDarkMode ? "bg-gray-700" : "bg-gray-50"}>
-                        <TableRow className={isDarkMode ? "border-gray-600" : ""}>
-                          <TableHead className={`font-medium py-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("couponName")}</TableHead>
-                          <TableHead className={`font-medium py-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("description")}</TableHead>
-                          <TableHead className={`font-medium py-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("price")}</TableHead>
-                          <TableHead className={`font-medium py-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("amount")}</TableHead>
-                          <TableHead className={`font-medium py-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("couponCode")}</TableHead>
-                          <TableHead className={`font-medium py-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("date")}</TableHead>
+                      <TableHeader
+                        className={isDarkMode ? "bg-gray-700" : "bg-gray-50"}
+                      >
+                        <TableRow
+                          className={isDarkMode ? "border-gray-600" : ""}
+                        >
+                          <TableHead
+                            className={`font-medium py-3 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-600"
+                            }`}
+                          >
+                            {t("couponName")}
+                          </TableHead>
+                          <TableHead
+                            className={`font-medium py-3 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-600"
+                            }`}
+                          >
+                            {t("description")}
+                          </TableHead>
+                          <TableHead
+                            className={`font-medium py-3 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-600"
+                            }`}
+                          >
+                            {t("price")}
+                          </TableHead>
+                          <TableHead
+                            className={`font-medium py-3 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-600"
+                            }`}
+                          >
+                            {t("amount")}
+                          </TableHead>
+                          <TableHead
+                            className={`font-medium py-3 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-600"
+                            }`}
+                          >
+                            {t("couponCode")}
+                          </TableHead>
+                          <TableHead
+                            className={`font-medium py-3 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-600"
+                            }`}
+                          >
+                            {t("date")}
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {pkg.coupons.map((coupon) => (
-                          <TableRow key={coupon.id} className={isDarkMode ? "border-gray-700 hover:bg-gray-700 even:bg-gray-800" : "hover:bg-gray-50 even:bg-gray-50"}>
-                            <TableCell className={`py-3 border-t ${isDarkMode ? 'border-gray-700 text-gray-300' : 'border-gray-200 text-gray-800'}`}>
+                          <TableRow
+                            key={coupon.id}
+                            className={
+                              isDarkMode
+                                ? "border-gray-700 hover:bg-gray-700 even:bg-gray-800"
+                                : "hover:bg-gray-50 even:bg-gray-50"
+                            }
+                          >
+                            <TableCell
+                              className={`py-3 border-t ${
+                                isDarkMode
+                                  ? "border-gray-700 text-gray-300"
+                                  : "border-gray-200 text-gray-800"
+                              }`}
+                            >
                               {coupon.name}
                             </TableCell>
-                            <TableCell className={`py-3 border-t ${isDarkMode ? 'border-gray-700 text-gray-300' : 'border-gray-200 text-gray-800'}`}>
+                            <TableCell
+                              className={`py-3 border-t ${
+                                isDarkMode
+                                  ? "border-gray-700 text-gray-300"
+                                  : "border-gray-200 text-gray-800"
+                              }`}
+                            >
                               {coupon.description.length > 50
                                 ? coupon.description.slice(0, 50) + "..."
                                 : coupon.description}
                             </TableCell>
-                            <TableCell className={`py-3 border-t font-medium ${isDarkMode ? 'border-gray-700 text-gray-300' : 'border-gray-200 text-gray-800'}`}>
+                            <TableCell
+                              className={`py-3 border-t font-medium ${
+                                isDarkMode
+                                  ? "border-gray-700 text-gray-300"
+                                  : "border-gray-200 text-gray-800"
+                              }`}
+                            >
                               ${coupon.price}
                             </TableCell>
-                            <TableCell className={`py-3 border-t ${isDarkMode ? 'border-gray-700 text-gray-300' : 'border-gray-200 text-gray-800'}`}>
+                            <TableCell
+                              className={`py-3 border-t ${
+                                isDarkMode
+                                  ? "border-gray-700 text-gray-300"
+                                  : "border-gray-200 text-gray-800"
+                              }`}
+                            >
                               {coupon.amount}
                             </TableCell>
-                            <TableCell className={`py-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <TableCell
+                              className={`py-3 border-t ${
+                                isDarkMode
+                                  ? "border-gray-700"
+                                  : "border-gray-200"
+                              }`}
+                            >
                               <span className="bg-[#00cbc1] bg-opacity-10 text-[#00857e] px-2 py-1 rounded-md text-xs font-mono">
                                 {coupon.coupon_code}
                               </span>
                             </TableCell>
-                            <TableCell className={`py-3 border-t ${isDarkMode ? 'border-gray-700 text-gray-300' : 'border-gray-200 text-gray-800'}`}>
+                            <TableCell
+                              className={`py-3 border-t ${
+                                isDarkMode
+                                  ? "border-gray-700 text-gray-300"
+                                  : "border-gray-200 text-gray-800"
+                              }`}
+                            >
                               {new Date(coupon.date).toLocaleDateString()}
                             </TableCell>
                           </TableRow>
@@ -683,26 +1181,72 @@ const PackageDetailsModal = ({
                 )}
               </div>
             </div>
-            
-            {/* Package settings section */}
-            <div className={`rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} border`}>
-              <div className={`px-4 py-3 border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium flex items-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <svg className="w-5 h-5 text-[#00cbc1] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+
+            <div
+              className={`rounded-lg overflow-hidden ${
+                isDarkMode
+                  ? "border-gray-700 bg-gray-800"
+                  : "border-gray-200 bg-white"
+              } border`}
+            >
+              <div
+                className={`px-4 py-3 border-b ${
+                  isDarkMode
+                    ? "border-gray-700 bg-gray-800"
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium flex items-center ${
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  <svg
+                    className="w-5 h-5 text-[#00cbc1] mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    ></path>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
                   </svg>
                   {t("packageSettings")}
                 </h4>
               </div>
               <div className="p-4">
                 {pkg.package_settings.length === 0 ? (
-                  <p className={`text-sm py-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>{t("noSettingsFound")}</p>
+                  <p
+                    className={`text-sm py-2 ${
+                      isDarkMode ? "text-gray-500" : "text-gray-500"
+                    }`}
+                  >
+                    {t("noSettingsFound")}
+                  </p>
                 ) : (
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {pkg.package_settings.map((setting) => (
-                      <li key={setting.id} className={`flex items-center justify-between px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <li
+                        key={setting.id}
+                        className={`flex items-center justify-between px-3 py-2 rounded-md ${
+                          isDarkMode ? "bg-gray-700" : "bg-gray-50"
+                        }`}
+                      >
+                        <span
+                          className={`text-sm ${
+                            isDarkMode ? "text-gray-400" : "text-gray-600"
+                          }`}
+                        >
                           {t(setting.criteria.name)}
                         </span>
                         <span className="text-sm font-medium text-[#00cbc1]">
@@ -714,14 +1258,20 @@ const PackageDetailsModal = ({
                 )}
               </div>
             </div>
-            
-            {/* Add coupon button */}
-            <div className="flex justify-start">
+
+            <div className="flex justify-start gap-2">
               <AddCouponToPackageDialog
                 pkg={pkg}
                 refreshPackages={refreshPackages}
                 t={t}
               />
+              {pkg.provider_id === parseInt(idUser) && (
+                <AddGiftToPackageDialog
+                  pkg={pkg}
+                  refreshPackages={refreshPackages}
+                  t={t}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1002,11 +1552,13 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          <EditPackageDialog
-            pkg={pkg}
-            refreshPackages={refreshPackages}
-            t={t}
-          />
+          {pkg.provider_id === parseInt(idUser) && (
+            <EditPackageDialog
+              pkg={pkg}
+              refreshPackages={refreshPackages}
+              t={t}
+            />
+          )}
         </div>
       );
     default:

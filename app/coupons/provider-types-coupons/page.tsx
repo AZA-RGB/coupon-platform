@@ -416,10 +416,10 @@ export default function TypesAllCouponsPage() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col lg:flex-row gap-4 w-full">
+          {/* <div className="flex flex-col lg:flex-row gap-4 w-full">
             <TopCouponsCard t={t} />
             <NavigationCards t={t} />
-          </div>
+          </div> */}
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>

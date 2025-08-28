@@ -428,6 +428,8 @@ export default function AllReelsPage() {
             <CardDescription>{t("description")}</CardDescription>
           </div>
           <div className="flex space-x-2">
+                        <AddReelDialog t={t} refreshReels={mutate} />
+
             <div className="relative">
               <Button
                 variant="outline"
@@ -470,7 +472,6 @@ export default function AllReelsPage() {
               <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
             </div>
 
-            <AddReelDialog t={t} refreshReels={mutate} />
           </div>
         </CardHeader>
       </Card>

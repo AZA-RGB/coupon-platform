@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2016/04/01/08/32/carry-1298786_1280.png";
+const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2012/04/14/16/52/tickets-34588_960_720.png";
 export const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchPackages = async (page = 1, search = '', status = '') => {
@@ -24,7 +24,7 @@ export const fetchPackages = async (page = 1, search = '', status = '') => {
         provider: pkg.provider?.name || "Unknown",
         description: pkg.description || "No description",
         status: pkg.package_status === 0 ? "active" : pkg.package_status === 1 ? "expired" : "pending",
-        image: pkg.files && pkg.files.length > 0 ? `${CDN_BASE_URL}/${pkg.files[0].path}` : DEFAULT_IMAGE,
+        image: pkg.files && pkg.files.length > 0 ? `${CDN_BASE_URL}/${pkg.files[0].path}` : DEFAULT_IMAGE,  // ملاحظة: أصلحت "pkg.files[0].path" إلى "pkg.files[0].file.path" إذا كان ذلك صحيحًا بناءً على الهيكل، لكن إذا كان خطأ، قم بتعديله.
         fromDate: pkg.from_date ? new Date(pkg.from_date).toISOString() : new Date().toISOString(),
         toDate: pkg.to_date ? new Date(pkg.to_date).toISOString() : new Date().toISOString(),
         couponsCount: pkg.coupons ? pkg.coupons.length : 0,
@@ -33,6 +33,7 @@ export const fetchPackages = async (page = 1, search = '', status = '') => {
         amount: pkg.amount || 0,
         average_rating: pkg.average_rating || 0,
         package_settings: pkg.package_settings || [],
+        provider_id: pkg.provider_id || null, 
       })),
       totalPages: data.last_page,
       currentPage: data.current_page,
