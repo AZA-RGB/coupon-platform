@@ -36,7 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Filter, Search, Plus } from "lucide-react";
+import { Filter, Search, Plus, Calendar, Ticket, Tag, User, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
@@ -241,68 +241,144 @@ const AddEventDialog = ({ refreshEvents, t }) => {
 const EventDetailsModal = ({ event, t, open, onOpenChange }) => {
   if (!event) return null;
 
+  // Status color mapping
+  const statusColors = {
+    active: "bg-green-100 text-green-800",
+    pending: "bg-yellow-100 text-yellow-800",
+    cancelled: "bg-red-100 text-red-800",
+    completed: "bg-blue-100 text-blue-800",
+    default: "bg-gray-100 text-gray-800"
+  };
+
+  const statusColor = statusColors[event.status] || statusColors.default;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="relative w-full h-64 mt-4">
-            <MyImage src={event.image} alt={event.title} />
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto p-0">
+        <div className="relative">
+          {/* Header with image */}
+          <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+            <MyImage 
+              src={event.image} 
+              alt={event.title}
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <DialogTitle className="absolute bottom-4 left-6 text-white text-2xl font-bold">
+              {event.title}
+            </DialogTitle>
           </div>
-          <DialogTitle>{event.title}</DialogTitle>
-          <DialogDescription>{event.description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("userId")}</h4>
-              <p className="text-sm text-muted-foreground">{event.userId}</p>
+
+          <button
+            onClick={() => onOpenChange(false)}
+            className="absolute top-4 right-4 rounded-full bg-primary/90 p-2 shadow-md  transition-all"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="px-6 pb-6">
+          {/* Description */}
+          <DialogDescription className="mt-4 text-base text-white-500">
+            {event.description}
+          </DialogDescription>
+
+          {/* Details grid */}
+          <div className="grid gap-6 py-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-white-500 flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {t("userId")}
+                </h4>
+                <p className="text-base font-medium">{event.userId}</p>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-white-500 flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  {t("status")}
+                </h4>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${statusColor}`}>
+                  {t(event.status)}
+                </span>
+              </div>
             </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("status")}</h4>
-              <p className="text-sm text-muted-foreground capitalize">
-                {t(event.status)}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-white-500 flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {t("startDate")}
+                </h4>
+                <p className="text-base font-medium">
+                  {new Date(event.fromDate).toLocaleDateString(undefined, {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-white-500 flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {t("endDate")}
+                </h4>
+                <p className="text-base font-medium">
+                  {new Date(event.toDate).toLocaleDateString(undefined, {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-white-500flex items-center gap-2">
+                <Ticket className="h-4 w-4" />
+                {t("couponsCount")}
+              </h4>
+              <p className="text-2xl font-bold text-primary">
+                {event.couponsCount}
               </p>
             </div>
+
+            {event.coupons.length > 0 && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-white-500 border-b pb-2">
+                  {t("coupons")}
+                </h4>
+                <div className="grid gap-3">
+                  {event.coupons.map((coupon) => (
+                    <div key={coupon.id} className="flex justify-between items-center p-4 bg-secondary rounded-lg   hover:bg-secondary-100 transition-colors">
+                      <div>
+                        <p className="font-medium">{coupon.name}</p>
+                        <p className="text-sm text-primary">{coupon.couponCode}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-primary">
+                          <span className="text-sm font-normal text-white-500 ml-1 mr-1">
+                            {t("price")} :
+                          </span>
+                          {coupon.price} 
+                          
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium">{t("startDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(event.fromDate).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium">{t("endDate")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {new Date(event.toDate).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium">{t("couponsCount")}</h4>
-            <p className="text-sm text-muted-foreground">
-              {event.couponsCount}
-            </p>
-          </div>
-          {event.coupons.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium">{t("coupons")}</h4>
-              <ul className="text-sm text-muted-foreground">
-                {event.coupons.map((coupon) => (
-                  <li key={coupon.id}>
-                    {coupon.name} ({coupon.couponCode}) - {t("price")}:{" "}
-                    {coupon.price}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 };
-
 const EventsTable = ({
   t,
   events,
