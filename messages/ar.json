@@ -614,6 +614,8 @@
     "giftSuccess": "تم ربط الكوبون كهدية بنجاح",
     "pointsGift":"هدية النقاط",
     "couponGift":"هدية الكوبون",
+    "enterPoints":"ادخل النقاط",
+    "points":"النقاط",
     "couponName": "اسم الكوبون",
       "submit":"إرسال",
     "selectGiftType":"اختر نوع الهدية",
