@@ -70,9 +70,9 @@ export default function LoginPage() {
       console.log("Role:", role);
 
       // // Save tokens and role to localStorage
-      Cookies.set("token", access_token, { expires: 30 }); // expires in 30 days
-      Cookies.set("refreshToken", refresh_token, { expires: 90 }); // expires in 90 days
-      Cookies.set("userRole", role, { expires: 30 }); // expires in 30 days
+      Cookies.set("token", access_token, { expires: 1 }); // expires in 30 days
+      Cookies.set("refreshToken", refresh_token, { expires: 1 }); // expires in 90 days
+      Cookies.set("userRole", role, { expires: 1 }); // expires in 30 days
 
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),

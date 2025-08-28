@@ -3,107 +3,145 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { useTranslations } from "next-intl";
+import useSWR from "swr";
 
-interface Customer {
-  id: string;
+// Define types based on the provided data structure
+interface User {
+  id: number;
   name: string;
-  avatarUrl: string;
-  orderCount: number;
+  email: string;
+  phone_number: string;
+  role: string;
+  status: string;
 }
 
-const testData: Customer[] = [
-  {
-    id: "1",
-    name: "Ali Assad",
-    avatarUrl: "https://github.com/shadcn.png",
-    orderCount: 15,
-  },
-  {
-    id: "2",
-    name: "Sara Ahmed",
-    avatarUrl: "https://avatars.githubusercontent.com/u/88889305?v=4",
-    orderCount: 12,
-  },
-  {
-    id: "3",
-    name: "Omar Khalid",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Omar",
-    orderCount: 10,
-  },
-  {
-    id: "4",
-    name: "Lina Mahmoud",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Lina",
-    orderCount: 8,
-  },
-  {
-    id: "5",
-    name: "Youssef Ali",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Youssef",
-    orderCount: 5,
-  },
-  {
-    id: "6",
-    name: "Ahmed Hassan",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Ahmed",
-    orderCount: 3,
-  },
-  {
-    id: "7",
-    name: "Fatima Ali",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Fatima",
-    orderCount: 2,
-  },
-  {
-    id: "8",
-    name: "Kareem Mahmoud",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Kareem",
-    orderCount: 1,
-  },
-  {
-    id: "9",
-    name: "Nour Ibrahim",
-    avatarUrl: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Nour",
-    orderCount: 0,
-  },
-];
-// Replace with your actual language detection logic
-const isArabic = true;
+interface Customer {
+  id: number;
+  user_id: number;
+  bank_id: string | null;
+  birth_date: string;
+  location: string;
+  purchases_count: number;
+  user: User & {
+    user_id: number;
+    bank_id: string | null;
+    birth_date: string;
+    location: string;
+    purchases_count: number;
+    user: User;
+  };
+}
+
+interface TopCustomersResponse {
+  message: string;
+  data: {
+    top_customers: Customer[];
+    top_coupons: any[]; // We won't use this in this component
+  };
+}
 
 export default function TopCustomersList() {
   const t = useTranslations();
+  const { data, error, isLoading } = useSWR<TopCustomersResponse>(
+    "/coupons/top-coupons-customers",
+  );
+
+  // Replace with your actual language detection logic
+  const isArabic = true;
+
+  if (error) {
+    return (
+      <div className="">
+        <Card className="grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
+          <div className="row-span-1 flex flex-row place-content-between items-center">
+            <CardTitle className="text-2xl font-normal">
+              {t("Topcustomers")}
+            </CardTitle>
+          </div>
+          <div className="row-span-5 flex items-center justify-center">
+            <p className="text-muted-foreground">Failed to load customers</p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="">
+        <Card className="grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
+          <div className="row-span-1 flex flex-row place-content-between items-center">
+            <CardTitle className="text-2xl font-normal">
+              {t("Topcustomers")}
+            </CardTitle>
+          </div>
+          <div className="row-span-5 flex items-center justify-center">
+            <p className="text-muted-foreground">Loading customers...</p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  const customers = data?.data?.top_customers || [];
+
+  // Function to generate avatar URL based on customer name
+  const getAvatarUrl = (name: string, id: number) => {
+    // You can use any avatar service you prefer
+    return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${name.replace(/\s+/g, "")}`;
+  };
+
   return (
     <div className="">
       <Card className="grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
         <div className="row-span-1 flex flex-row place-content-between items-center">
-          <CardTitle className="text-2xl   font-normal">
+          <CardTitle className="text-2xl font-normal">
             {t("Topcustomers")}
           </CardTitle>
         </div>
         <div className="row-span-5 overflow-auto">
-          <ScrollArea className="rounded-md ">
+          <ScrollArea className="rounded-md">
             <div className="">
-              {testData.map((customer) => (
-                <div key={customer.id}>
-                  <div
-                    className={`flex  items-center p-3 hover:bg-muted space-x-4 ${isArabic ? "flex-row-reverse text-right  place-conte-end space-x-reverse" : "place-content-start"}`}
-                  >
-                    <Avatar>
-                      <AvatarImage src={customer.avatarUrl} />
-                      <AvatarFallback>
-                        {customer.name.slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <div>{customer.name}</div>
-                      <div className="text-muted-foreground">
-                        Orders: {customer.orderCount}
+              {customers.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-muted-foreground">No customers found</p>
+                </div>
+              ) : (
+                customers.map((customer) => (
+                  <div key={customer.id}>
+                    <div
+                      className={`flex items-center p-3 hover:bg-muted space-x-4 ${
+                        isArabic
+                          ? "flex-row-reverse text-right place-content-end space-x-reverse"
+                          : "place-content-start"
+                      }`}
+                    >
+                      <Avatar>
+                        <AvatarImage
+                          src={getAvatarUrl(customer.user.name, customer.id)}
+                        />
+                        <AvatarFallback>
+                          {customer.user.name.slice(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div
+                        className={`flex flex-col ${
+                          isArabic ? "items-end" : "items-start"
+                        }`}
+                      >
+                        <div>{customer.user.name}</div>
+                        <div className="text-muted-foreground">
+                          {t("Purchases")}: {customer.purchases_count}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {customer.location}
+                        </div>
                       </div>
                     </div>
+                    <Separator />
                   </div>
-                  <Separator className="" />
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </ScrollArea>
         </div>
