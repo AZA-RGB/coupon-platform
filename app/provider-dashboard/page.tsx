@@ -1,9 +1,10 @@
+"use client";
+
 import { EventsCarousel } from "@/components/admin-dashboard/EventsCarousel";
-import { CardsCarousel } from "@/components/dashboard/cards-carousel";
 import QRCodeComp from "@/components/dashboard/QR-code";
-import TopCouponsTable from "@/components/dashboard/top-coupons-table";
 import TopProvidersTable from "@/components/dashboard/top-providers-table";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   DollarSign,
   LineChart,
@@ -12,24 +13,47 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import RefreshToken from "../auth/TokenRefresher";
-import PurchasesOverTime from "@/components/report-page/PurchasesOverTime";
-// import Cookies from "js-cookies";
-// import useSWR from "swr";
-export default function Dashboard() {
-  // RefreshToken();
-  const t = useTranslations();
+import { useEffect, useState } from "react";
 
-  // const testData = [
-  //   {
-  //     billID: "#12345",
-  //     coupon: "shawarma coupon",
-  //     date: "15/3/2025",
-  //     customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
-  //     price: "150",
-  //   },
-  //   // ... (rest of your test data remains the same)
-  // ];
+export default function Dashboard() {
+  const t = useTranslations();
+  const [purchaseKey, setPurchaseKey] = useState("");
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+
+
+  useEffect(() => {
+  if (message) {
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }
+}, [message]);
+  const handleRedeem = async () => {
+    try {
+      const response = await fetch("http://164.92.67.78:3002/api/redeems/create-redeem-from-purchase-key", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ purchase_key: purchaseKey }),
+      });
+
+      if (response.ok) {
+        setMessage("Redeemed successfully!");
+        setIsError(false);
+      } else {
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.message || "Failed to redeem"}`);
+        setIsError(true);
+      }
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
+      setIsError(true);
+    }
+  };
 
   const cardData = [
     {
@@ -80,19 +104,43 @@ export default function Dashboard() {
 
       {/* main cards - responsive layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="col-span-1 h-[35vh]">
+    <Card className="col-span-1 h-[35vh] rounded-2xl">
+  <CardHeader>
+    <CardTitle className="text-lg font-semibold">صرف الكوبون</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <input
+      type="text"
+      value={purchaseKey}
+      onChange={(e) => setPurchaseKey(e.target.value)}
+      placeholder="ادخل رمز الشراء"
+      className="border p-2 mb-4 w-full rounded-lg"
+    />
+    <button
+      onClick={handleRedeem}
+      className="bg-primary hover:bg-primary-500 text-white p-2 rounded-lg w-full"
+    >
+      صرف
+    </button>
+
+   
+{message && (
+  <Alert className="mt-4" variant={isError ? "destructive" : "default"}>
+    <AlertTitle>{isError ? "Error" : "Success"}</AlertTitle>
+    <AlertDescription>{message}</AlertDescription>
+  </Alert>
+)}
+  </CardContent>
+</Card>
+        <div className="h-[35vh]">
           <EventsCarousel />
         </div>
-        <div className="h-[35vh]  ">
-          <EventsCarousel />
-        </div>
-        <Card className="flex-1 flex items-center justify-center p-4 ">
+        <Card className="flex-1 flex items-center justify-center p-4">
           <QRCodeComp size={180} />
         </Card>
       </div>
 
       {/* tables - responsive layout */}
-
       <TopProvidersTable />
     </div>
   );
