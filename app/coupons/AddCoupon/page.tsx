@@ -38,6 +38,8 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { fetcher } from "@/lib/fetcher";
 import { useSearchParams } from "next/navigation"; // Add this import
+import Router from "next/router";
+import Link from "next/link";
 
 const formSchema = z
   .object({
@@ -48,7 +50,7 @@ const formSchema = z
     amount: z.coerce.number().min(1),
     pointsToBuy: z.coerce.number().min(0),
     images: z.array(z.instanceof(File)).min(1),
-    Type: z.string().min(0, "You must select type before adding new coupon"),
+    Type: z.string().min(1, "You must select type before adding new coupon"),
   })
   .catchall(z.any())
   .required();
@@ -277,7 +279,7 @@ export default function AddCoupon() {
                       <FormItem>
                         <FormLabel>{t("coverImages")}</FormLabel>
                         <FormControl>
-                          <FileUploadDropzone field={field} />
+                          <FileUploadDropzone field={field} maxFiles={1} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -397,13 +399,17 @@ export default function AddCoupon() {
                         t("addNewCoupon")
                       )}
                     </Button>
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={() => form.reset()}
-                    >
-                      {t("cancel")}
-                    </Button>
+                    <Link href={"/coupons/provider-coupons"}>
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => {
+                          form.reset();
+                        }}
+                      >
+                        {t("cancel")}
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
