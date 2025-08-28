@@ -106,7 +106,8 @@ export default function AddPackageDialog({ refreshPackages }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>{t("addPackage")}</Button>
+        
+        <Button size="sm">{t("addPackage")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-h-[80vh] flex flex-col">
         <DialogHeader>

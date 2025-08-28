@@ -263,6 +263,7 @@
     "title": "Coupons",
     "description": "Manage all coupons",
     "noCouponsFound": "No coupons found",
+    "noGiftPrograms": "No gift programs found",
     "seeTopCoupons": "Top Coupons",
     "seeTopCouponsDesc": "View the most popular coupons",
     "selectAll": "Select All",

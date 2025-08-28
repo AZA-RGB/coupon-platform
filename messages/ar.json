@@ -340,7 +340,8 @@
     "giftDeleteSuccess": "تم حذف الهدية بنجاح",
     "giftDeleteSuccessDesc": "تم حذف الهدية بنجاح",
     "topCouponsTitle": "الكوبونات الأكثر طلبا",
-    "topCouponsDesc": "الكوبونات الأكثر طلبا"
+    "topCouponsDesc": "الكوبونات الأكثر طلبا",
+    "noGiftPrograms": "لا يوجد برامج الهدايا"
   },
   "Providers": {
     "verified": "تم التحقق",
@@ -627,6 +628,7 @@
     "date": "التاريخ",
     "noCoupons": "لم يتم العثور على كوبونات",
     "couponsCount": "عدد الكوبونات",
+    
     "addSuccess": "تمت إضافة الباقة بنجاح",
     "addSuccessDesc": "تم إنشاء الباقة الجديدة.",
     "addError": "فشل في إضافة الباقة",

@@ -5,7 +5,7 @@ const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchCoupons = async (page = 1, search = '', status = '') => {
   try {
-        //     let url = `http://164.92.67.78:3002/api/providers/my-coupons?current_page=${page}&&per_page=12`;
+        //     let url = `http://164.92.67.78:3002/api/providers/my-coupons?current_page=${page}&per_page=12`;
 
     let url = `http://164.92.67.78:3002/api/coupons/index?page=${page}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
