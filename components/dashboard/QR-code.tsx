@@ -6,14 +6,8 @@ import { Spinner } from "../ui/spinner";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 export default function QRCodeComp({ size }) {
-  const [rand, setRand] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRand(Math.floor(Math.random() * 9000) + 1000);
-    }, 3000);
+  const [rand, _] = useState(Math.floor(Math.random() * 9000) + 1000);
 
-    return () => clearInterval(interval);
-  }, []);
   const { isLoading, error, data } = useSWR("/providers/show-me");
 
   if (isLoading) return <Spinner className={`animate-spin h-${size + 10}`} />;

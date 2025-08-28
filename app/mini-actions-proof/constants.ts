@@ -1,3 +1,4 @@
+import api from "@/lib/api";
 import axios from "axios";
 
 interface MiniAction {
@@ -46,15 +47,12 @@ interface MiniActionProof {
 export const fetchMiniActionProofs = async (
   page: number,
   search: string,
-  filter: string
+  filter: string,
 ) => {
   try {
-    const response = await axios.get(
-      "http://164.92.67.78:3002/api/mini-action-proofs/all",
-      {
-        params: { page, search, filter },
-      }
-    );
+    const response = await api.get("/mini-action-proofs/all", {
+      params: { page, search, filter },
+    });
     const miniActionProofs = response.data.data;
 
     // Validate that miniActionProofs is an array and filter out invalid entries
@@ -64,14 +62,14 @@ export const fetchMiniActionProofs = async (
 
     // Filter out proofs with missing or null customer
     const validMiniActionProofs = miniActionProofs.filter(
-      (proof: MiniActionProof) => proof.customer && proof.customer.bank_id
+      (proof: MiniActionProof) => proof.customer && proof.customer.bank_id,
     );
 
     if (validMiniActionProofs.length < miniActionProofs.length) {
       console.warn(
         `Filtered out ${
           miniActionProofs.length - validMiniActionProofs.length
-        } invalid MiniActionProofs with missing customer or bank_id`
+        } invalid MiniActionProofs with missing customer or bank_id`,
       );
     }
 
@@ -88,9 +86,7 @@ export const fetchMiniActionProofs = async (
 
 export const fetchMiniActionProofDetails = async (id: number) => {
   try {
-    const response = await axios.get(
-      `http://164.92.67.78:3002/api/mini-action-proofs/${id}`
-    );
+    const response = await api.get(`/mini-action-proofs/${id}`);
     return response.data.data;
   } catch (error) {
     throw error;
@@ -99,9 +95,7 @@ export const fetchMiniActionProofDetails = async (id: number) => {
 
 export const approveMiniActionProof = async (id: number) => {
   try {
-    await axios.post(
-      `http://164.92.67.78:3002/api/mini-action-proofs/${id}/approve`
-    );
+    await api.post(`/mini-action-proofs/${id}/approve`);
     return { success: true, id };
   } catch (error) {
     return { success: false, id, error };
@@ -110,9 +104,7 @@ export const approveMiniActionProof = async (id: number) => {
 
 export const rejectMiniActionProof = async (id: number) => {
   try {
-    await axios.post(
-      `http://164.92.67.78:3002/api/mini-action-proofs/${id}/reject`
-    );
+    await api.post(`/mini-action-proofs/${id}/reject`);
     return { success: true, id };
   } catch (error) {
     return { success: false, id, error };

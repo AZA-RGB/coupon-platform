@@ -2,13 +2,23 @@ import axios from "axios";
 
 const API_BASE_URL = "http://164.92.67.78:3002/api";
 
-export const fetchComplaints = async (page = 1, perPage = 10, search = '', complainableType = '') => {
+export const fetchComplaints = async (
+  page = 1,
+  perPage = 10,
+  search = "",
+  complainableType = "",
+) => {
   try {
-    const params = new URLSearchParams({ page: page.toString(), per_page: perPage.toString() });
-    if (search) params.append('search', search);
-    if (complainableType) params.append('complainable_type', complainableType);
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString(),
+    });
+    if (search) params.append("search", search);
+    if (complainableType) params.append("complainable_type", complainableType);
 
-    const response = await axios.get(`${API_BASE_URL}/complains/all?${params.toString()}`);
+    const response = await axios.get(
+      `${API_BASE_URL}/complains/all?${params.toString()}`,
+    );
     const { data } = response.data;
 
     if (!data || !Array.isArray(data)) {
@@ -24,16 +34,21 @@ export const fetchComplaints = async (page = 1, perPage = 10, search = '', compl
         content: complaint.content || "No content",
         complainableId: complaint.complainable_id || null,
         complainableType: complaint.complainable_type || "Unknown",
-        complainable: complaint.complainable ? {
-          id: complaint.complainable.id,
-          name: complaint.complainable.name || complaint.complainable.user?.name || "Unknown",
-          description: complaint.complainable.description || null,
-          price: complaint.complainable.price || null,
-          couponCode: complaint.complainable.coupon_code || null,
-          location: complaint.complainable.location || null,
-        } : null,
+        complainable: complaint.complainable
+          ? {
+              id: complaint.complainable.id,
+              name:
+                complaint.complainable.name ||
+                complaint.complainable.user?.name ||
+                "Unknown",
+              description: complaint.complainable.description || null,
+              price: complaint.complainable.price || null,
+              couponCode: complaint.complainable.coupon_code || null,
+              location: complaint.complainable.location || null,
+            }
+          : null,
       })),
-      totalPages: Math.ceil(data.length / perPage), 
+      totalPages: Math.ceil(data.length / perPage),
       currentPage: page,
     };
   } catch (error) {

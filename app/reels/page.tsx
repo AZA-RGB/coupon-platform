@@ -122,11 +122,11 @@ const ReelsGrid = ({
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {reels.map((reel) => (
               <Card
                 key={reel.id}
-                className="w-full p-1 flex flex-col justify-around relative"
+                className="w-full p-0 flex flex-col justify-around relative "
               >
                 <div className="absolute top-2 left-2 z-10">
                   <Checkbox
@@ -140,7 +140,7 @@ const ReelsGrid = ({
                     src={`https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/${reel.reel.path}#t=1`}
                     preload="metadata"
                     muted
-                    className="object-cover rounded-xl w-full h-[400px]"
+                    className="object-cover rounded-xl w-full h-[30vh] md:h-[400px]"
                     poster={`https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/${reel.reel.path}#t=1`}
                   />
                   <Button

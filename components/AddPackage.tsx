@@ -24,6 +24,7 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import axios from "axios";
 import { toast } from "sonner";
+import api from "@/lib/api";
 
 const addFormSchema = z.object({
   title: z.string().min(1, { message: "titleRequired" }),
@@ -33,7 +34,9 @@ const addFormSchema = z.object({
   max_providers: z.string().min(1, { message: "maxProvidersRequired" }),
   max_price: z.string().min(1, { message: "maxPriceRequired" }),
   max_amount: z.string().min(1, { message: "maxAmountRequired" }),
-  max_coupons_number: z.string().min(1, { message: "maxCouponsNumberRequired" }),
+  max_coupons_number: z
+    .string()
+    .min(1, { message: "maxCouponsNumberRequired" }),
   file: z
     .any()
     .optional()
@@ -68,13 +71,13 @@ export default function AddPackageDialog({ refreshPackages }) {
       formData.append("to_date", values.to_date);
       formData.append("max_providers", values.max_providers);
       formData.append("max_price", values.max_price);
-      formData.append("max_amount", values.max_amount);
+      formData.append("amount", values.max_amount);
       formData.append("max_coupons_number", values.max_coupons_number);
       if (values.file) {
         formData.append("file", values.file);
       }
 
-      await axios.post("http://164.92.67.78:3002/api/packages/create", formData, {
+      await api.post("/packages/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -90,7 +93,7 @@ export default function AddPackageDialog({ refreshPackages }) {
         if (error.response) {
           toast.error(
             `${t("addErrorDesc")}: ${error.response.data.message || t("addError")}`,
-            { duration: 7000 }
+            { duration: 7000 },
           );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
@@ -106,7 +109,6 @@ export default function AddPackageDialog({ refreshPackages }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        
         <Button size="sm">{t("addPackage")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-h-[80vh] flex flex-col">
@@ -137,7 +139,10 @@ export default function AddPackageDialog({ refreshPackages }) {
                   <FormItem>
                     <FormLabel>{t("description")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                      <Input
+                        placeholder={t("descriptionPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -176,7 +181,11 @@ export default function AddPackageDialog({ refreshPackages }) {
                   <FormItem>
                     <FormLabel>{t("maxProviders")}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder={t("maxProvidersPlaceholder")} {...field} />
+                      <Input
+                        type="number"
+                        placeholder={t("maxProvidersPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -189,7 +198,11 @@ export default function AddPackageDialog({ refreshPackages }) {
                   <FormItem>
                     <FormLabel>{t("maxPrice")}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder={t("maxPricePlaceholder")} {...field} />
+                      <Input
+                        type="number"
+                        placeholder={t("maxPricePlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -202,7 +215,11 @@ export default function AddPackageDialog({ refreshPackages }) {
                   <FormItem>
                     <FormLabel>{t("maxAmount")}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder={t("maxAmountPlaceholder")} {...field} />
+                      <Input
+                        type="number"
+                        placeholder={t("maxAmountPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -215,7 +232,11 @@ export default function AddPackageDialog({ refreshPackages }) {
                   <FormItem>
                     <FormLabel>{t("maxCouponsNumber")}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder={t("maxCouponsNumberPlaceholder")} {...field} />
+                      <Input
+                        type="number"
+                        placeholder={t("maxCouponsNumberPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -231,7 +252,9 @@ export default function AddPackageDialog({ refreshPackages }) {
                       <Input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                        onChange={(e) =>
+                          field.onChange(e.target.files?.[0] || null)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
