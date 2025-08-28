@@ -321,7 +321,7 @@ const TopCategoriesCard = ({ t }) => {
     data: topCategories,
     error,
     isLoading,
-  } = useSWR("/categories/top-selling-categories", fetchTopCategories);
+  } = useSWR("/categories/top-selling-categories");
 
   if (isLoading) {
     return (
@@ -336,7 +336,7 @@ const TopCategoriesCard = ({ t }) => {
     );
   }
 
-  if (error || !topCategories || topCategories.length === 0) {
+  if (error || !topCategories || !Array.isArray(topCategories.data)) {
     return (
       <Card className="w-full lg:w-3/5 p-4 flex flex-col gap-4">
         <CardTitle className="text-lg text-primary mb-1">
@@ -373,11 +373,11 @@ const TopCategoriesCard = ({ t }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {topCategories.slice(0, 3).map((row, index) => (
+            {topCategories.data.slice(0, 3).map((row, index) => (
               <TableRow key={index} className="hover:bg-secondary">
-                <TableCell className="py-2 px-4">{row.rank}</TableCell>
-                <TableCell className="py-2 px-4">{row.category}</TableCell>
-                <TableCell className="py-2 px-4">{row.sales}</TableCell>
+                <TableCell className="py-2 px-4">{index + 1}</TableCell>
+                <TableCell className="py-2 px-4">{row.name}</TableCell>
+                <TableCell className="py-2 px-4">{row.sales_count}</TableCell>
                 <TableCell className="py-2 px-4">
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div

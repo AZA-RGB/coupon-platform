@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function Dashboard() {
   const t = useTranslations();
@@ -21,25 +22,27 @@ export default function Dashboard() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
-
   useEffect(() => {
-  if (message) {
-    const timer = setTimeout(() => {
-      setMessage("");
-    }, 2000);
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+      }, 2000);
 
-    return () => clearTimeout(timer);
-  }
-}, [message]);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
   const handleRedeem = async () => {
     try {
-      const response = await fetch("http://164.92.67.78:3002/api/redeems/create-redeem-from-purchase-key", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://164.92.67.78:3002/api/redeems/create-redeem-from-purchase-key",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ purchase_key: purchaseKey }),
         },
-        body: JSON.stringify({ purchase_key: purchaseKey }),
-      });
+      );
 
       if (response.ok) {
         setMessage("Redeemed successfully!");
@@ -104,34 +107,36 @@ export default function Dashboard() {
 
       {/* main cards - responsive layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <Card className="col-span-1 h-[35vh] rounded-2xl">
-  <CardHeader>
-    <CardTitle className="text-lg font-semibold">صرف الكوبون</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <input
-      type="text"
-      value={purchaseKey}
-      onChange={(e) => setPurchaseKey(e.target.value)}
-      placeholder="ادخل رمز الشراء"
-      className="border p-2 mb-4 w-full rounded-lg"
-    />
-    <button
-      onClick={handleRedeem}
-      className="bg-primary hover:bg-primary-500 text-white p-2 rounded-lg w-full"
-    >
-      صرف
-    </button>
+        <Card className="col-span-1 h-[35vh] rounded-2xl">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">صرف الكوبون</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              type="text"
+              value={purchaseKey}
+              onChange={(e) => setPurchaseKey(e.target.value)}
+              placeholder="ادخل رمز الشراء"
+              className="border p-2 mb-4 w-full rounded-lg"
+            />
+            <button
+              onClick={handleRedeem}
+              className="bg-primary hover:bg-primary-500 text-white p-2 rounded-lg w-full"
+            >
+              صرف
+            </button>
 
-   
-{message && (
-  <Alert className="mt-4" variant={isError ? "destructive" : "default"}>
-    <AlertTitle>{isError ? "Error" : "Success"}</AlertTitle>
-    <AlertDescription>{message}</AlertDescription>
-  </Alert>
-)}
-  </CardContent>
-</Card>
+            {message && (
+              <Alert
+                className="mt-4"
+                variant={isError ? "destructive" : "default"}
+              >
+                <AlertTitle>{isError ? "Error" : "Success"}</AlertTitle>
+                <AlertDescription>{message}</AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
         <div className="h-[35vh]">
           <EventsCarousel />
         </div>

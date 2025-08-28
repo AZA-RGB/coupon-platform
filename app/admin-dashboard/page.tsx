@@ -129,24 +129,18 @@ const TopCategoriesCard = () => {
         <div className="text-red-500 text-center">
           {t("Types.errorLoadingCategories") || error}
         </div>
-      ) : (
+      ) : topCategoriesData && topCategoriesData.data ? (
         <div className="overflow-auto rounded-xl">
           <Table className="min-w-full text-sm">
             <TableHeader className="bg-secondary">
               <TableRow>
-                <TableHead
-                  className={`py-2 px-4 text-start text-muted-foreground rtl:text-right`}
-                >
+                <TableHead className="py-2 px-4 text-start text-muted-foreground rtl:text-right">
                   {t("Types.rank")}
                 </TableHead>
-                <TableHead
-                  className={`py-2 px-4 text-start text-muted-foreground rtl:text-right`}
-                >
+                <TableHead className="py-2 px-4 text-start text-muted-foreground rtl:text-right">
                   {t("Types.category")}
                 </TableHead>
-                <TableHead
-                  className={`py-2 px-4 text-start text-muted-foreground rtl:text-right`}
-                >
+                <TableHead className="py-2 px-4 text-start text-muted-foreground rtl:text-right">
                   {t("Types.sales")}
                 </TableHead>
               </TableRow>
@@ -154,7 +148,7 @@ const TopCategoriesCard = () => {
             <TableBody>
               {topCategoriesData.data.map((row, index) => (
                 <TableRow key={index} className="hover:bg-secondary">
-                  <TableCell className="py-2 px-4">{index}</TableCell>
+                  <TableCell className="py-2 px-4">{index + 1}</TableCell>
                   <TableCell className="py-2 px-4">{row.name}</TableCell>
                   <TableCell className="py-2 px-4">{row.sales_count}</TableCell>
                 </TableRow>
@@ -162,6 +156,8 @@ const TopCategoriesCard = () => {
             </TableBody>
           </Table>
         </div>
+      ) : (
+        <div className="text-center">{t("Types.noData")}</div>
       )}
     </Card>
   );
