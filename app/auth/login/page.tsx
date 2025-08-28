@@ -12,6 +12,8 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import axios from "axios";
+import RefreshToken from "../TokenRefresher";
+import refreshToken from "../TokenRefresher";
 
 interface LoginData {
   email: string;
@@ -70,10 +72,11 @@ export default function LoginPage() {
       console.log("Role:", role);
 
       // // Save tokens and role to localStorage
-      Cookies.set("token", access_token, { expires: 1 }); // expires in 30 days
-      Cookies.set("refreshToken", refresh_token, { expires: 1 }); // expires in 90 days
-      Cookies.set("userRole", role, { expires: 1 }); // expires in 30 days
+      Cookies.set("token", access_token);
+      Cookies.set("refreshToken", refresh_token);
+      Cookies.set("userRole", role);
 
+      setInterval(refreshToken, 5000);
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),
         duration: 3000,

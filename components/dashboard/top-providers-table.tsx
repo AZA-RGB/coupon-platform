@@ -1,5 +1,8 @@
+"use client";
+import useSWR from "swr";
+import PurchasesOverTime from "../report-page/PurchasesOverTime";
 import { Button } from "../ui/button";
-import { Card } from "../ui/card";
+import { Card, CardTitle } from "../ui/card";
 import {
   Table,
   TableBody,
@@ -9,140 +12,61 @@ import {
   TableRow,
 } from "../ui/table";
 import { useTranslations } from "next-intl";
+import Cookies from "js-cookie";
+import { report } from "process";
+import { Spinner } from "../ui/spinner";
+import PurchaseTypeBreakdown from "../report-page/PurchaseTypeBreakdown";
+import RatingDistribution from "../report-page/RatingDistributions";
 
-const testData = [
-  {
-    billID: "#12345",
-    coupon: "shawarma coupon",
-    date: "15/3/2025",
-    customers: ["Ali Assad", "Sara Ahmed", "Omar Khalid"],
-    price: "150",
-  },
-  {
-    billID: "#12346",
-    coupon: "10% discount",
-    date: "16/3/2025",
-    customers: ["Lina Mahmoud"],
-    price: "150",
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-  {
-    billID: "#12347",
-    coupon: "free delivery",
-    date: "17/3/2025",
-    price: "150",
-    customers: ["Youssef Ali", "Mona Hassan"],
-  },
-];
 export default function TopProvidersTable() {
   const t = useTranslations();
+  const today = new Date();
+  const lastYear = new Date(
+    today.getFullYear() - 1,
+    today.getMonth(),
+    today.getDate(),
+  );
+  const reportURL = `/providers/${Cookies.get("id")}/report?date[]=${lastYear.toISOString().split("T")[0]}&date[]=${today.toISOString().split("T")[0]}`;
+  const { data: reportData, isLoading, error } = useSWR(reportURL);
+
   return (
-    <Card className="col-span-2 grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
-      <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-2xl text-primary ">
-          {t("Providers.topProviders")}
+    <div className="flex gap-4  ">
+      <Card className=" bg-gradient-to-b to-background col-span-2 grid grid-rows-6 gap-1 px-3  max-h-[70vh] lg:w-2/3 ">
+        <CardTitle className="">
+          <div className="text-2xl text-primary">
+            {t("AdminDashboard.salesOverview")}
+          </div>
+        </CardTitle>
+
+        <div className="row-span-5 overflow-auto">
+          {isLoading && (
+            <div className="flex items-center justify-center h-full">
+              <Spinner className="animate-spin" />{" "}
+              {/* Replace with your spinner component */}
+            </div>
+          )}
         </div>
-        <Button variant="outline" className="">
-          {t("Providers.export")}
-        </Button>
-      </div>
-      <div className="row-span-5 overflow-auto">
-        <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead className="w-[100px]">
-                {t("CouponsTable.billID")}
-              </TableHead>
-              <TableHead>{t("CouponsTable.coupon")}</TableHead>
-              <TableHead>{t("CouponsTable.date")}</TableHead>
-              <TableHead>{t("CouponsTable.customers")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {testData.map((bill, index) => (
-              <TableRow key={index} className="hover:bg-muted">
-                <TableCell className="font-medium ">{bill.billID}</TableCell>
-                <TableCell>{bill.coupon}</TableCell>
-                <TableCell>{bill.date}</TableCell>
-                <TableCell>
-                  {bill.customers.map((customer, i) => (
-                    <div key={i}>{customer}</div>
-                  ))}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Card>
+
+        {error && (
+          <div className="flex items-center justify-center h-full text-destructive">
+            {t("common.errorLoadingData")}
+          </div>
+        )}
+
+        {reportData && (
+          <PurchasesOverTime
+            data={reportData.data.purchases.purchases_over_time}
+          />
+        )}
+      </Card>
+      {reportData && (
+        <div className="flex-col space-y-4 ">
+          <PurchaseTypeBreakdown
+            data={reportData.data.purchases.purchase_type_breakdown}
+          />
+          <RatingDistribution ratings={reportData.data.ratings} />
+        </div>
+      )}
+    </div>
   );
 }

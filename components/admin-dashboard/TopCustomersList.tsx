@@ -46,7 +46,6 @@ export default function TopCustomersList() {
     "/coupons/top-coupons-customers",
   );
 
-  // Replace with your actual language detection logic
   const isArabic = true;
 
   if (error) {
@@ -54,9 +53,7 @@ export default function TopCustomersList() {
       <div className="">
         <Card className="grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
           <div className="row-span-1 flex flex-row place-content-between items-center">
-            <CardTitle className="text-2xl font-normal">
-              {t("Topcustomers")}
-            </CardTitle>
+            <CardTitle className="text-2xl font-normal text-primary"></CardTitle>
           </div>
           <div className="row-span-5 flex items-center justify-center">
             <p className="text-muted-foreground">Failed to load customers</p>
@@ -95,7 +92,7 @@ export default function TopCustomersList() {
     <div className="">
       <Card className="grid grid-rows-6 gap-1 px-3 pt-0 h-[70vh]">
         <div className="row-span-1 flex flex-row place-content-between items-center">
-          <CardTitle className="text-2xl font-normal">
+          <CardTitle className="text-2xl font-normal  text-primary">
             {t("Topcustomers")}
           </CardTitle>
         </div>

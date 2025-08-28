@@ -45,9 +45,10 @@ const formSchema = z
     description: z.string().min(30).max(200),
     date: z.coerce.date(),
     price: z.coerce.number().min(1),
-    price: z.coerce.number().min(1),
+    amount: z.coerce.number().min(1),
+    pointsToBuy: z.coerce.number().min(0),
     images: z.array(z.instanceof(File)).min(1),
-    Type: z.string().min(1, "You must select type before adding new coupon"),
+    Type: z.string().min(0, "You must select type before adding new coupon"),
   })
   .catchall(z.any())
   .required();
@@ -60,6 +61,7 @@ export default function AddCoupon() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date(),
+      pointsToBuy: 0,
       Type: typeId, // Set initial Type value from typeId
     },
   });
@@ -83,6 +85,7 @@ export default function AddCoupon() {
       "description",
       "date",
       "price",
+      "pointsToBuy",
       "amount",
       "images",
       "Type",
@@ -107,6 +110,7 @@ export default function AddCoupon() {
       name,
       description,
       price,
+      pointsToBuy,
       amount,
       images,
       ...rest
@@ -125,19 +129,22 @@ export default function AddCoupon() {
       })
       .filter((item) => item !== null);
 
-    const post_values = {
-      date,
-      coupon_type_id: Number(Type),
-      name,
-      description,
-      price,
-      file: images,
-      criteriaIds: dynamic_criteria_value,
-    };
-    console.log("post values :", post_values);
+    // const post_values = {
+    //   date,
+    //   coupon_type_id: Number(Type),
+    //   name,
+    //   description,
+    //   price,
+    //   file: images,
+    //   criteriaIds: dynamic_criteria_value,
+    // };
+    // console.log("post values :", post_values);
 
     try {
       const formData = new FormData();
+      formData.append("pointsToBuy", pointsToBuy);
+      console.log("pointsToBuy", pointsToBuy);
+
       formData.append("date", date.toISOString());
       formData.append("amount", amount);
 
@@ -155,6 +162,7 @@ export default function AddCoupon() {
         formData.append(`criteriaIds[${index}][value]`, String(item.value));
       });
 
+      console.log(formData);
       const response = await api.post("/coupons/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -350,6 +358,19 @@ export default function AddCoupon() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>amount</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pointsToBuy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Points to buy</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
