@@ -238,8 +238,9 @@ const CouponTypesGrid = ({
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
-                        variant="outline"
-                        className=""
+                        // variant="outline"
+                        className="bg-gray-300 hover:bg-gray-400 w-1/2 h-8 text-xs"
+                        size={"sm"}
                         onClick={() => {
                           setTypeIdDetails(type.id);
                         }}
@@ -275,7 +276,7 @@ const CouponTypesGrid = ({
                       </ScrollArea>
                     </PopoverContent>
                   </Popover>
-                  <Button className="w-1/2 h-8 text-xs" asChild>
+                  <Button size={"sm"} className="w-1/2 h-8 text-xs" asChild>
                     <Link href={`/coupons/AddCoupon?typeId=${type.id}`}>
                       {t("addCoupon")}
                     </Link>
