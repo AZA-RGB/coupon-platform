@@ -30,37 +30,33 @@ export default function TopProvidersTable() {
   const { data: reportData, isLoading, error } = useSWR(reportURL);
 
   return (
-    <div className="flex gap-4  ">
-      <Card className=" bg-gradient-to-b to-background col-span-2 grid grid-rows-6 gap-1 px-3  max-h-[70vh] lg:w-2/3 ">
-        <CardTitle className="">
-          <div className="text-2xl text-primary">
+    <div className="flex flex-col lg:flex-row gap-4 ">
+      <Card className="bg-gradient-to-b to-background grid grid-rows-6 gap-1 px-4 py-6 max-h-[70vh] w-full lg:w-2/3">
+        <CardTitle>
+          <div className="text-xl sm:text-xl text-primary">
             {t("AdminDashboard.salesOverview")}
           </div>
         </CardTitle>
-
         <div className="row-span-5 overflow-auto">
           {isLoading && (
             <div className="flex items-center justify-center h-full">
-              <Spinner className="animate-spin" />{" "}
-              {/* Replace with your spinner component */}
+              <Spinner className="animate-spin" />
             </div>
           )}
+          {error && (
+            <div className="flex items-center justify-center h-full text-destructive text-sm sm:text-base">
+              {t("common.errorLoadingData")}
+            </div>
+          )}
+          {reportData && (
+            <PurchasesOverTime
+              data={reportData.data.purchases.purchases_over_time}
+            />
+          )}
         </div>
-
-        {error && (
-          <div className="flex items-center justify-center h-full text-destructive">
-            {t("common.errorLoadingData")}
-          </div>
-        )}
-
-        {reportData && (
-          <PurchasesOverTime
-            data={reportData.data.purchases.purchases_over_time}
-          />
-        )}
       </Card>
       {reportData && (
-        <div className="flex-col space-y-4 ">
+        <div className="flex flex-col gap-4 w-full lg:w-1/3">
           <PurchaseTypeBreakdown
             data={reportData.data.purchases.purchase_type_breakdown}
           />

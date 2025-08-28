@@ -49,7 +49,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchCoupons, deleteCoupon, fetchCouponDetails, createGiftProgram, deleteGiftProgram } from "./constants";
+import {
+  fetchCoupons,
+  deleteCoupon,
+  fetchCouponDetails,
+  createGiftProgram,
+  deleteGiftProgram,
+} from "./constants";
 import MyImage from "@/components/my-image";
 import { MobileSummaryCards, SummaryCards } from "../summary_cards";
 
@@ -68,8 +74,6 @@ const NavigationCards = ({ t }) => {
   );
 };
 
-
-
 const CouponDetailsModal = ({
   coupon,
   t,
@@ -82,13 +86,13 @@ const CouponDetailsModal = ({
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkMode(mediaQuery.matches);
 
     const handleChange = (e) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener('change', handleChange);
+    mediaQuery.addEventListener("change", handleChange);
 
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   if (!coupon) return null;
@@ -143,14 +147,22 @@ const CouponDetailsModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-[700px] max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 ${bgColor}`}>
+      <DialogContent
+        className={`sm:max-w-[700px] max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 ${bgColor}`}
+      >
         <div className="relative">
           {/* Header with gradient */}
-          <div className={`bg-gradient-to-r from-[#00cbc1] to-[#00a39c] p-6 text-white`}>
+          <div
+            className={`bg-gradient-to-r from-[#00cbc1] to-[#00a39c] p-6 text-white`}
+          >
             <DialogHeader className="space-y-2">
               <div className="flex justify-between items-start">
-                <DialogTitle className="text-2xl font-bold">{coupon.name}</DialogTitle>
-                <Badge className={`${getStatusColor(coupon.coupon_status)} capitalize font-semibold`}>
+                <DialogTitle className="text-2xl font-bold">
+                  {coupon.name}
+                </DialogTitle>
+                <Badge
+                  className={`${getStatusColor(coupon.coupon_status)} capitalize font-semibold`}
+                >
                   {t(coupon.coupon_status)}
                 </Badge>
               </div>
@@ -164,13 +176,18 @@ const CouponDetailsModal = ({
             {/* Coupon Images */}
             {coupon.files.length > 0 && (
               <div className="mb-6">
-                <h4 className={`text-lg font-semibold mb-3 flex items-center ${textColor}`}>
+                <h4
+                  className={`text-lg font-semibold mb-3 flex items-center ${textColor}`}
+                >
                   <i className="fas fa-images mr-2 text-[#00cbc1]"></i>
                   {t("files")}
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {coupon.files.map((file) => (
-                    <div key={file.id} className={`relative w-full h-40 rounded-lg overflow-hidden ${borderColor}`}>
+                    <div
+                      key={file.id}
+                      className={`relative w-full h-40 rounded-lg overflow-hidden ${borderColor}`}
+                    >
                       <MyImage
                         src={file.path}
                         alt={file.name}
@@ -183,11 +200,25 @@ const CouponDetailsModal = ({
             )}
 
             {/* Coupon Code */}
-            <div className={`${isDarkMode ? 'bg-[#00cbc1]/20 border-[#00cbc1]' : 'bg-[#00cbc1]/10 border-[#00cbc1]'} border rounded-lg p-4 mb-6`}>
-              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-[#00cbc1]' : 'text-[#00cbc1]'} mb-1`}>{t("couponCode")}</h4>
+            <div
+              className={`${isDarkMode ? "bg-[#00cbc1]/20 border-[#00cbc1]" : "bg-[#00cbc1]/10 border-[#00cbc1]"} border rounded-lg p-4 mb-6`}
+            >
+              <h4
+                className={`text-sm font-medium ${isDarkMode ? "text-[#00cbc1]" : "text-[#00cbc1]"} mb-1`}
+              >
+                {t("couponCode")}
+              </h4>
               <div className="flex items-center justify-between">
-                <p className={`text-2xl font-mono font-bold ${isDarkMode ? 'text-[#00cbc1]' : 'text-[#00cbc1]'}`}>{coupon.coupon_code}</p>
-                <Button variant="outline" size="sm" className={`${isDarkMode ? 'text-[#00cbc1] border-[#00cbc1]' : 'text-[#00cbc1] border-[#00cbc1]'}`}>
+                <p
+                  className={`text-2xl font-mono font-bold ${isDarkMode ? "text-[#00cbc1]" : "text-[#00cbc1]"}`}
+                >
+                  {coupon.coupon_code}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`${isDarkMode ? "text-[#00cbc1] border-[#00cbc1]" : "text-[#00cbc1] border-[#00cbc1]"}`}
+                >
                   <i className="fas fa-copy mr-2"></i>
                   Copy Code
                 </Button>
@@ -196,29 +227,81 @@ const CouponDetailsModal = ({
 
             {/* Main Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-              <DetailCard title={t("discount")} value={coupon.price} icon="fa-tag" isDarkMode={isDarkMode} />
-              <DetailCard title={t("date")} value={new Date(coupon.date).toLocaleDateString()} icon="fa-calendar" isDarkMode={isDarkMode} />
-              <DetailCard title={t("category")} value={coupon.category} icon="fa-folder" isDarkMode={isDarkMode} />
-              <DetailCard title={t("couponType")} value={coupon.coupon_type} icon="fa-ticket-alt" isDarkMode={isDarkMode} />
-              <DetailCard title={t("provider")} value={coupon.provider} icon="fa-store" isDarkMode={isDarkMode} />
-              <DetailCard title={t("providerLocation")} value={coupon.provider_location} icon="fa-map-marker-alt" isDarkMode={isDarkMode} />
-              <DetailCard title={t("providerEmail")} value={coupon.provider_email} icon="fa-envelope" isEmail isDarkMode={isDarkMode} />
-              <DetailCard title={t("providerPhone")} value={coupon.provider_phone} icon="fa-phone" isPhone isDarkMode={isDarkMode} />
+              <DetailCard
+                title={t("discount")}
+                value={coupon.price}
+                icon="fa-tag"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("date")}
+                value={new Date(coupon.date).toLocaleDateString()}
+                icon="fa-calendar"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("category")}
+                value={coupon.category}
+                icon="fa-folder"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("couponType")}
+                value={coupon.coupon_type}
+                icon="fa-ticket-alt"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("provider")}
+                value={coupon.provider}
+                icon="fa-store"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("providerLocation")}
+                value={coupon.provider_location}
+                icon="fa-map-marker-alt"
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("providerEmail")}
+                value={coupon.provider_email}
+                icon="fa-envelope"
+                isEmail
+                isDarkMode={isDarkMode}
+              />
+              <DetailCard
+                title={t("providerPhone")}
+                value={coupon.provider_phone}
+                icon="fa-phone"
+                isPhone
+                isDarkMode={isDarkMode}
+              />
             </div>
 
             {/* Criteria */}
             {coupon.couponCriteria.length > 0 && (
               <div className="mb-6">
-                <h4 className={`text-lg font-semibold mb-3 flex items-center ${textColor}`}>
+                <h4
+                  className={`text-lg font-semibold mb-3 flex items-center ${textColor}`}
+                >
                   <i className="fas fa-list-alt mr-2 text-[#00cbc1]"></i>
                   {t("couponCriteria")}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {coupon.couponCriteria.map((criteria) => (
-                    <div key={criteria.id} className={`${cardBgColor} p-3 rounded-lg ${borderColor}`}>
-                      <p className={`text-sm font-medium ${textColor}`}>{criteria.criteria_name}</p>
+                    <div
+                      key={criteria.id}
+                      className={`${cardBgColor} p-3 rounded-lg ${borderColor}`}
+                    >
+                      <p className={`text-sm font-medium ${textColor}`}>
+                        {criteria.criteria_name}
+                      </p>
                       <p className={`text-sm ${textMutedColor}`}>
-                        {criteria.value} <span className="text-xs text-gray-500">({criteria.criteria_type})</span>
+                        {criteria.value}{" "}
+                        <span className="text-xs text-gray-500">
+                          ({criteria.criteria_type})
+                        </span>
                       </p>
                     </div>
                   ))}
@@ -230,7 +313,9 @@ const CouponDetailsModal = ({
             {coupon.giftPrograms.length > 0 ? (
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className={`text-lg font-semibold flex items-center ${textColor}`}>
+                  <h4
+                    className={`text-lg font-semibold flex items-center ${textColor}`}
+                  >
                     <i className="fas fa-gift mr-2 text-[#00cbc1]"></i>
                     {t("giftPrograms")}
                   </h4>
@@ -242,7 +327,7 @@ const CouponDetailsModal = ({
                       setGiftModalOpen(true);
                       onOpenChange(false);
                     }}
-                    className={`${isDarkMode ? 'text-[#00cbc1] border-[#00cbc1]' : 'text-[#00cbc1] border-[#00cbc1]'}`}
+                    className={`${isDarkMode ? "text-[#00cbc1] border-[#00cbc1]" : "text-[#00cbc1] border-[#00cbc1]"}`}
                   >
                     <i className="fas fa-plus mr-2"></i>
                     {t("addGift")}
@@ -251,7 +336,10 @@ const CouponDetailsModal = ({
 
                 <div className="space-y-3">
                   {coupon.giftPrograms.map((gift) => (
-                    <div key={gift.id} className={`${isDarkMode ? 'bg-[#00cbc1]/20 border-[#00cbc1]' : 'bg-[#00cbc1]/10 border-[#00cbc1]'} border rounded-lg p-4 flex justify-between items-center`}>
+                    <div
+                      key={gift.id}
+                      className={`${isDarkMode ? "bg-[#00cbc1]/20 border-[#00cbc1]" : "bg-[#00cbc1]/10 border-[#00cbc1]"} border rounded-lg p-4 flex justify-between items-center`}
+                    >
                       <div>
                         <p className={`font-medium ${textColor}`}>
                           {gift.gift_coupon_id
@@ -259,7 +347,9 @@ const CouponDetailsModal = ({
                             : `${t("points")}: ${gift.points_value}`}
                         </p>
                         <div className="flex items-center mt-1">
-                          <span className={`inline-block w-2 h-2 rounded-full mr-2 ${gift.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                          <span
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${gift.is_active ? "bg-green-500" : "bg-gray-400"}`}
+                          ></span>
                           <span className={`text-sm ${textMutedColor}`}>
                             {gift.is_active ? t("active") : t("inactive")}
                           </span>
@@ -279,9 +369,13 @@ const CouponDetailsModal = ({
                 </div>
               </div>
             ) : (
-              <div className={`text-center py-6 border-2 border-dashed ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg mb-6`}>
+              <div
+                className={`text-center py-6 border-2 border-dashed ${isDarkMode ? "border-gray-600" : "border-gray-300"} rounded-lg mb-6`}
+              >
                 <i className="fas fa-gift text-3xl text-gray-400 mb-3"></i>
-                <p className={`${textMutedColor} mb-4`}>{t("noGiftPrograms")}</p>
+                <p className={`${textMutedColor} mb-4`}>
+                  {t("noGiftPrograms")}
+                </p>
                 <Button
                   onClick={() => {
                     setSelectedCouponId(coupon.id);
@@ -303,7 +397,14 @@ const CouponDetailsModal = ({
 };
 
 // Helper DetailCard
-const DetailCard = ({ title, value, icon, isEmail = false, isPhone = false, isDarkMode = false }) => {
+const DetailCard = ({
+  title,
+  value,
+  icon,
+  isEmail = false,
+  isPhone = false,
+  isDarkMode = false,
+}) => {
   const cardBgColor = isDarkMode ? "bg-gray-800" : "bg-gray-50";
   const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
   const borderColor = isDarkMode ? "border-gray-700" : "border-gray-200";
@@ -315,17 +416,19 @@ const DetailCard = ({ title, value, icon, isEmail = false, isPhone = false, isDa
         <h4 className={`text-sm font-medium ${textColor}`}>{title}</h4>
       </div>
       {isEmail ? (
-        <a href={`mailto:${value}`} className="text-[#00cbc1] hover:underline">{value}</a>
+        <a href={`mailto:${value}`} className="text-[#00cbc1] hover:underline">
+          {value}
+        </a>
       ) : isPhone ? (
-        <a href={`tel:${value}`} className="text-[#00cbc1] hover:underline">{value}</a>
+        <a href={`tel:${value}`} className="text-[#00cbc1] hover:underline">
+          {value}
+        </a>
       ) : (
         <p className={`text-sm ${textColor}`}>{value || "N/A"}</p>
       )}
     </div>
   );
 };
-
-
 
 const GiftProgramModal = ({
   couponId,
@@ -403,11 +506,15 @@ const GiftProgramModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-[500px] p-0 overflow-hidden ${bgColor}`}>
+      <DialogContent
+        className={`sm:max-w-[500px] p-0 overflow-hidden ${bgColor}`}
+      >
         {/* Header with primary color gradient */}
         <div
           className="p-6 text-white"
-          style={{ background: `linear-gradient(to right, ${primaryColor}, ${primaryColor})` }}
+          style={{
+            background: `linear-gradient(to right, ${primaryColor}, ${primaryColor})`,
+          }}
         >
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center">
@@ -423,20 +530,32 @@ const GiftProgramModal = ({
         <div className="p-6 space-y-5">
           {/* Gift Type Selection */}
           <div>
-            <label className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}>
-              <i className="fas fa-list mr-2" style={{ color: primaryColor }}></i>
+            <label
+              className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}
+            >
+              <i
+                className="fas fa-list mr-2"
+                style={{ color: primaryColor }}
+              ></i>
               {t("giftType")}
             </label>
             <Select
               value={giftType}
               onValueChange={(value: "coupon" | "points") => setGiftType(value)}
             >
-              <SelectTrigger className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+              <SelectTrigger
+                className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+              >
                 <SelectValue placeholder={t("selectGiftType")} />
               </SelectTrigger>
-              <SelectContent className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+              <SelectContent
+                className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+              >
                 <SelectItem value="coupon" className="flex items-center">
-                  <i className="fas fa-ticket-alt mr-2" style={{ color: primaryColor }}></i>
+                  <i
+                    className="fas fa-ticket-alt mr-2"
+                    style={{ color: primaryColor }}
+                  ></i>
                   {t("couponGift")}
                 </SelectItem>
                 <SelectItem value="points" className="flex items-center">
@@ -450,15 +569,27 @@ const GiftProgramModal = ({
           {/* Conditional Fields */}
           {giftType === "coupon" ? (
             <div>
-              <label className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}>
-                <i className="fas fa-ticket-alt mr-2" style={{ color: primaryColor }}></i>
+              <label
+                className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}
+              >
+                <i
+                  className="fas fa-ticket-alt mr-2"
+                  style={{ color: primaryColor }}
+                ></i>
                 {t("selectGiftCoupon")}
               </label>
-              <Select value={selectedGiftCouponId} onValueChange={setSelectedGiftCouponId}>
-                <SelectTrigger className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+              <Select
+                value={selectedGiftCouponId}
+                onValueChange={setSelectedGiftCouponId}
+              >
+                <SelectTrigger
+                  className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+                >
                   <SelectValue placeholder={t("selectCoupon")} />
                 </SelectTrigger>
-                <SelectContent className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
+                <SelectContent
+                  className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}
+                >
                   {coupons
                     .filter((coupon) => coupon.id !== couponId)
                     .map((coupon) => (
@@ -471,15 +602,21 @@ const GiftProgramModal = ({
                           <div
                             className={`p-1 rounded mr-2`}
                             style={{
-                              backgroundColor: isDarkMode ? "rgba(0,203,193,0.3)" : "rgba(0,203,193,0.2)",
+                              backgroundColor: isDarkMode
+                                ? "rgba(0,203,193,0.3)"
+                                : "rgba(0,203,193,0.2)",
                               color: primaryColor,
                             }}
                           >
                             <i className="fas fa-ticket-alt text-xs"></i>
                           </div>
                           <div>
-                            <p className={`font-medium ${textColor}`}>{coupon.name}</p>
-                            <p className={`text-xs ${textMutedColor}`}>{coupon.coupon_code}</p>
+                            <p className={`font-medium ${textColor}`}>
+                              {coupon.name}
+                            </p>
+                            <p className={`text-xs ${textMutedColor}`}>
+                              {coupon.coupon_code}
+                            </p>
                           </div>
                         </div>
                       </SelectItem>
@@ -489,7 +626,9 @@ const GiftProgramModal = ({
             </div>
           ) : (
             <div>
-              <label className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}>
+              <label
+                className={`block text-sm font-medium mb-2 flex items-center ${textColor}`}
+              >
                 <i className="fas fa-coins mr-2 text-yellow-500"></i>
                 {t("points")}
               </label>
@@ -556,13 +695,13 @@ const CouponsGrid = ({
     setSelectedCoupons((prev) =>
       prev.includes(id)
         ? prev.filter((couponId) => couponId !== id)
-        : [...prev, id]
+        : [...prev, id],
     );
   };
 
   const handleToggleSelectAll = () => {
     const allSelected = coupons.every((coupon) =>
-      selectedCoupons.includes(coupon.id)
+      selectedCoupons.includes(coupon.id),
     );
     setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
   };
@@ -634,7 +773,7 @@ const CouponsGrid = ({
                     selectedCoupons.length === coupons.length &&
                       coupons.length > 0
                       ? "deselectAll"
-                      : "selectAll"
+                      : "selectAll",
                   )}
                 </Button>
                 <AlertDialog>
@@ -687,9 +826,7 @@ const CouponsGrid = ({
                           checked={selectedCoupons.includes(coupon.id)}
                           onCheckedChange={() => handleSelectCoupon(coupon.id)}
                         />
-                        <CardTitle className="text-lg">
-                          {coupon.name}
-                        </CardTitle>
+                        <CardTitle className="text-lg">{coupon.name}</CardTitle>
                       </div>
                       <CardDescription className="flex justify-between items-center text-xs">
                         <span>{coupon.type}</span>
@@ -698,8 +835,8 @@ const CouponsGrid = ({
                             coupon.status === "active"
                               ? "bg-green-100 text-green-800"
                               : coupon.status === "expired"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
                           {t(coupon.status)}
@@ -716,10 +853,14 @@ const CouponsGrid = ({
                         </span>
                       </div>
                     </CardContent>
-                    <CardFooter className="px-3 pb-3">
+                    <CardFooter className="flex gap-3 px-3 pb-3">
+                      <Link href={`/coupons/update-coupon?id=${coupon.id}`}>
+                        <Button className="flex-1 h-8">Update Coupon</Button>
+                      </Link>
+
                       <Button
                         variant="outline"
-                        className="w-full h-8 text-xs"
+                        className="w-full h-8 text-xs flex-1"
                         onClick={() => handleViewDetails(coupon.id)}
                       >
                         {t("viewDetails")}
@@ -767,7 +908,8 @@ const CouponsGrid = ({
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                    if (currentPage < totalPages)
+                      setCurrentPage(currentPage + 1);
                   }}
                   className={
                     currentPage >= totalPages
@@ -922,7 +1064,7 @@ export default function AllCouponsPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2 relative z-50">
-                 <Button asChild size="sm">
+                <Button asChild size="sm">
                   <Link href="/coupons/AddCoupon">
                     <Plus className="mr-2 h-4 w-4" />
                     {t("newCoupon")}
@@ -978,7 +1120,6 @@ export default function AllCouponsPage() {
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
                 </div>
-               
               </div>
             </CardHeader>
           </Card>

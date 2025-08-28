@@ -56,7 +56,7 @@ export default function UpdateCoupon() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: new Date(),
+      // date: new Date(),
     },
   });
 
@@ -128,6 +128,8 @@ export default function UpdateCoupon() {
       name,
       description,
       price,
+      amount,
+      pointsToBuy,
       images,
       ...rest
     } = values;
@@ -148,6 +150,8 @@ export default function UpdateCoupon() {
     try {
       const formData = new FormData();
       formData.append("_method", "PUT");
+      formData.append("pointsToBuy", pointsToBuy);
+      formData.append("amount", amount);
       formData.append("date", date.toISOString());
       formData.append("coupon_type_id", String(Type));
       formData.append("name", name);
@@ -349,7 +353,32 @@ export default function UpdateCoupon() {
                       </FormItem>
                     )}
                   />
-
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>amount</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pointsToBuy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Points to buy</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <div className="flex items-center place-content-around">
                     <Button
                       type="submit"

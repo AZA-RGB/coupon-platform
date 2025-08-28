@@ -15,6 +15,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import ProviderGeneralCards from "@/components/dashboard/providerGeneralCards";
 
 export default function Dashboard() {
   const t = useTranslations();
@@ -88,23 +89,8 @@ export default function Dashboard() {
 
   return (
     <div className="p-2 sm:p-5 space-y-3 sm:space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {cardData.map((card, index) => (
-          <Card
-            key={index}
-            className="flex flex-row justify-between items-center p-4"
-          >
-            <div>
-              <div className="text-muted-foreground text-sm">{card.title}</div>
-              <div className="text-sm sm:text-base">{card.value}</div>
-            </div>
-            <div className="bg-primary text-white rounded-lg p-3">
-              {card.icon}
-            </div>
-          </Card>
-        ))}
-      </div>
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+      <ProviderGeneralCards />
       {/* main cards - responsive layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="col-span-1 h-[35vh] rounded-2xl">

@@ -637,15 +637,15 @@
     "selectGiftCoupon": "Select Gift Coupon",
     "addGiftDesc": "Add a gift to this package.",
     "addGift": "Add Gift",
-    "giftSuccessDesc":"The gift program was created successfully",
+    "giftSuccessDesc": "The gift program was created successfully",
     "giftSuccess": "Gift program created successfully",
-    "pointsGift":"Points Gift",
-    "points":"Points",
-    "couponGift":"Coupon Gift",
-    "submit":"Submit",
-    "selectGiftType":"Select Gift Type",
-    "giftType":"Gift Type",
-    "enterPoints":"Enter Points",
+    "pointsGift": "Points Gift",
+    "points": "Points",
+    "couponGift": "Coupon Gift",
+    "submit": "Submit",
+    "selectGiftType": "Select Gift Type",
+    "giftType": "Gift Type",
+    "enterPoints": "Enter Points",
     "selectAll": "Select All",
     "deselectAll": "Deselect All",
     "deleteSelected": "Delete Selected",
@@ -938,6 +938,12 @@
       "average_rating": "Average Rating",
       "total_revenue": "Total Revenue",
       "unique_customers": "Unique Customers"
+    },
+    "PurchaseTypeBreakdown": {
+      "title": "Purchase Type Breakdown",
+      "package": "Package",
+      "coupon": "Coupon",
+      "purchases": "purchases"
     }
   },
   "Invoices": {

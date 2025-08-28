@@ -615,20 +615,20 @@
     "addGift": "اضافة هدية",
     "giftSuccessDesc": "تم ربط الكوبون كهدية بنجاح",
     "giftSuccess": "تم ربط الكوبون كهدية بنجاح",
-    "pointsGift":"هدية النقاط",
-    "couponGift":"هدية الكوبون",
-    "enterPoints":"ادخل النقاط",
-    "points":"النقاط",
+    "pointsGift": "هدية النقاط",
+    "couponGift": "هدية الكوبون",
+    "enterPoints": "ادخل النقاط",
+    "points": "النقاط",
     "couponName": "اسم الكوبون",
-      "submit":"إرسال",
-    "selectGiftType":"اختر نوع الهدية",
-    "giftType":"نوع الهدية",
+    "submit": "إرسال",
+    "selectGiftType": "اختر نوع الهدية",
+    "giftType": "نوع الهدية",
     "price": "السعر",
     "couponCode": "كود الكوبون",
     "date": "التاريخ",
     "noCoupons": "لم يتم العثور على كوبونات",
     "couponsCount": "عدد الكوبونات",
-    
+
     "addSuccess": "تمت إضافة الباقة بنجاح",
     "addSuccessDesc": "تم إنشاء الباقة الجديدة.",
     "addError": "فشل في إضافة الباقة",
@@ -936,6 +936,12 @@
       "average_rating": "متوسط التقييم",
       "total_revenue": "إجمالي الإيرادات",
       "unique_customers": "العملاء الفريدون"
+    },
+    "PurchaseTypeBreakdown": {
+      "title": "توزيع أنواع المشتريات",
+      "package": "باقة",
+      "coupon": "قسيمة",
+      "purchases": " مشتريات"
     }
   },
   "Invoices": {

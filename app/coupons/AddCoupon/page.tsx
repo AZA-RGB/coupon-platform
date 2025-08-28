@@ -145,10 +145,10 @@ export default function AddCoupon() {
     try {
       const formData = new FormData();
       formData.append("pointsToBuy", pointsToBuy);
+      formData.append("amount", amount);
       console.log("pointsToBuy", pointsToBuy);
 
       formData.append("date", date.toISOString());
-      formData.append("amount", amount);
 
       formData.append("coupon_type_id", String(Type));
       formData.append("name", name);

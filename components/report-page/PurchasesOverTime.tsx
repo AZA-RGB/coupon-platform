@@ -34,7 +34,7 @@ export default React.memo(function PurchasesOverTime({ data }: Props) {
   }));
 
   return (
-    <ChartContainer className="max-h-96" config={chartConfig}>
+    <ChartContainer className="max-h-96 w-full" config={chartConfig}>
       <AreaChart data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
