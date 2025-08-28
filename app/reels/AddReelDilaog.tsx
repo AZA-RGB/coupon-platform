@@ -62,7 +62,7 @@ export default function AddReelDialog({ t, refreshReels }) {
     try {
       setIsUploading(true);
       setUploadProgress(0);
-      
+
       // Create new cancel token source for this upload
       cancelTokenSourceRef.current = axios.CancelToken.source();
 
@@ -76,7 +76,7 @@ export default function AddReelDialog({ t, refreshReels }) {
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
+              (progressEvent.loaded * 100) / progressEvent.total,
             );
             setUploadProgress(percentCompleted);
           }
@@ -95,15 +95,15 @@ export default function AddReelDialog({ t, refreshReels }) {
         // Upload was cancelled - don't show error toast
         return;
       }
-      
+
       console.error("Form submission error", error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response) {
           toast.error(
             `${t("addErrorDesc")}: ${
               error.response.data.message || t("addError")
-            }`
+            }`,
           );
         } else if (error.request) {
           toast.error(t("networkError"));
@@ -160,7 +160,7 @@ export default function AddReelDialog({ t, refreshReels }) {
                   <FormControl>
                     <Input
                       type="file"
-                      accept="image/*,video/*"
+                      accept="video/*"
                       onChange={(e) =>
                         field.onChange(e.target.files?.[0] || null)
                       }
@@ -171,7 +171,7 @@ export default function AddReelDialog({ t, refreshReels }) {
                 </FormItem>
               )}
             />
-            
+
             {/* Upload progress section */}
             {isUploading && (
               <div className="space-y-2">
@@ -200,8 +200,8 @@ export default function AddReelDialog({ t, refreshReels }) {
 
             <div className="flex justify-end gap-2">
               <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   disabled={isUploading}
                   onClick={() => {
                     if (isUploading) {
@@ -209,11 +209,11 @@ export default function AddReelDialog({ t, refreshReels }) {
                     }
                   }}
                 >
-                  {t("cancel") }
+                  {t("cancel")}
                 </Button>
               </DialogTrigger>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={form.formState.isSubmitting || isUploading}
               >
                 {form.formState.isSubmitting || isUploading ? (

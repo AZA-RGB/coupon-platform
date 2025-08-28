@@ -20,102 +20,20 @@ import {
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { Filter, Plus, Search, Play, Trash2 } from "lucide-react";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import debounce from "lodash/debounce";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ViewportBoundary } from "next/dist/server/app-render/entry-base";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import AddReelDialog from "./AddReelDilaog";
 import { Checkbox } from "@/components/ui/checkbox";
-
-import  api  from "@/lib/api"; // Import your preconfigured api
+import api from "@/lib/api";
 import { toast } from "sonner";
 
 const REELS_PER_PAGE = 10;
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
-
-// const SummaryCards = ({ t }) => {
-//   const summaries = [
-//     { title: t("activeReels"), value: "24,560", change: "+8% from last month" },
-//     {
-//       title: t("monthlyViews"),
-//       value: "24,560",
-//       change: "+8% from last month",
-//     },
-//     { title: t("totalReels"), value: "24,560", change: "+8% from last month" },
-//   ];
-
-//   return (
-//     <Card className="w-full lg:w-3/5 p-4 hidden md:flex flex-col gap-4">
-//       <div className="flex flex-col sm:flex-row gap-4 w-full">
-//         {summaries.map((summary, index) => (
-//           <div key={index} className="flex-1 p-4 flex flex-col justify-between">
-//             <div>
-//               <h2>{summary.title}</h2>
-//               <h4 className="text-2xl">{summary.value}</h4>
-//             </div>
-//             <span className="text-sm text-green-500 mt-2">
-//               {summary.change}
-//             </span>
-//           </div>
-//         ))}
-//       </div>
-//     </Card>
-//   );
-// };
-
-// const MobileSummaryCards = ({ t }) => {
-//   const summaries = [
-//     { title: t("activeReels"), value: "24,560", change: "+8% from last month" },
-//     {
-//       title: t("monthlyViews"),
-//       value: "24,560",
-//       change: "+8% from last month",
-//     },
-//     { title: t("totalReels"), value: "24,560", change: "+8% from last month" },
-//   ];
-
-//   return (
-//     <div className="flex flex-col gap-4 md:hidden">
-//       {summaries.map((summary, index) => (
-//         <Card key={index} className="w-full p-4 flex flex-col justify-between">
-//           <div>
-//             <h2>{summary.title}</h2>
-//             <h4 className="text-2xl">{summary.value}</h4>
-//           </div>
-//           <span className="text-sm text-green-500 mt-2">{summary.change}</span>
-//         </Card>
-//       ))}
-//     </div>
-//   );
-// };
-
-// const NavigationCards = ({ t }) => {
-//   return (
-//     <div className="w-full lg:w-2/5 flex flex-col sm:flex-row sm:grid-cols-2 md:grid-cols-1 gap-4">
-//       <Link href="/dashboard/top-reels" className="block">
-//         <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-//           <CardTitle className="text-lg text-primary mb-1">
-//             {t("seeTopReels")}
-//           </CardTitle>
-//           <CardDescription>{t("seeTopReelsDesc")}</CardDescription>
-//         </Card>
-//       </Link>
-//       <Link href="/dashboard/top-views" className="block">
-//         <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-6">
-//           <CardTitle className="text-lg text-primary mb-1">
-//             {t("seeTopViews")}
-//           </CardTitle>
-//           <CardDescription>{t("seeTopViewsDesc")}</CardDescription>
-//         </Card>
-//       </Link>
-//     </div>
-//   );
-// };
 
 const ReelsGrid = ({
   t,
@@ -132,7 +50,9 @@ const ReelsGrid = ({
 
   const handleSelectReel = (id) => {
     setSelectedReels((prev) =>
-      prev.includes(id) ? prev.filter((reelId) => reelId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((reelId) => reelId !== id)
+        : [...prev, id],
     );
   };
 
@@ -146,28 +66,19 @@ const ReelsGrid = ({
 
     try {
       setIsDeleting(true);
-      
-      // Delete each reel individually
       await Promise.all(
-        selectedReels.map(id => 
-          api.delete(`/reels/${id}`)
-            .catch(error => {
-              console.error(`Failed to delete reel ${id}:`, error);
-              throw error;
-            })
-        )
+        selectedReels.map((id) =>
+          api.delete(`/reels/${id}`).catch((error) => {
+            console.error(`Failed to delete reel ${id}:`, error);
+            throw error;
+          }),
+        ),
       );
-
-      toast(
-        t("deleteSuccess"),
-      );
-
+      toast(t("deleteSuccess"));
       setSelectedReels([]);
-      mutate(); // Refresh the reels list
+      mutate();
     } catch (error) {
-      toast(
- t("deleteError"),
-      );
+      toast(t("deleteError"));
     } finally {
       setIsDeleting(false);
     }
@@ -194,7 +105,7 @@ const ReelsGrid = ({
               {t(
                 selectedReels.length === reels.length && reels.length > 0
                   ? "deselectAll"
-                  : "selectAll"
+                  : "selectAll",
               )}
             </Button>
             <Button
@@ -215,7 +126,7 @@ const ReelsGrid = ({
             {reels.map((reel) => (
               <Card
                 key={reel.id}
-                className="w-full p-1 flex flex-col justify-between relative"
+                className="w-full p-1 flex flex-col justify-around relative"
               >
                 <div className="absolute top-2 left-2 z-10">
                   <Checkbox
@@ -225,18 +136,18 @@ const ReelsGrid = ({
                   />
                 </div>
                 <div className="relative">
-                  <Image
-                    src="/event.jpg"
-                    alt="s"
-                    width={1920}
-                    height={1080}
-                    className="object-cover rounded-xl"
+                  <video
+                    src={`https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/${reel.reel.path}#t=1`}
+                    preload="metadata"
+                    muted
+                    className="object-cover rounded-xl w-full h-[400px]"
+                    poster={`https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/${reel.reel.path}#t=1`}
                   />
                   <Button
                     className="absolute inset-0 flex items-center justify-center w-full h-full p-0 bg-opacity-0 rounded-xl hover:bg-black hover:opacity-50 duration-300"
                     onClick={() => handlePlayVideo(reel)}
                   >
-                    <Play className="w-96 h-96 text-white " strokeWidth={6} />
+                    <Play className="w-12 h-12 text-white" strokeWidth={3} />
                   </Button>
                 </div>
                 <div className="flex gap-1.5">
@@ -321,8 +232,8 @@ const ReelsGrid = ({
                 controls
                 className="w-full h-full object-cover rounded-lg"
               />
-              <div className="flex absolute bottom-16 left-3 ">
-                <div className="  text-white bg-black backdrop-blur-2xl opacity-90 px-2 py-1 rounded mx-1">
+              <div className="flex absolute bottom-16 left-3">
+                <div className="text-white bg-black backdrop-blur-2xl opacity-90 px-2 py-1 rounded mx-1">
                   by: {playingVideo.provider.name || "Unknown"}
                 </div>
                 <Avatar>
@@ -334,7 +245,6 @@ const ReelsGrid = ({
                   />
                 </Avatar>
               </div>
-
               <Button
                 variant="ghost"
                 className="absolute top-2 right-2 text-white bg-accent bg-opacity-90"
@@ -360,14 +270,14 @@ export default function AllReelsPage() {
 
   const { data, error, isLoading, mutate } = useSWR(
     `/reels/index?page=${currentPage}`,
-    fetcher
+    fetcher,
   );
   const reels = data?.data?.data || [];
   const totalPages = data?.data?.last_page || 1;
 
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value) => setSearchTerm(value), 300),
-    []
+    [],
   );
 
   const filteredReels = useMemo(() => {
@@ -416,11 +326,6 @@ export default function AllReelsPage() {
 
   return (
     <div className="container mx-auto pt-5 pb-6 px-4 space-y-4">
-      {/* <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <SummaryCards t={t} />
-        <NavigationCards t={t} />
-        <MobileSummaryCards t={t} />
-      </div> */}
       <Card>
         <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <div>
@@ -428,8 +333,7 @@ export default function AllReelsPage() {
             <CardDescription>{t("description")}</CardDescription>
           </div>
           <div className="flex space-x-2">
-                        <AddReelDialog t={t} refreshReels={mutate} />
-
+            <AddReelDialog t={t} refreshReels={mutate} />
             <div className="relative">
               <Button
                 variant="outline"
@@ -471,7 +375,6 @@ export default function AllReelsPage() {
               />
               <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
             </div>
-
           </div>
         </CardHeader>
       </Card>
