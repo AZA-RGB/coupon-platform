@@ -30,6 +30,14 @@ import api from "@/lib/api";
 import axios from "axios";
 import useSWR from "swr";
 import { Textarea } from "./ui/textarea";
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from "./ui/multi-select";
 
 const formSchema = z.object({
   type_name: z.string().min(1, "اسم النوع مطلوب"),
@@ -38,12 +46,7 @@ const formSchema = z.object({
     .array(z.string())
     .nonempty("الرجاء اختيار عنصر واحد على الأقل")
     .optional(),
-  image: z
-    .instanceof(File)
-    .optional()
-    .refine((file) => !file || file.type.startsWith("image/"), {
-      message: "يجب أن يكون الملف صورة",
-    }),
+  image: z.any().optional(),
 });
 
 export default function AddTypeDialog({ refreshTypes }) {
@@ -54,7 +57,7 @@ export default function AddTypeDialog({ refreshTypes }) {
         toast.error("فشل تحميل قائمة المعايير");
         console.error("Error fetching criteria:", err);
       },
-    }
+    },
   );
 
   const form = useForm({
@@ -73,7 +76,7 @@ export default function AddTypeDialog({ refreshTypes }) {
       const criteriaIds =
         data?.data?.data
           ?.filter((criterion) =>
-            values.criteria_list?.includes(criterion.name)
+            values.criteria_list?.includes(criterion.name),
           )
           .map((criterion) => criterion.id) || [];
 
@@ -102,7 +105,7 @@ export default function AddTypeDialog({ refreshTypes }) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           toast.error(
-            `خطأ: ${error.response.data.message || "فشل في إنشاء نوع الكوبون"}`
+            `خطأ: ${error.response.data.message || "فشل في إنشاء نوع الكوبون"}`,
           );
         } else if (error.request) {
           toast.error("خطأ في الشبكة - يرجى التحقق من اتصالك");
@@ -210,24 +213,27 @@ export default function AddTypeDialog({ refreshTypes }) {
                         </Button>
                       </div>
                     ) : (
-                      <select
-                        multiple
-                        value={field.value}
-                        onChange={(e) =>
-                          field.onChange(
-                            Array.from(e.target.selectedOptions).map(
-                              (option) => option.value
-                            )
-                          )
-                        }
-                        className="w-full border rounded-md p-2"
+                      <MultiSelector
+                        values={field.value}
+                        onValuesChange={field.onChange}
+                        loop={false}
                       >
-                        {data?.data?.data?.map((criterion) => (
-                          <option key={criterion.id} value={criterion.name}>
-                            {criterion.name}
-                          </option>
-                        ))}
-                      </select>
+                        <MultiSelectorTrigger>
+                          <MultiSelectorInput placeholder="اختر المعايير" />
+                        </MultiSelectorTrigger>
+                        <MultiSelectorContent>
+                          <MultiSelectorList>
+                            {data?.data?.data?.map((criterion) => (
+                              <MultiSelectorItem
+                                key={criterion.id}
+                                value={criterion.name}
+                              >
+                                {criterion.name}
+                              </MultiSelectorItem>
+                            ))}
+                          </MultiSelectorList>
+                        </MultiSelectorContent>
+                      </MultiSelector>
                     )}
                   </FormControl>
                   <FormDescription>تعيين معايير لهذا النوع</FormDescription>
