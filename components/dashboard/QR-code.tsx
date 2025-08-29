@@ -21,7 +21,7 @@ export default function QRCodeComp({ size }) {
         className="rounded-sm"
         value={rand + "" + data.data.user_id}
         size={size}
-        // level="H" // Error correction level
+        level="H" // Error correction level
       />
     </div>
   );
