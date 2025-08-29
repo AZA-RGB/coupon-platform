@@ -76,7 +76,7 @@ export default function LoginPage() {
       Cookies.set("refreshToken", refresh_token);
       Cookies.set("userRole", role);
 
-      setInterval(refreshToken, 5000);
+      // setInterval(refreshToken, 5000);
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDesc"),
         duration: 3000,
