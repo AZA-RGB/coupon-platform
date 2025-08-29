@@ -56,6 +56,7 @@ export default function Dashboard() {
     setValidationError("");
 
     try {
+    
       const response = await fetch(
         "http://164.92.67.78:3002/api/redeems/create-redeem-from-purchase-key",
         {

@@ -226,7 +226,8 @@ const AddMiniActionDialog = ({
                   <FormLabel>{t("points")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="number"                         min="0"
+
                       placeholder={t("pointsPlaceholder")}
                       value={field.value}
                       onChange={(e) => field.onChange(Number(e.target.value) || 0)}
@@ -274,7 +275,8 @@ const AddMiniActionDialog = ({
                     <FormLabel>{t("expectedTime")}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="number"                         min="0"
+
                         placeholder={t("expectedTimePlaceholder")}
                         value={field.value}
                         onChange={(e) => field.onChange(Number(e.target.value) || 0)}
@@ -319,7 +321,8 @@ const AddMiniActionDialog = ({
                   <FormLabel>{t("usageNumber")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="number"                         min="0"
+
                       placeholder={t("usageNumberPlaceholder")}
                       value={field.value}
                       onChange={(e) => field.onChange(Number(e.target.value) || 0)}
@@ -485,7 +488,8 @@ const EditMiniActionDialog = ({
                   <FormLabel>{t("points")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="number"                         min="0"
+
                       placeholder={t("pointsPlaceholder")}
                       value={field.value}
                       onChange={(e) => field.onChange(Number(e.target.value) || 0)}
@@ -533,7 +537,8 @@ const EditMiniActionDialog = ({
                     <FormLabel>{t("expectedTime")}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="number"                         min="0"
+
                         placeholder={t("expectedTimePlaceholder")}
                         value={field.value}
                         onChange={(e) => field.onChange(Number(e.target.value) || 0)}
@@ -578,7 +583,8 @@ const EditMiniActionDialog = ({
                   <FormLabel>{t("usageNumber")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="number"                         min="0"
+
                       placeholder={t("usageNumberPlaceholder")}
                       value={field.value}
                       onChange={(e) => field.onChange(Number(e.target.value) || 0)}

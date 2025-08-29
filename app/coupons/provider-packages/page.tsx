@@ -532,6 +532,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
         },
         {
           headers: {
+            authorization: `Bearer ${Cookies.get("token")}`,
             "Content-Type": "application/json",
           },
         }
@@ -648,6 +649,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxProvidersPlaceholder")}
                         {...field}
                       />
@@ -665,6 +667,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxPricePlaceholder")}
                         {...field}
                       />
@@ -682,6 +685,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxAmountPlaceholder")}
                         {...field}
                       />
@@ -699,6 +703,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxCouponsNumberPlaceholder")}
                         {...field}
                       />
