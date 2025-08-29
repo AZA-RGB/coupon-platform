@@ -272,9 +272,6 @@ export default function SalesReportCard({
         <div className="flex flex-col gap-4 md:gap-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-primary text-xl sm:text-2xl">{t("title")}</h2>
-            <Button variant="outline" className="w-full sm:w-auto" disabled>
-              {t("export")}
-            </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {[...Array(5)].map((_, index) => (
@@ -315,9 +312,6 @@ export default function SalesReportCard({
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-primary text-xl sm:text-2xl">{t("title")}</h2>
-          <Button variant="outline" className="w-full sm:w-auto">
-            {t("export")}
-          </Button>
         </div>
 
         {/* Stats Grid */}

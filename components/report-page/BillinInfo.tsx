@@ -86,7 +86,6 @@ export default function BillingInfo({
     >
       <div className="row-span-1 flex flex-row place-content-between items-center">
         <div className="text-3xl ">{t("title")}</div>
-        <Button variant="outline">{t("exportButton")}</Button>
       </div>
       <div className="row-span-5 overflow-auto rounded-2xl">
         {isLoading && <Spinner className="amimate-spin" />}
