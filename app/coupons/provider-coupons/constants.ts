@@ -9,13 +9,13 @@ export const fetchCoupons = async (page = 1, search = "", status = "") => {
   try {
     //     let url = `http://164.92.67.78:3002/api/providers/my-coupons?current_page=${page}&per_page=12`;
 
-    let url = `/coupons/index?page=${page}`;
+    let url = `/coupons/index?page=${page}&needToken=true`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (status !== "") url += `&coupon_status=${status}`;
 
     const response = await api.get(url);
     const { data } = response.data;
-
+    console.log(data);
     return {
       coupons: data.data.map((coupon) => ({
         id: coupon.id,
@@ -86,7 +86,7 @@ export const fetchCouponDetails = async (id: number) => {
       price: data.price ? `${parseFloat(data.price).toFixed(2)}` : "0.00",
       coupon_type: data.couponType?.name || "Unknown",
       category: data.category?.name || "Unknown",
-      provider_id: data.provider_id??0,
+      provider_id: data.provider_id ?? 0,
       provider: data.provider?.name || "Unknown",
       provider_location: data.provider?.location || "Unknown",
       provider_email: data.provider?.user?.email || "Unknown",

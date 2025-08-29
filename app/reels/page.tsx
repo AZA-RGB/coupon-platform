@@ -267,9 +267,9 @@ export default function AllReelsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedReels, setSelectedReels] = useState([]);
-
+  const needToken = Cookies.get("userRole") === "provider";
   const { data, error, isLoading, mutate } = useSWR(
-    `/reels/index?page=${currentPage}`,
+    `/reels/index?page=${currentPage}&needToken=${needToken}`,
     fetcher,
   );
   const reels = data?.data?.data || [];
