@@ -73,7 +73,7 @@ export function AppSidebar() {
       } else {
         setUserRole("admin");
         console.warn(
-          "No valid user role found in localStorage, defaulting to admin",
+          "No valid user role found in localStorage, defaulting to admin"
         );
       }
     } catch (error) {
@@ -186,6 +186,18 @@ export function AppSidebar() {
       roles: ["admin"],
     },
     {
+      title: t("Redeems"),
+      url: "/provider-redeems",
+      icon: GitPullRequestArrow,
+      roles: ["provider"],
+    },
+    {
+      title: t("customers"),
+      url: "/provider-customers",
+      icon: Users,
+      roles: ["provider"],
+    },
+    {
       title: t("reels"),
       url: "/reels",
       icon: Film,
@@ -214,7 +226,7 @@ export function AppSidebar() {
       <SidebarHeader
         className={cn(
           "transition-all duration-300 overflow-hidden py-4",
-          open ? "opacity-100 max-h-24" : "opacity-0 max-h-0 p-0",
+          open ? "opacity-100 max-h-24" : "opacity-0 max-h-0 p-0"
         )}
       >
         <div className="flex items-center justify-between">
@@ -273,7 +285,7 @@ export function AppSidebar() {
                 "w-full rounded-xl transition-all duration-300",
                 open
                   ? "justify-start gap-3 px-3 py-6 hover:bg-blue-100/60 dark:hover:bg-blue-900/40"
-                  : "justify-center hover:bg-blue-100/40 dark:hover:bg-blue-900/20",
+                  : "justify-center hover:bg-blue-100/40 dark:hover:bg-blue-900/20"
               )}
             >
               <Settings className="h-5 w-5 text-gray-500 dark:text-gray-400" />

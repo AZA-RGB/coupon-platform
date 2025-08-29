@@ -236,6 +236,38 @@
     "coupons": "Coupons",
     "actions": "Actions"
   },
+  "Redeems": {
+    "title": "My Redeems",
+    "description": "View and manage your redeemed coupons",
+    "seeTopRedeems": "Top Redeems",
+    "seeTopRedeemsDesc": "View your top redeemed coupons",
+    "couponName": "Coupon Name",
+    "customerName": "Customer Name",
+    "purchaseKey": "Purchase Key",
+    "price": "Price",
+    "amount": "Amount",
+    "redeemDate": "Redeem Date",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "filter": "Filter",
+    "search": "Search",
+    "noRedeemsFound": "No redeems found",
+    "fetchError": "Error fetching redeems",
+    "fetchErrorDesc": "Unable to fetch redeems data",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "couponDetails": "Coupon Details",
+    "customerDetails": "Customer Details",
+    "redeemDetails": "Redeem Details",
+    "couponCode": "Coupon Code",
+    "description2": "Description",
+    "providerName": "Provider Name",
+    "email": "Email",
+    "phone": "Phone",
+    "redeemedBy": "Redeemed by",
+    "close": "Close"
+  },
+  
   "Coupons": {
     "edit":"Edit",
     "noCouponFound": "No coupon found with the provided ID.",
@@ -245,6 +277,7 @@
     "details": "Details",
     "giftCoupon": "Gift Coupon",
     "type": "Type",
+
 
     "averageRating": "Average Rating",
     "addedDate": "Added Date",
@@ -750,6 +783,7 @@
     "updateButton": "Update criterion"
   },
   "Sidebar": {
+    "Redeems": "Redeems",
     "miniActionsProof": "Manage Mini Actions",
     "miniActions": "Mini Actions",
     "criteria": "criteria",

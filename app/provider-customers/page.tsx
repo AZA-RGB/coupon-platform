@@ -36,83 +36,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-  AlertDialogFooter,
-} from "@/components/ui/alert-dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import {
-  fetchCustomers,
-  deleteCustomer,
-  fetchCustomerDetails,
-  fetchCouponStats,
-  blockCustomer,
+  fetchProviderCustomers,
+  fetchProviderCustomerDetails,
 } from "./constants";
-import ReportGenerator from "@/components/reportGenerator";
 
-const SummaryCards = ({ t, summaries }) => {
-  return (
-    <Card className="w-full lg:w-3/4 p-4 hidden md:flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row gap-4 w-full">
-        {summaries.map((summary, index) => (
-          <div key={index} className="flex-1 p-4 flex flex-col justify-between">
-            <div>
-              <h2>{t(summary.title)}</h2>
-              <h4 className="text-2xl">{summary.value}</h4>
-            </div>
-            <span className="text-sm text-green-500 mt-2">
-              {summary.change}
-            </span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-};
 
-const MobileSummaryCards = ({ t, summaries }) => {
-  return (
-    <div className="flex flex-col gap-4 md:hidden">
-      {summaries.map((summary, index) => (
-        <Card key={index} className="w-full p-4 flex flex-col justify-between">
-          <div>
-            <h2>{t(summary.title)}</h2>
-            <h4 className="text-2xl">{summary.value}</h4>
-          </div>
-          <span className="text-sm text-green-500 mt-2">{summary.change}</span>
-        </Card>
-      ))}
-    </div>
-  );
-};
-
-const NavigationCards = ({ t }) => {
-  return (
-    <div className="w-full lg:w-1/4">
-      <a href="/top-customers" className="block h-full">
-        <Card className="w-full hover:shadow-md transition-shadow h-full cursor-pointer p-4">
-          <CardTitle className="text-lg text-primary mb-1">
-            {t("seeTopCustomers")}
-          </CardTitle>
-          <CardDescription>{t("seeTopCustomersDesc")}</CardDescription>
-        </Card>
-      </a>
-    </div>
-  );
-};
 
 const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
   if (!customer) return null;
 
-  // Calculate age from birth date
   const calculateAge = (birthDate) => {
     const today = new Date();
     const birth = new Date(birthDate);
@@ -130,7 +64,6 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[650px] max-h-[85vh] p-0 bg-background border-border rounded-xl overflow-y-auto">
         <div className="relative">
-          {/* Header with background */}
           <div className="bg-gradient-to-r from-primary/20 to-primary/5 py-6 px-6 border-b border-border">
             <DialogHeader className="text-left">
               <div className="flex items-start gap-4">
@@ -149,14 +82,12 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                     </svg>
                   </div>
                 </div>
-
                 <div className="flex-1">
                   <div className="flex items-center gap-3 flex-wrap">
                     <DialogTitle className="text-2xl font-bold text-foreground">
                       {customer.name}
                     </DialogTitle>
                   </div>
-
                   <DialogDescription className="text-muted-foreground flex items-center gap-2 mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -164,7 +95,6 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                     </svg>
                     {customer.location}
                   </DialogDescription>
-
                   <div className="flex items-center gap-4 mt-3">
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,7 +102,6 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                       </svg>
                       {customerAge} {t('yearsOld')}
                     </div>
-
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -184,10 +113,8 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
               </div>
             </DialogHeader>
           </div>
-
           <div className="px-6 py-5">
             <div className="grid gap-5">
-              {/* Contact Information Card */}
               <div className="bg-muted/40 p-5 rounded-xl">
                 <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 pb-2 border-border border-b">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -205,11 +132,6 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                     </p>
                     <p className="text-sm font-medium text-foreground flex items-center gap-2">
                       {customer.email}
-                      <button className="text-primary hover:text-primary/80">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                      </button>
                     </p>
                   </div>
                   <div className="space-y-1">
@@ -221,17 +143,10 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                     </p>
                     <p className="text-sm font-medium text-foreground flex items-center gap-2">
                       {customer.phone}
-                      <button className="text-primary hover:text-primary/80">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                      </button>
                     </p>
                   </div>
                 </div>
               </div>
-
-              {/* Personal Details Card */}
               <div className="bg-muted/40 p-5 rounded-xl">
                 <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 pb-2 border-border border-b">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -254,10 +169,6 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                   </div>
                 </div>
               </div>
-
-            
-
-              {/* Action Buttons */}
               <div className="flex justify-end gap-3 pt-6">
                 <Button variant="outline" onClick={() => onOpenChange(false)} className="border-border">
                   {t("close")}
@@ -271,32 +182,25 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
   );
 };
 
-
 const CustomersTable = ({
   t,
   customers,
   currentPage,
   setCurrentPage,
   totalPages,
-  selectedCustomers,
-  setSelectedCustomers,
-  handleDeleteSelected,
-  handleSelectCustomer,
-  refreshCustomers,
+  setSelectedCustomer,
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedCustomer, setLocalSelectedCustomer] = useState(null);
 
   const columns = useMemo(
     () => [
-      { key: "select", label: t("select") || "Select" },
       { key: "userInfo", label: t("userInfo") || "User Info" },
       { key: "phone", label: t("phone") || "Phone" },
       { key: "subscribeDate", label: t("subscribeDate") || "Subscribe Date" },
       { key: "status", label: t("status") || "Status" },
-      { key: "coupons", label: t("coupons") || "Coupons" },
-      { key: "banned", label: t("banned") || "Banned" },
+      // { key: "coupons", label: t("coupons") || "Coupons" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
     [t],
@@ -308,53 +212,11 @@ const CustomersTable = ({
   );
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString( "en-US", {
+    return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     });
-  };
-
-  const handleToggleSelectAll = () => {
-    const allSelected = customers.every((customer) =>
-      selectedCustomers.includes(customer.id),
-    );
-    setSelectedCustomers(
-      allSelected ? [] : customers.map((customer) => customer.id),
-    );
-  };
-
-  const handleBlockCustomer = async (id, block) => {
-    try {
-      const { success, error } = await blockCustomer(id, block);
-      if (success) {
-        toast.success(t(block ? "banSuccess" : "unBanSuccess"), {
-          duration: 3000,
-        });
-        await refreshCustomers();
-      } else {
-        const status = error.response?.status;
-        const message = error.response?.data?.message || error.message;
-        toast.error(
-          `${t("blockErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
-          {
-            description: t("blockError"),
-            duration: 7000,
-          },
-        );
-      }
-    } catch (error) {
-      console.error("Error during block/unblock:", error);
-      const status = error.response?.status;
-      const message = error.response?.data?.message || error.message;
-      toast.error(
-        `${t("blockErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
-        {
-          description: t("blockError"),
-          duration: 7000,
-        },
-      );
-    }
   };
 
   return (
@@ -363,52 +225,10 @@ const CustomersTable = ({
         customer={selectedCustomer}
         t={t}
         open={!!selectedCustomer}
-        onOpenChange={(open) => !open && setSelectedCustomer(null)}
+        onOpenChange={(open) => !open && setLocalSelectedCustomer(null)}
       />
       <Card className="shadow-sm">
         <CardContent className="p-x-2">
-          <div className="flex justify-end gap-2 mb-4">
-            <Button
-              variant="outline"
-              onClick={handleToggleSelectAll}
-              disabled={customers.length === 0}
-              className="cursor-pointer"
-            >
-              {t(
-                selectedCustomers.length === customers.length &&
-                  customers.length > 0
-                  ? "deselectAll"
-                  : "selectAll",
-              )}
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  className="cursor-pointer"
-                  disabled={selectedCustomers.length === 0}
-                >
-                  {t("deleteSelected")}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t("confirmDeleteDesc", {
-                      count: selectedCustomers.length,
-                    })}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteSelected}>
-                    {t("confirm")}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
           <div className="overflow-x-auto">
             <div className="rounded-md border" dir={isRTL ? "rtl" : "ltr"}>
               <Table>
@@ -417,9 +237,7 @@ const CustomersTable = ({
                     {columns.map((column) => (
                       <TableHead
                         key={column.key}
-                        className={`px-4 py-3 font-medium ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
+                        className={`px-4 py-3 font-medium ${isRTL ? "text-right" : "text-left"}`}
                       >
                         {column.label}
                       </TableHead>
@@ -445,9 +263,7 @@ const CustomersTable = ({
                         {columns.map((column) => (
                           <TableCell
                             key={`${customer.id}-${column.key}`}
-                            className={`px-4 py-3 ${
-                              isRTL ? "text-right" : "text-left"
-                            }`}
+                            className={`px-4 py-3 ${isRTL ? "text-right" : "text-left"}`}
                           >
                             {renderTableCellContent(
                               customer,
@@ -455,11 +271,7 @@ const CustomersTable = ({
                               isRTL,
                               t,
                               formatDate,
-                              handleSelectCustomer,
-                              setSelectedCustomer,
-                              refreshCustomers,
-                              selectedCustomers,
-                              handleBlockCustomer,
+                              setLocalSelectedCustomer,
                             )}
                           </TableCell>
                         ))}
@@ -478,9 +290,7 @@ const CustomersTable = ({
             >
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() =>
-                    currentPage > 1 && setCurrentPage(currentPage - 1)
-                  }
+                  onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
                   className="cursor-pointer"
                   disabled={currentPage === 1}
                 />
@@ -498,9 +308,7 @@ const CustomersTable = ({
               ))}
               <PaginationItem>
                 <PaginationNext
-                  onClick={() =>
-                    currentPage < totalPages && setCurrentPage(currentPage + 1)
-                  }
+                  onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
                   className="cursor-pointer"
                   disabled={currentPage === totalPages}
                 />
@@ -513,27 +321,8 @@ const CustomersTable = ({
   );
 };
 
-function renderTableCellContent(
-  customer,
-  key,
-  isRTL,
-  t,
-  formatDate,
-  handleSelectCustomer,
-  setSelectedCustomer,
-  refreshCustomers,
-  selectedCustomers,
-  handleBlockCustomer,
-) {
+function renderTableCellContent(customer, key, isRTL, t, formatDate, setSelectedCustomer) {
   switch (key) {
-    case "select":
-      return (
-        <Checkbox
-          className="mx-6"
-          checked={selectedCustomers.includes(customer.id)}
-          onCheckedChange={() => handleSelectCustomer(customer.id)}
-        />
-      );
     case "userInfo":
       return (
         <div className={`flex items-center ${"flex-row"} gap-2`}>
@@ -582,35 +371,11 @@ function renderTableCellContent(
           {t(`Status.${customer.status}`)}
         </span>
       );
-    case "coupons":
-      return `${customer.totalCoupons}`;
-    case "banned":
-      return (
-        <Button
-          variant="default"
-          size="sm"
-          className={`cursor-pointer ${
-            customer.status === "active"
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-          onClick={() =>
-            handleBlockCustomer(customer.id, customer.status === "active")
-          }
-        >
-          {t(customer.status === "active" ? "ban" : "unBan")}
-        </Button>
-      );
+    // case "coupons":
+    //   return `${customer.totalCoupons}`;
     case "actions":
       return (
         <div className="flex gap-2">
-          <ReportGenerator
-            variant="link"
-            object={customer}
-            object_type="customers"
-            key={customer.id}
-          />
-
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"
@@ -625,7 +390,7 @@ function renderTableCellContent(
   }
 }
 
-export default function AllCustomersDashboard() {
+export default function ProviderCustomersDashboard() {
   const t = useTranslations("Customers");
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -635,29 +400,15 @@ export default function AllCustomersDashboard() {
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [summaryData, setSummaryData] = useState([
-    { title: "totalCustomers", value: "0", change: "+0%" },
-    { title: "newCustomers", value: "0", change: "+0%" },
-    { title: "activeCustomers", value: "0", change: "+0%" },
-  ]);
 
-  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearchKeyPress = (e) => {
     if (e.key === "Enter") {
       setSearchQuery(inputValue);
       setCurrentPage(1);
     }
-  };
-
-  const handleSelectCustomer = (id) => {
-    setSelectedCustomers((prev) =>
-      prev.includes(id)
-        ? prev.filter((customerId) => customerId !== id)
-        : [...prev, id],
-    );
   };
 
   const fetchCustomersData = async () => {
@@ -667,7 +418,7 @@ export default function AllCustomersDashboard() {
         customers,
         totalPages,
         currentPage: apiCurrentPage,
-      } = await fetchCustomers(currentPage, searchQuery, statusFilter);
+      } = await fetchProviderCustomers(currentPage, searchQuery, statusFilter);
       if (!Array.isArray(customers)) {
         throw new Error("Customers data is not an array");
       }
@@ -677,7 +428,7 @@ export default function AllCustomersDashboard() {
         setCurrentPage(apiCurrentPage || 1);
       }
     } catch (error) {
-      console.error("Error in fetchCustomersData:", {
+      console.error("Error in fetchProviderCustomersData:", {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
@@ -698,81 +449,16 @@ export default function AllCustomersDashboard() {
     }
   };
 
-  const fetchSummaryData = async () => {
-    try {
-      const stats = await fetchCouponStats();
-      setSummaryData(stats);
-    } catch (error) {
-      console.error("Error fetching summary data:", error);
-      toast.error(t("fetchErrorDesc"), {
-        description: t("fetchError"),
-        duration: 5000,
-      });
-    }
-  };
-
   useEffect(() => {
     fetchCustomersData();
-    fetchSummaryData();
   }, [currentPage, searchQuery, statusFilter]);
-
-  const handleDeleteSelected = async () => {
-    setIsLoading(true);
-    try {
-      const deletePromises = selectedCustomers.map((id) => deleteCustomer(id));
-      const results = await Promise.all(deletePromises);
-      const failedDeletions = results.filter((result) => !result.success);
-      if (failedDeletions.length > 0) {
-        const errorMessages = failedDeletions.map((result) => {
-          const error = result.error;
-          const status = error.response?.status;
-          const message = error.response?.data?.message || error.message;
-          return `Customer ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
-        });
-        toast.error(t("deleteFailedDesc"), {
-          description: errorMessages.join("; ") || t("deleteFailed"),
-          duration: 7000,
-        });
-      } else {
-        toast.success(
-          t("deleteSuccessDesc", { count: selectedCustomers.length }),
-          {
-            description: t("deleteSuccess"),
-            duration: 3000,
-          },
-        );
-        setSelectedCustomers([]);
-        setCurrentPage(1);
-        await fetchCustomersData();
-      }
-    } catch (error) {
-      console.error("Error during deletion:", error);
-      const status = error.response?.status;
-      const message = error.response?.data?.message || error.message;
-      toast.error(
-        `${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
-        {
-          description: t("deleteError"),
-          duration: 7000,
-        },
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const currentCustomers = useMemo(() => {
     return customers.sort((a, b) => {
       if (filterType === "newest") {
-        return (
-          new Date(b.subscribeDate).getTime() -
-          new Date(a.subscribeDate).getTime()
-        );
+        return new Date(b.subscribeDate).getTime() - new Date(a.subscribeDate).getTime();
       } else if (filterType === "oldest") {
-        return (
-          new Date(a.subscribeDate).getTime() -
-          new Date(b.subscribeDate).getTime()
-        );
+        return new Date(a.subscribeDate).getTime() - new Date(b.subscribeDate).getTime();
       }
       return 0;
     });
@@ -794,9 +480,6 @@ export default function AllCustomersDashboard() {
       ) : (
         <>
           <div className="flex flex-col lg:flex-row gap-4 w-full">
-            <SummaryCards t={t} summaries={summaryData} />
-            <MobileSummaryCards t={t} summaries={summaryData} />
-            <NavigationCards t={t} />
           </div>
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
@@ -806,7 +489,7 @@ export default function AllCustomersDashboard() {
               </div>
               <div className="flex space-x-2 relative z-50">
                 <div className="relative">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     className="text-muted-foreground"
@@ -814,15 +497,14 @@ export default function AllCustomersDashboard() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button>
+                  </Button> */}
                   {isFilterMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value ||
-                            statusFilter === item.value
+                            filterType === item.value || statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}
@@ -844,7 +526,7 @@ export default function AllCustomersDashboard() {
                     </div>
                   )}
                 </div>
-                <div className="relative">
+                {/* <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
@@ -854,7 +536,7 @@ export default function AllCustomersDashboard() {
                     onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div>
+                </div> */}
               </div>
             </CardHeader>
           </Card>
@@ -864,11 +546,7 @@ export default function AllCustomersDashboard() {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
-            selectedCustomers={selectedCustomers}
-            setSelectedCustomers={setSelectedCustomers}
-            handleDeleteSelected={handleDeleteSelected}
-            handleSelectCustomer={handleSelectCustomer}
-            refreshCustomers={fetchCustomersData}
+            setSelectedCustomer={fetchProviderCustomerDetails}
           />
         </>
       )}
