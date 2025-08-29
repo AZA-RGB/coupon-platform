@@ -237,6 +237,7 @@
     "actions": "Actions"
   },
   "Coupons": {
+    "edit":"Edit",
     "noCouponFound": "No coupon found with the provided ID.",
     "error": "Error",
     "backToCoupons": "Back to Coupons",
