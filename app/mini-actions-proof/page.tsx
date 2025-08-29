@@ -512,7 +512,7 @@ export default function MiniActionProofsAllPage() {
               </div>
               <div className="flex space-x-2 relative z-50">
                 <div className="relative">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     className="text-muted-foreground"
@@ -520,7 +520,7 @@ export default function MiniActionProofsAllPage() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button>
+                  </Button> */}
                   {isFilterMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
@@ -541,7 +541,7 @@ export default function MiniActionProofsAllPage() {
                     </div>
                   )}
                 </div>
-                <div className="relative">
+                {/* <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
@@ -551,7 +551,7 @@ export default function MiniActionProofsAllPage() {
                     onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div>
+                </div> */}
               </div>
             </CardHeader>
           </Card>

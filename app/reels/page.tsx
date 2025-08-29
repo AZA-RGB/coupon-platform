@@ -31,7 +31,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import api from "@/lib/api";
 import { toast } from "sonner";
 
-const REELS_PER_PAGE = 10;
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
 
@@ -335,7 +334,7 @@ export default function AllReelsPage() {
           <div className="flex space-x-2">
             <AddReelDialog t={t} refreshReels={mutate} />
             <div className="relative">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 className="text-muted-foreground"
@@ -343,7 +342,7 @@ export default function AllReelsPage() {
               >
                 <Filter className="mr-2 h-4 w-4" />
                 {t("filter")}
-              </Button>
+              </Button> */}
               {isFilterMenuOpen && (
                 <div className="absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow">
                   {filterOptions.map((item) => (
@@ -366,7 +365,7 @@ export default function AllReelsPage() {
                 </div>
               )}
             </div>
-            <div className="relative">
+            {/* <div className="relative">
               <Input
                 type="text"
                 placeholder={t("search")}
@@ -374,7 +373,7 @@ export default function AllReelsPage() {
                 onChange={(e) => debouncedSetSearchTerm(e.target.value)}
               />
               <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-            </div>
+            </div> */}
           </div>
         </CardHeader>
       </Card>
