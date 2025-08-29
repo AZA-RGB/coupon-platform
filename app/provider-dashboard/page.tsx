@@ -149,7 +149,7 @@ export default function Dashboard() {
                 variant={isError ? "destructive" : "default"}
               >
                 <AlertTitle>{isError ? "Error" : "Success"}</AlertTitle>
-                <AlertDescription>الرجاء ادخال رمز شراء صالح</AlertDescription>
+                <AlertDescription>{isError ? "الرجاء ادخال رمز شراء صالح" : "تم الصرف بنجاح"}</AlertDescription>
               </Alert>
             )}
           </CardContent>
