@@ -44,18 +44,24 @@ export default function CriteriaPage() {
                   <div className="flex-1">
                     <FormFieldRenderer field={criterion} />
                   </div>
-                  <div className="mt-4 mx-4">
-                    <UpdateCriterionDialog
-                      refresh={() => mutate()}
-                      criterion={criterion}
-                    />
-                  </div>
-                  <div className="mt-4 mx-4">
-                    <DeleteCriterionDialog
-                      refresh={() => mutate()}
-                      criterion={criterion}
-                    />
-                  </div>
+                  {criterion.criteria_type !== "package" &&
+                    criterion.name !== "BayersNumber" &&
+                    criterion.name !== "pointsToBuy" && (
+                      <>
+                        <div className="mt-4 mx-4">
+                          <UpdateCriterionDialog
+                            refresh={() => mutate()}
+                            criterion={criterion}
+                          />
+                        </div>
+                        <div className="mt-4 mx-4">
+                          <DeleteCriterionDialog
+                            refresh={() => mutate()}
+                            criterion={criterion}
+                          />
+                        </div>
+                      </>
+                    )}
                 </div>
               ))}
         </div>
@@ -78,20 +84,25 @@ export default function CriteriaPage() {
                   <div className="flex-1">
                     <FormFieldRenderer field={criterion} />
                   </div>
-                  <div className="mt-4 mx-4">
-                    <UpdateCriterionDialog
-                      key={criterion.id}
-                      refresh={() => mutate()}
-                      criterion={criterion}
-                    />
-                  </div>
-                  <div className="mt-4 mx-4">
-                    <DeleteCriterionDialog
-                      key={criterion.id}
-                      refresh={() => mutate()}
-                      criterion={criterion}
-                    />
-                  </div>
+
+                  {criterion.criteria_type !== "package" &&
+                    criterion.name !== "BayersNumber" &&
+                    criterion.name !== "pointsToBuy" && (
+                      <>
+                        <div className="mt-4 mx-4">
+                          <UpdateCriterionDialog
+                            refresh={() => mutate()}
+                            criterion={criterion}
+                          />
+                        </div>
+                        <div className="mt-4 mx-4">
+                          <DeleteCriterionDialog
+                            refresh={() => mutate()}
+                            criterion={criterion}
+                          />
+                        </div>
+                      </>
+                    )}
                 </div>
               ))}
         </div>
