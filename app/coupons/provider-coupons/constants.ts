@@ -1,5 +1,7 @@
 import api from "@/lib/api";
 import axios from "axios";
+import Cookies from "js-cookie";
+
 
 const DEFAULT_IMAGE =
   "https://cdn.pixabay.com/photo/2022/04/22/01/04/ticket-7148607_1280.png";
@@ -13,12 +15,18 @@ export const fetchCoupons = async (page = 1, search = "", status = "") => {
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (status !== "") url += `&coupon_status=${status}`;
 
-    const response = await api.get(url);
+    const response = await api.get(url,{
+          headers: {
+            "authorization": `Bearer ${Cookies.get("token")}`,
+            "Content-Type": "application/json",
+          },
+        });
     const { data } = response.data;
     console.log(data);
     return {
       coupons: data.data.map((coupon) => ({
         id: coupon.id,
+        provider_id: coupon?.provider?.id??0,
         code: coupon.coupon_code,
         name: coupon.name,
         type: coupon.couponType?.name || "Unknown",
@@ -51,7 +59,12 @@ export const fetchCoupons = async (page = 1, search = "", status = "") => {
 
 export const fetchCouponStats = async () => {
   try {
-    const response = await api.get("/coupons/coupons-general-statistics");
+    const response = await api.get("/coupons/coupons-general-statistics",{
+      headers: {
+        "authorization": `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     const { data } = response.data;
     return {
       activeCoupons: data.active_coupons,
@@ -66,7 +79,12 @@ export const fetchCouponStats = async () => {
 
 export const deleteCoupon = async (id) => {
   try {
-    const response = await api.delete(`/coupons/${id}`);
+    const response = await api.delete(`/coupons/${id}`,{
+      headers: {
+        "authorization": `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     console.log(`Delete response for coupon ${id}:`, response);
     return { success: true, response };
   } catch (error) {
@@ -143,7 +161,12 @@ export const createGiftProgram = async (giftData: {
   points?: number;
 }) => {
   try {
-    const response = await api.post("/gift-programs/create", giftData);
+    const response = await api.post("/gift-programs/create", giftData,{
+      headers: {
+        "authorization": `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     return { success: true, response };
   } catch (error) {
     console.error("Error creating gift program:", error);
@@ -153,7 +176,12 @@ export const createGiftProgram = async (giftData: {
 
 export const deleteGiftProgram = async (id: number) => {
   try {
-    const response = await api.delete(`/gift-programs/${id}`);
+    const response = await api.delete(`/gift-programs/${id}`,{
+      headers: {
+        "authorization": `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     console.log(`Delete response for gift program ${id}:`, response);
     return { success: true, response };
   } catch (error) {
