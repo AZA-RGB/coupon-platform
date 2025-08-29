@@ -40,6 +40,7 @@ import { fetcher } from "@/lib/fetcher";
 import { useSearchParams } from "next/navigation"; // Add this import
 import Router from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -56,6 +57,7 @@ const formSchema = z
   .required();
 
 export default function AddCoupon() {
+  const router = useRouter();
   const searchParams = useSearchParams(); // Get query parameters
   const typeId = searchParams.get("typeId") || ""; // Extract typeId from URL
 
@@ -174,6 +176,7 @@ export default function AddCoupon() {
       const result = response.data;
       toast.success(result.message || "Coupon created successfully!");
       form.reset();
+      router.push("/coupons/provider-coupons");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(
