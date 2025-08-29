@@ -35,7 +35,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { fetcher } from "@/lib/fetcher";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -50,6 +50,8 @@ const formSchema = z
   .required();
 
 export default function UpdateCoupon() {
+  const router = useRouter();
+
   const searchParams = useSearchParams();
   const couponId = searchParams.get("id"); // Get coupon ID from URL
 
@@ -168,7 +170,7 @@ export default function UpdateCoupon() {
         formData.append(`criteriaIds[${index}][id]`, String(item.id));
         formData.append(`criteriaIds[${index}][value]`, String(item.value));
       });
-      console.log(formData);
+      // console.log(formData);
 
       const response = await api.post(`/coupons/${couponId}`, formData, {
         headers: {
@@ -178,6 +180,7 @@ export default function UpdateCoupon() {
 
       const result = response.data;
       toast.success(result.message || "Coupon updated successfully!");
+      router.push("/coupons/provider-coupons");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(
