@@ -58,6 +58,9 @@ import {
 } from "./constants";
 import MyImage from "@/components/my-image";
 import { MobileSummaryCards, SummaryCards } from "../summary_cards";
+import Cookies from "js-cookie";
+
+const idUser = Cookies.get("id");
 
 const NavigationCards = ({ t }) => {
   return (
@@ -161,7 +164,9 @@ const CouponDetailsModal = ({
                   {coupon.name}
                 </DialogTitle>
                 <Badge
-                  className={`${getStatusColor(coupon.coupon_status)} capitalize font-semibold`}
+                  className={`${getStatusColor(
+                    coupon.coupon_status
+                  )} capitalize font-semibold`}
                 >
                   {t(coupon.coupon_status)}
                 </Badge>
@@ -201,23 +206,35 @@ const CouponDetailsModal = ({
 
             {/* Coupon Code */}
             <div
-              className={`${isDarkMode ? "bg-[#00cbc1]/20 border-[#00cbc1]" : "bg-[#00cbc1]/10 border-[#00cbc1]"} border rounded-lg p-4 mb-6`}
+              className={`${
+                isDarkMode
+                  ? "bg-[#00cbc1]/20 border-[#00cbc1]"
+                  : "bg-[#00cbc1]/10 border-[#00cbc1]"
+              } border rounded-lg p-4 mb-6`}
             >
               <h4
-                className={`text-sm font-medium ${isDarkMode ? "text-[#00cbc1]" : "text-[#00cbc1]"} mb-1`}
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-[#00cbc1]" : "text-[#00cbc1]"
+                } mb-1`}
               >
                 {t("couponCode")}
               </h4>
               <div className="flex items-center justify-between">
                 <p
-                  className={`text-2xl font-mono font-bold ${isDarkMode ? "text-[#00cbc1]" : "text-[#00cbc1]"}`}
+                  className={`text-2xl font-mono font-bold ${
+                    isDarkMode ? "text-[#00cbc1]" : "text-[#00cbc1]"
+                  }`}
                 >
                   {coupon.coupon_code}
                 </p>
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`${isDarkMode ? "text-[#00cbc1] border-[#00cbc1]" : "text-[#00cbc1] border-[#00cbc1]"}`}
+                  className={`${
+                    isDarkMode
+                      ? "text-[#00cbc1] border-[#00cbc1]"
+                      : "text-[#00cbc1] border-[#00cbc1]"
+                  }`}
                 >
                   <i className="fas fa-copy mr-2"></i>
                   Copy Code
@@ -327,7 +344,11 @@ const CouponDetailsModal = ({
                       setGiftModalOpen(true);
                       onOpenChange(false);
                     }}
-                    className={`${isDarkMode ? "text-[#00cbc1] border-[#00cbc1]" : "text-[#00cbc1] border-[#00cbc1]"}`}
+                    className={`${
+                      isDarkMode
+                        ? "text-[#00cbc1] border-[#00cbc1]"
+                        : "text-[#00cbc1] border-[#00cbc1]"
+                    }`}
                   >
                     <i className="fas fa-plus mr-2"></i>
                     {t("addGift")}
@@ -338,7 +359,11 @@ const CouponDetailsModal = ({
                   {coupon.giftPrograms.map((gift) => (
                     <div
                       key={gift.id}
-                      className={`${isDarkMode ? "bg-[#00cbc1]/20 border-[#00cbc1]" : "bg-[#00cbc1]/10 border-[#00cbc1]"} border rounded-lg p-4 flex justify-between items-center`}
+                      className={`${
+                        isDarkMode
+                          ? "bg-[#00cbc1]/20 border-[#00cbc1]"
+                          : "bg-[#00cbc1]/10 border-[#00cbc1]"
+                      } border rounded-lg p-4 flex justify-between items-center`}
                     >
                       <div>
                         <p className={`font-medium ${textColor}`}>
@@ -348,7 +373,9 @@ const CouponDetailsModal = ({
                         </p>
                         <div className="flex items-center mt-1">
                           <span
-                            className={`inline-block w-2 h-2 rounded-full mr-2 ${gift.is_active ? "bg-green-500" : "bg-gray-400"}`}
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                              gift.is_active ? "bg-green-500" : "bg-gray-400"
+                            }`}
                           ></span>
                           <span className={`text-sm ${textMutedColor}`}>
                             {gift.is_active ? t("active") : t("inactive")}
@@ -370,7 +397,9 @@ const CouponDetailsModal = ({
               </div>
             ) : (
               <div
-                className={`text-center py-6 border-2 border-dashed ${isDarkMode ? "border-gray-600" : "border-gray-300"} rounded-lg mb-6`}
+                className={`text-center py-6 border-2 border-dashed ${
+                  isDarkMode ? "border-gray-600" : "border-gray-300"
+                } rounded-lg mb-6`}
               >
                 <i className="fas fa-gift text-3xl text-gray-400 mb-3"></i>
                 <p className={`${textMutedColor} mb-4`}>
@@ -639,7 +668,9 @@ const GiftProgramModal = ({
                   value={pointsValue}
                   onChange={(e) => setPointsValue(e.target.value)}
                   min="1"
-                  className={`pl-10 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : ""}`}
+                  className={`pl-10 ${
+                    isDarkMode ? "bg-gray-800 border-gray-700 text-white" : ""
+                  }`}
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i className="fas fa-coins text-yellow-500"></i>
@@ -695,13 +726,13 @@ const CouponsGrid = ({
     setSelectedCoupons((prev) =>
       prev.includes(id)
         ? prev.filter((couponId) => couponId !== id)
-        : [...prev, id],
+        : [...prev, id]
     );
   };
 
   const handleToggleSelectAll = () => {
     const allSelected = coupons.every((coupon) =>
-      selectedCoupons.includes(coupon.id),
+      selectedCoupons.includes(coupon.id)
     );
     setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
   };
@@ -773,7 +804,7 @@ const CouponsGrid = ({
                     selectedCoupons.length === coupons.length &&
                       coupons.length > 0
                       ? "deselectAll"
-                      : "selectAll",
+                      : "selectAll"
                   )}
                 </Button>
                 <AlertDialog>
@@ -835,8 +866,8 @@ const CouponsGrid = ({
                             coupon.status === "active"
                               ? "bg-green-100 text-green-800"
                               : coupon.status === "expired"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
                           {t(coupon.status)}
@@ -854,9 +885,14 @@ const CouponsGrid = ({
                       </div>
                     </CardContent>
                     <CardFooter className="flex gap-3 px-3 pb-3">
-                      <Link href={`/coupons/update-coupon?id=${coupon.id}`}>
-                        <Button className="flex-1 h-8">Update Coupon</Button>
-                      </Link>
+                      {coupon.provider_id === parseInt(idUser) && (
+                        <Link href={`/coupons/update-coupon?id=${coupon.id}`}>
+                          <Button className="flex-1 h-8">
+                            {" "}
+                            {t("edit")}
+                          </Button>
+                        </Link>
+                      )}
 
                       <Button
                         variant="outline"
@@ -1002,7 +1038,7 @@ export default function AllCouponsPage() {
           {
             description: t("deleteSuccess"),
             duration: 3000,
-          },
+          }
         );
         setSelectedCoupons([]);
         setCurrentPage(1);
@@ -1018,7 +1054,7 @@ export default function AllCouponsPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        },
+        }
       );
     } finally {
       setIsLoading(false);
