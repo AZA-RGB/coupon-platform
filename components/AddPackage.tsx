@@ -25,18 +25,37 @@ import { useTranslations } from "next-intl";
 import axios from "axios";
 import { toast } from "sonner";
 import api from "@/lib/api";
+import Cookies from "js-cookie";
 
 const addFormSchema = z.object({
   title: z.string().min(1, { message: "titleRequired" }),
   description: z.string().min(1, { message: "descriptionRequired" }),
   from_date: z.string().min(1, { message: "startDateRequired" }),
   to_date: z.string().min(1, { message: "endDateRequired" }),
-  max_providers: z.string().min(1, { message: "maxProvidersRequired" }),
-  max_price: z.string().min(1, { message: "maxPriceRequired" }),
-  max_amount: z.string().min(1, { message: "maxAmountRequired" }),
+  max_providers: z
+    .string()
+    .min(1, { message: "maxProvidersRequired" })
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "maxProvidersNonNegative",
+    }),
+  max_price: z
+    .string()
+    .min(1, { message: "maxPriceRequired" })
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "maxPriceNonNegative",
+    }),
+  max_amount: z
+    .string()
+    .min(1, { message: "maxAmountRequired" })
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "maxAmountNonNegative",
+    }),
   max_coupons_number: z
     .string()
-    .min(1, { message: "maxCouponsNumberRequired" }),
+    .min(1, { message: "maxCouponsNumberRequired" })
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "maxCouponsNumberNonNegative",
+    }),
   file: z
     .any()
     .optional()
@@ -78,7 +97,10 @@ export default function AddPackageDialog({ refreshPackages }) {
       }
 
       await api.post("/packages/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       toast.success(t("addSuccessDesc"), {
@@ -183,6 +205,7 @@ export default function AddPackageDialog({ refreshPackages }) {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxProvidersPlaceholder")}
                         {...field}
                       />
@@ -200,6 +223,7 @@ export default function AddPackageDialog({ refreshPackages }) {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxPricePlaceholder")}
                         {...field}
                       />
@@ -217,6 +241,7 @@ export default function AddPackageDialog({ refreshPackages }) {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxAmountPlaceholder")}
                         {...field}
                       />
@@ -234,6 +259,7 @@ export default function AddPackageDialog({ refreshPackages }) {
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder={t("maxCouponsNumberPlaceholder")}
                         {...field}
                       />

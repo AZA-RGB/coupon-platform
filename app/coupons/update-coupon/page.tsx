@@ -350,7 +350,8 @@ export default function UpdateCoupon() {
                       <FormItem>
                         <FormLabel>Price</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number"                         min="0"
+ {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -363,7 +364,8 @@ export default function UpdateCoupon() {
                       <FormItem>
                         <FormLabel>amount</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number"                         min="0"
+ {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -376,7 +378,8 @@ export default function UpdateCoupon() {
                       <FormItem>
                         <FormLabel>Points to buy</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number"                         min="0"
+ {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

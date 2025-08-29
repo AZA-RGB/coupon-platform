@@ -73,12 +73,12 @@ export default function AddCoupon() {
   const { data, isLoading, error } = useSWR("/coupon-types/index?page=1");
   const { isMutating: mutatingTypes, trigger: mutateTypes } = useSWRMutation(
     "/coupon-types/index?page=1",
-    fetcher,
+    fetcher
   );
   const { data: criteriadata, isLoading: LoadingCriteria } = useSWR(
     form.watch("Type")
       ? `/criterias/for-add-Coupon/list/${form.watch("Type")}`
-      : null,
+      : null
   );
   const handleTypeChange = (value: string) => {
     form.setValue("Type", value);
@@ -182,7 +182,7 @@ export default function AddCoupon() {
         toast.error(
           error.response?.data?.message ||
             error.message ||
-            t("validation.formError"),
+            t("validation.formError")
         );
       }
     }
@@ -243,7 +243,7 @@ export default function AddCoupon() {
                                     >
                                       {type.name}
                                     </SelectItem>
-                                  ),
+                                  )
                                 )}
                               </SelectContent>
                             </Select>
@@ -350,7 +350,7 @@ export default function AddCoupon() {
                       <FormItem>
                         <FormLabel>Price</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -364,7 +364,7 @@ export default function AddCoupon() {
                       <FormItem>
                         <FormLabel>amount</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -377,7 +377,7 @@ export default function AddCoupon() {
                       <FormItem>
                         <FormLabel>Points to buy</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
