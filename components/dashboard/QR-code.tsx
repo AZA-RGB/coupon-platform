@@ -5,23 +5,21 @@ import useSWR from "swr";
 import { Spinner } from "../ui/spinner";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-export default function QRCodeComp({ size }) {
-  const [rand, _] = useState(Math.floor(Math.random() * 9000) + 1000);
 
+export default function QRCodeComp() {
+  const [rand] = useState(Math.floor(Math.random() * 9000) + 1000);
   const { isLoading, error, data } = useSWR("/providers/show-me");
 
-  if (isLoading) return <Spinner className={`animate-spin h-${size + 10}`} />;
-  if (error) return <Spinner className="animate-spin" />;
-  if (data) {
-    Cookies.set("id", data.data.user_id);
-  }
+  if (isLoading || error) return <Spinner className="animateсуspin" />;
+  if (data) Cookies.set("id", data.data.user_id);
+
   return (
-    <div className="border-8 rounded-xl border-white">
+    <div className="border-8 rounded-xl border-white w-[25vh] h-[25vh]">
       <QRCode
-        className="rounded-sm"
+        className="rounded-sm w-full h-full"
         value={rand + "" + data.data.user_id}
-        size={size}
-        level="H" // Error correction level
+        level="H"
+        viewBox="0 0 256 256"
       />
     </div>
   );

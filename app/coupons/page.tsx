@@ -244,7 +244,7 @@ export default function AllCouponsPage() {
         </div>
       ) : (
         <>
-          {/* Section 1: Summary and Navigation */}
+          {/*Section 1: Summary and Navigation */}
           <div className="flex flex-col lg:flex-row gap-4">
             <SummaryCards t={t} />
             <NavigationCards t={t} />

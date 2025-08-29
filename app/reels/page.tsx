@@ -30,9 +30,7 @@ import AddReelDialog from "./AddReelDilaog";
 import { Checkbox } from "@/components/ui/checkbox";
 import api from "@/lib/api";
 import { toast } from "sonner";
-
-
-const fetcher = (url) => api.get(url).then((res) => res.data);
+import Cookies from "js-cookie";
 
 const ReelsGrid = ({
   t,
@@ -73,7 +71,7 @@ const ReelsGrid = ({
           }),
         ),
       );
-      toast(t("deleteSuccess"));
+      toast();
       setSelectedReels([]);
       mutate();
     } catch (error) {
@@ -266,10 +264,9 @@ export default function AllReelsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedReels, setSelectedReels] = useState([]);
-
+  const needToken = Cookies.get("userRole") === "provider";
   const { data, error, isLoading, mutate } = useSWR(
-    `/reels/index?page=${currentPage}`,
-    fetcher,
+    `/reels/index?page=${currentPage}&needToken=${needToken}`,
   );
   const reels = data?.data?.data || [];
   const totalPages = data?.data?.last_page || 1;

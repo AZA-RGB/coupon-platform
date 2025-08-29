@@ -21,12 +21,10 @@ export const SummaryCards = ({ t }) => {
     {
       title: t("activeCoupons"),
       value: stats.activeCoupons,
-      change: "+8%",
     },
     {
       title: t("monthlyReturn"),
       value: `${stats.monthlyReturn}`,
-      change: "+8%",
     },
     {
       title: t("totalCoupons"),
@@ -41,12 +39,9 @@ export const SummaryCards = ({ t }) => {
         {summaries.map((summary, index) => (
           <div key={index} className="flex-1 p-4 flex flex-col justify-between">
             <div>
-              <h2>{summary.title}</h2>
+              <h2 className="text-primary">{summary.title}</h2>
               <h4 className="text-2xl">{summary.value}</h4>
             </div>
-            <span className="text-sm text-green-500 mt-2">
-              {summary.change + " " + t("fromLastMonth")}
-            </span>
           </div>
         ))}
       </div>

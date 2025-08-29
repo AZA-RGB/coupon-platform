@@ -22,7 +22,7 @@ export const fetchCoupons = async (page = 1, search = "", status = "") => {
           },
         });
     const { data } = response.data;
-
+    console.log(data);
     return {
       coupons: data.data.map((coupon) => ({
         id: coupon.id,
@@ -104,7 +104,7 @@ export const fetchCouponDetails = async (id: number) => {
       price: data.price ? `${parseFloat(data.price).toFixed(2)}` : "0.00",
       coupon_type: data.couponType?.name || "Unknown",
       category: data.category?.name || "Unknown",
-      provider_id: data.provider_id??0,
+      provider_id: data.provider_id ?? 0,
       provider: data.provider?.name || "Unknown",
       provider_location: data.provider?.location || "Unknown",
       provider_email: data.provider?.user?.email || "Unknown",
