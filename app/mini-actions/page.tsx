@@ -1162,7 +1162,7 @@ export default function MiniActionsAllPage() {
               <div className="flex space-x-2 relative z-50">
                 <AddMiniActionDialog refreshMiniActions={fetchMiniActionsData} t={t} />
                 <div className="relative">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     className="text-muted-foreground"
@@ -1170,7 +1170,7 @@ export default function MiniActionsAllPage() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button>
+                  </Button> */}
                   {isFilterMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
@@ -1191,7 +1191,7 @@ export default function MiniActionsAllPage() {
                     </div>
                   )}
                 </div>
-                <div className="relative">
+                {/* <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
@@ -1201,7 +1201,7 @@ export default function MiniActionsAllPage() {
                     onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div>
+                </div> */}
               </div>
             </CardHeader>
           </Card>
