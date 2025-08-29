@@ -16,12 +16,14 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import ProviderGeneralCards from "@/components/dashboard/providerGeneralCards";
+import Cookies from "js-cookie";
 
 export default function Dashboard() {
   const t = useTranslations();
   const [purchaseKey, setPurchaseKey] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     if (message) {
@@ -32,13 +34,34 @@ export default function Dashboard() {
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  const validatePurchaseKey = (key) => {
+    // Check if the input is empty
+    if (!key.trim()) {
+      return "Purchase key cannot be empty";
+    }
+    return "";
+  };
+
   const handleRedeem = async () => {
+    // Validate the purchase key
+    const validationMessage = validatePurchaseKey(purchaseKey);
+    if (validationMessage) {
+      setValidationError(validationMessage);
+      setMessage("");
+      return;
+    }
+
+    // Clear any previous validation error
+    setValidationError("");
+
     try {
       const response = await fetch(
         "http://164.92.67.78:3002/api/redeems/create-redeem-from-purchase-key",
         {
           method: "POST",
           headers: {
+            "authorization": `Bearer ${Cookies.get("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ purchase_key: purchaseKey }),
@@ -48,6 +71,7 @@ export default function Dashboard() {
       if (response.ok) {
         setMessage("Redeemed successfully!");
         setIsError(false);
+        setPurchaseKey(""); // Clear input on success
       } else {
         const errorData = await response.json();
         setMessage(`Error: ${errorData.message || "Failed to redeem"}`);
@@ -101,13 +125,20 @@ export default function Dashboard() {
             <Input
               type="text"
               value={purchaseKey}
-              onChange={(e) => setPurchaseKey(e.target.value)}
+              onChange={(e) => {
+                setPurchaseKey(e.target.value);
+                setValidationError(""); // Clear validation error on input change
+              }}
               placeholder="ادخل رمز الشراء"
-              className="border p-2 mb-4 w-full rounded-lg"
+              className={`border p-2 mb-4 w-full rounded-lg ${validationError ? "border-red-500" : ""}`}
             />
+            {validationError && (
+              <p className="text-red-500 text-sm mb-2">{validationError}</p>
+            )}
             <button
               onClick={handleRedeem}
-              className="bg-primary hover:bg-primary-500 text-white p-2 rounded-lg w-full"
+              className="bg-primary hover:bg-primary-500 text-white p-2 rounded-lg w-full disabled:bg-gray-400"
+              disabled={!purchaseKey.trim()}
             >
               صرف
             </button>
@@ -118,7 +149,7 @@ export default function Dashboard() {
                 variant={isError ? "destructive" : "default"}
               >
                 <AlertTitle>{isError ? "Error" : "Success"}</AlertTitle>
-                <AlertDescription>{message}</AlertDescription>
+                <AlertDescription>الرجاء ادخال رمز شراء صالح</AlertDescription>
               </Alert>
             )}
           </CardContent>
