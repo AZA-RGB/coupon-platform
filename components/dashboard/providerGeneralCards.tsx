@@ -1,17 +1,10 @@
 import useSWR from "swr";
 import { Card } from "@/components/ui/card";
-import {
-  Users,
-  ShoppingCart,
-  UserPlus,
-  DollarSign,
-  TrendingUp,
-} from "lucide-react";
+import { ShoppingCart, UserPlus, DollarSign, Users } from "lucide-react";
 
 interface AnalyticsData {
   total_purchases: number;
   new_customers: number;
-  registration_requests: number;
   total_revenue: number;
   total_customers: number;
 }
@@ -36,26 +29,23 @@ export default function ProviderGeneralCards() {
       icon: <UserPlus className="h-5 w-5" />,
     },
     {
-      title: "Registration Requests",
-      value: data?.registration_requests?.toLocaleString() || "0",
-      icon: <Users className="h-5 w-5" />,
-    },
-    {
       title: "Total Revenue",
       value:
-        `SYP ${data?.total_revenue?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` ||
-        "SYP 0.00",
+        `SYP ${data?.total_revenue?.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}` || "SYP 0.00",
       icon: <DollarSign className="h-5 w-5" />,
     },
     {
       title: "Total Customers",
       value: data?.total_customers?.toLocaleString() || "0",
-      icon: <TrendingUp className="h-5 w-5" />,
+      icon: <Users className="h-5 w-5" />,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {cardData.map((card, index) => (
         <Card
           key={index}
