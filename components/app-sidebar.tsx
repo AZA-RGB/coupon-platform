@@ -22,7 +22,7 @@ import {
   ListTree,
   BadgePercent,
   Sparkles,
-  ClipboardCheck
+  ClipboardCheck,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -229,23 +229,6 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           {/* Profile */}
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild className="group">
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-3 p-3 rounded-sm transition-all duration-50 transform hover:scale-[1.02]"
-                >
-                  <User className="text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform duration-15000" />
-                  <span className="text-gray-700 dark:text-gray-200 font-medium">
-                    {t("profile")}
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-
-          <SidebarSeparator className="my-2 border-gray-200 dark:border-gray-700" />
 
           {/* Main Navigation */}
           <SidebarGroupLabel className="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wide">
