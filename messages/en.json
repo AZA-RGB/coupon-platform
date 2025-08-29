@@ -590,6 +590,8 @@
   "pickDate": "pick a date",
   "Topcustomers": "Top Customers",
   "Packages": {
+    "showAll": "Show All",
+    "me": "Me",
     "title": "Packages",
     "description": "Manage all packages",
     "select": "Select",

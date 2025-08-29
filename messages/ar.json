@@ -595,6 +595,8 @@
   "pickDate": "اختر تاريخ",
   "Topcustomers": "أفضل الزبائن",
   "Packages": {
+    "me":"لي",
+    "showAll": "اظهار الكل",
     "close": "اغلاق",
     "title": "الباقات",
     "description": "إدارة جميع الباقات",

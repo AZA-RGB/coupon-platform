@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2012/04/14/16/52/tickets-34588_960_720.png";
 export const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";

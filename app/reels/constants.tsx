@@ -1,12 +1,26 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
-const DEFAULT_IMAGE = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+const DEFAULT_IMAGE =
+  "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
 
 export const fetchReels = async (page = 1, perPage = 10) => {
   try {
-    const params = new URLSearchParams({ page: page.toString(), per_page: perPage.toString() });
-    const response = await axios.get(`http://164.92.67.78:3002/api/reels/index?${params.toString()}`);
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString(),
+    });
+
+    const response = await axios.get(
+      `http://164.92.67.78:3002/api/reels/index?${params.toString()}&needToken=true`,
+      {
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const { data } = response.data;
 
     if (!data || !Array.isArray(data.data)) {
@@ -19,8 +33,12 @@ export const fetchReels = async (page = 1, perPage = 10) => {
         id: reel.id,
         providerId: reel.provider_id || "Unknown",
         description: reel.description || "No description",
-        date: reel.date ? new Date(reel.date).toISOString() : new Date().toISOString(),
-        media: reel.reel?.path ? `${CDN_BASE_URL}/${reel.reel.path}` : DEFAULT_IMAGE,
+        date: reel.date
+          ? new Date(reel.date).toISOString()
+          : new Date().toISOString(),
+        media: reel.reel?.path
+          ? `${CDN_BASE_URL}/${reel.reel.path}`
+          : DEFAULT_IMAGE,
         fileType: reel.reel?.file_type || 0, // 0 for image, 1 for video
         providerName: reel.provider?.name || "Unknown",
       })),
@@ -35,9 +53,16 @@ export const fetchReels = async (page = 1, perPage = 10) => {
 
 export const addReel = async (formData) => {
   try {
-    const response = await axios.post(`http://164.92.67.78:3002/api/reels/create`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await axios.post(
+      `http://164.92.67.78:3002/api/reels/create`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
     console.log("Add reel response:", response);
     return { success: true, response };
   } catch (error) {
@@ -48,7 +73,15 @@ export const addReel = async (formData) => {
 
 export const deleteReel = async (reelId) => {
   try {
-    const response = await axios.delete(`http://164.92.67.78:3002/api/reels/${reelId}`);
+    const response = await axios.delete(
+      `http://164.92.67.78:3002/api/reels/${reelId}`,
+       {
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     console.log(`Delete reel response for reel ${reelId}:`, response);
     return { success: true, response };
   } catch (error) {
