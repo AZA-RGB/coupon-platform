@@ -71,7 +71,7 @@ const ReelsGrid = ({
           }),
         ),
       );
-      toast(t("deleteSuccess"));
+      toast();
       setSelectedReels([]);
       mutate();
     } catch (error) {

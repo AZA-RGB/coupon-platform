@@ -56,13 +56,12 @@ export default function Dashboard() {
     setValidationError("");
 
     try {
-    
       const response = await fetch(
         "http://164.92.67.78:3002/api/redeems/create-redeem-from-purchase-key",
         {
           method: "POST",
           headers: {
-            "authorization": `Bearer ${Cookies.get("token")}`,
+            authorization: `Bearer ${Cookies.get("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ purchase_key: purchaseKey }),
@@ -150,7 +149,9 @@ export default function Dashboard() {
                 variant={isError ? "destructive" : "default"}
               >
                 <AlertTitle>{isError ? "Error" : "Success"}</AlertTitle>
-                <AlertDescription>{isError ? "الرجاء ادخال رمز شراء صالح" : "تم الصرف بنجاح"}</AlertDescription>
+                <AlertDescription>
+                  {isError ? "الرجاء ادخال رمز شراء صالح" : "تم الصرف بنجاح"}
+                </AlertDescription>
               </Alert>
             )}
           </CardContent>
@@ -159,7 +160,7 @@ export default function Dashboard() {
           <EventsCarousel />
         </div>
         <Card className="flex-1 flex items-center justify-center p-4">
-          <QRCodeComp size={180} />
+          <QRCodeComp />
         </Card>
       </div>
 
