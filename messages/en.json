@@ -785,6 +785,7 @@
     "updateButton": "Update criterion"
   },
   "Sidebar": {
+    "banners": "Banners",
     "Redeems": "Redeems",
     "miniActionsProof": "Manage Mini Actions",
     "miniActions": "Mini Actions",

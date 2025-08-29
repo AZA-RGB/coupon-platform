@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL = "http://164.92.67.78:3002/api";
+import Cookies from "js-cookie";
 
 export const fetchCategories = async (page = 1, perPage = 10, search = "", filter = "") => {
   try {
@@ -37,7 +38,12 @@ export const fetchCategories = async (page = 1, perPage = 10, search = "", filte
 
 export const createCategory = async (name) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/categories/create`, { name });
+    const response = await axios.post(`${API_BASE_URL}/categories/create`, { name },{
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
     console.log("Create category response:", response);
     return { success: true, response };
   } catch (error) {
@@ -48,7 +54,12 @@ export const createCategory = async (name) => {
 
 export const updateCategory = async (id, name) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/categories/${id}`, { name });
+    const response = await axios.put(`${API_BASE_URL}/categories/${id}`, { name },{
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
     console.log(`Update category response for ID ${id}:`, response);
     return { success: true, response };
   } catch (error) {
@@ -59,7 +70,12 @@ export const updateCategory = async (id, name) => {
 
 export const deleteCategory = async (id) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/categories/${id}`);
+    const response = await axios.delete(`${API_BASE_URL}/categories/${id}`,{
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
     console.log(`Delete category response for ID ${id}:`, response);
     return { success: true, response };
   } catch (error) {

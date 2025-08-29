@@ -1,8 +1,9 @@
 import api from "@/lib/api";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const DEFAULT_IMAGE =
-  "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+  "https://cdn.pixabay.com/photo/2017/06/10/07/27/price-2389232_1280.png";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
 export const fetchBanners = async (page = 1, search = "") => {
@@ -10,7 +11,12 @@ export const fetchBanners = async (page = 1, search = "") => {
     let url = `http://164.92.67.78:3002/api/banners/all?page=${page}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
 
-    const response = await api.get(`/banners/all?page=${page}`);
+    const response = await api.get(`/banners/all?page=${page}`, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     const { data } = response.data;
 
     if (!data || !Array.isArray(data)) {
@@ -50,7 +56,10 @@ export const createBanner = async (bannerData) => {
     }
 
     const response = await api.post(`/banners/create`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        authorization: `Bearer ${Cookies.get("token")}`,
+      },
     });
     return { success: true, response };
   } catch (error) {
@@ -69,7 +78,10 @@ export const updateBanner = async (id, bannerData) => {
     }
 
     const response = await api.put(`/banners/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        authorization: `Bearer ${Cookies.get("token")}`,
+      },
     });
     return { success: true, response };
   } catch (error) {
@@ -80,7 +92,12 @@ export const updateBanner = async (id, bannerData) => {
 
 export const deleteBanner = async (id) => {
   try {
-    const response = await api.delete(`/banners/${id}`);
+    const response = await api.delete(`/banners/${id}`, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     return { success: true, response };
   } catch (error) {
     console.error(`Error deleting banner ${id}:`, error);

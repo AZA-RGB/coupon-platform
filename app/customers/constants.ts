@@ -7,7 +7,7 @@ export const fetchCustomers = async (page = 1, search = '', status = '') => {
   try {
     const params = new URLSearchParams({ page: page.toString() });
     if (search) params.append('search', search);
-    if (status) params.append('customer_status', status);
+    if (status) params.append('status', status);
 
     const response = await axios.get(`${API_BASE_URL}/customers/all?${params.toString()}`);
     const { data } = response.data;

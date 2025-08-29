@@ -197,6 +197,12 @@ export function AppSidebar() {
       icon: Users,
       roles: ["provider"],
     },
+      {
+      title: t("banners"),
+      url: "/banners",
+      icon: Sparkles,
+      roles: ["admin"],
+    },
     {
       title: t("reels"),
       url: "/reels",
