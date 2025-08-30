@@ -59,6 +59,7 @@ import {
 import MyImage from "@/components/my-image";
 import { MobileSummaryCards, SummaryCards } from "../summary_cards";
 import Cookies from "js-cookie";
+import ReportGenerator from "@/components/reportGenerator";
 
 const idUser = Cookies.get("id");
 
@@ -165,7 +166,7 @@ const CouponDetailsModal = ({
                 </DialogTitle>
                 <Badge
                   className={`${getStatusColor(
-                    coupon.coupon_status
+                    coupon.coupon_status,
                   )} capitalize font-semibold`}
                 >
                   {t(coupon.coupon_status)}
@@ -726,13 +727,13 @@ const CouponsGrid = ({
     setSelectedCoupons((prev) =>
       prev.includes(id)
         ? prev.filter((couponId) => couponId !== id)
-        : [...prev, id]
+        : [...prev, id],
     );
   };
 
   const handleToggleSelectAll = () => {
     const allSelected = coupons.every((coupon) =>
-      selectedCoupons.includes(coupon.id)
+      selectedCoupons.includes(coupon.id),
     );
     setSelectedCoupons(allSelected ? [] : coupons.map((coupon) => coupon.id));
   };
@@ -804,7 +805,7 @@ const CouponsGrid = ({
                     selectedCoupons.length === coupons.length &&
                       coupons.length > 0
                       ? "deselectAll"
-                      : "selectAll"
+                      : "selectAll",
                   )}
                 </Button>
                 <AlertDialog>
@@ -866,8 +867,8 @@ const CouponsGrid = ({
                             coupon.status === "active"
                               ? "bg-green-100 text-green-800"
                               : coupon.status === "expired"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
                           {t(coupon.status)}
@@ -885,14 +886,7 @@ const CouponsGrid = ({
                       </div>
                     </CardContent>
                     <CardFooter className="flex gap-3 px-3 pb-3">
-                      {coupon.provider_id === parseInt(idUser) && (
-                        <Link href={`/coupons/update-coupon?id=${coupon.id}`}>
-                          <Button className="flex-1 h-8">
-                            {" "}
-                            {t("edit")}
-                          </Button>
-                        </Link>
-                      )}
+                      <ReportGenerator object={coupon} object_type="coupons" />
 
                       <Button
                         variant="outline"
@@ -1038,7 +1032,7 @@ export default function AllCouponsPage() {
           {
             description: t("deleteSuccess"),
             duration: 3000,
-          }
+          },
         );
         setSelectedCoupons([]);
         setCurrentPage(1);
@@ -1054,7 +1048,7 @@ export default function AllCouponsPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);
