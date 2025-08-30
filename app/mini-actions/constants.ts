@@ -1,5 +1,6 @@
 import api from "@/lib/api";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const DEFAULT_IMAGE =
   "https://cdn.pixabay.com/photo/2018/04/29/19/12/money-icon-3360867_1280.png";
@@ -8,14 +9,19 @@ const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 export const fetchMiniActions = async (
   page = 1,
   search = "",
-  typeFilter = "",
+  typeFilter = ""
 ) => {
   try {
-    let url = `/mini-actions/all?page=${page}&per_page=10`;
+    let url = `http://164.92.67.78:3002/api/mini-actions/all?page=${page}&per_page=10&needToken=true`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (typeFilter !== "") url += `&type=${typeFilter}`;
 
-    const response = await api.get(url);
+    const response = await axios.get(url, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     const { data } = response.data;
 
     if (!data || !Array.isArray(data)) {
@@ -55,7 +61,12 @@ export const fetchMiniActions = async (
 
 export const deleteMiniAction = async (id) => {
   try {
-    const response = await api.delete(`/mini-actions/${id}`);
+    const response = await axios.delete(`http://164.92.67.78:3002/api/mini-actions/${id}`, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     console.log(`Delete response for mini-action ${id}:`, response);
     return { success: true, response };
   } catch (error) {
@@ -66,7 +77,12 @@ export const deleteMiniAction = async (id) => {
 
 export const fetchMiniActionDetails = async (id) => {
   try {
-    const response = await api.get(`/mini-actions/${id}`);
+    const response = await axios.get(`http://164.92.67.78:3002/api/mini-actions/${id}`, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     const { data } = response.data;
 
     if (!data) {

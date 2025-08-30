@@ -36,7 +36,7 @@ import { Filter, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
-import { fetchMiniActionProofs,  approveMiniActionProof, rejectMiniActionProof } from "./constants";
+import { fetchMiniActionProofs, approveMiniActionProof, rejectMiniActionProof } from "./constants";
 import MyImage from "@/components/my-image";
 
 interface MiniAction {
@@ -54,12 +54,12 @@ interface MiniAction {
 }
 
 interface Customer {
-  id: number;
-  user_id: number;
-  bank_id: string;
-  birth_date: string;
-  location: string;
-  purchases_count: number;
+  id: number | null;
+  user_id: number | null;
+  bank_id: string | null;
+  birth_date: string | null;
+  location: string | null;
+  purchases_count: number | null;
 }
 
 interface File {
@@ -109,7 +109,7 @@ const MiniActionProofDetailsModal = ({
               <div className="grid grid-cols-2 gap-2">
                 {miniActionProof.files.map((file) => (
                   <div key={file.id} className="relative w-full h-32">
-                    <MyImage src={"https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/"+file.path} alt={file.name} />
+                    <MyImage src={"https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com/" + file.path} alt={file.name} />
                   </div>
                 ))}
               </div>
@@ -372,7 +372,7 @@ function renderTableCellContent(
         </span>
       );
     case "customer":
-      return <span>{proof.customer.bank_id}</span>;
+      return <span>{proof.customer?.bank_id || 'Unknown Customer'}</span>;
     case "status":
       return <span className="capitalize">{t(proof.status)}</span>;
     case "gained_points":
@@ -437,6 +437,7 @@ export default function MiniActionProofsAllPage() {
     try {
       const { miniActionProofs, totalPages, currentPage: apiCurrentPage } = await fetchMiniActionProofs(
         currentPage,
+        10,
         searchQuery,
         filterType
       );
@@ -512,7 +513,7 @@ export default function MiniActionProofsAllPage() {
               </div>
               <div className="flex space-x-2 relative z-50">
                 <div className="relative">
-                  {/* <Button
+                  <Button
                     variant="outline"
                     size="sm"
                     className="text-muted-foreground"
@@ -520,7 +521,7 @@ export default function MiniActionProofsAllPage() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button> */}
+                  </Button>
                   {isFilterMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
@@ -541,7 +542,7 @@ export default function MiniActionProofsAllPage() {
                     </div>
                   )}
                 </div>
-                {/* <div className="relative">
+                <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
@@ -551,7 +552,7 @@ export default function MiniActionProofsAllPage() {
                     onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div> */}
+                </div>
               </div>
             </CardHeader>
           </Card>
