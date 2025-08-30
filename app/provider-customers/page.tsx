@@ -41,8 +41,7 @@ import {
   fetchProviderCustomers,
   fetchProviderCustomerDetails,
 } from "./constants";
-
-
+import ReportGenerator from "@/components/reportGenerator";
 
 const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
   if (!customer) return null;
@@ -52,7 +51,10 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
     const birth = new Date(birthDate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
       age--;
     }
     return age;
@@ -77,8 +79,17 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                     />
                   </div>
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-background">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-primary-foreground" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3 text-primary-foreground"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -89,24 +100,62 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                     </DialogTitle>
                   </div>
                   <DialogDescription className="text-muted-foreground flex items-center gap-2 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                     {customer.location}
                   </DialogDescription>
                   <div className="flex items-center gap-4 mt-3">
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
                       </svg>
-                      {customerAge} {t('yearsOld')}
+                      {customerAge} {t("yearsOld")}
                     </div>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                        />
                       </svg>
-                      {customer.purchasesCount} {t('purchases')}
+                      {customer.purchasesCount} {t("purchases")}
                     </div>
                   </div>
                 </div>
@@ -117,16 +166,38 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
             <div className="grid gap-5">
               <div className="bg-muted/40 p-5 rounded-xl">
                 <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 pb-2 border-border border-b">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
                   </svg>
                   {t("contactInformation")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                       {t("email")}
                     </p>
@@ -136,8 +207,19 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
                   </div>
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
                       </svg>
                       {t("phone")}
                     </p>
@@ -149,28 +231,51 @@ const CustomerDetailsModal = ({ customer, t, open, onOpenChange }) => {
               </div>
               <div className="bg-muted/40 p-5 rounded-xl">
                 <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 pb-2 border-border border-b">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                   {t("personalDetails")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">{t("birthDate")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("birthDate")}
+                    </p>
                     <p className="text-sm font-medium text-foreground">
-                      {new Date(customer.birthDate).toLocaleDateString()} ({customerAge} {t('yearsOld')})
+                      {new Date(customer.birthDate).toLocaleDateString()} (
+                      {customerAge} {t("yearsOld")})
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">{t("memberSince")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("memberSince")}
+                    </p>
                     <p className="text-sm font-medium text-foreground">
-                      {new Date(customer.createdAt || new Date().setFullYear(new Date().getFullYear() - 1)).toLocaleDateString()}
+                      {new Date(
+                        customer.createdAt ||
+                          new Date().setFullYear(new Date().getFullYear() - 1),
+                      ).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-6">
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="border-border">
+                <Button
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  className="border-border"
+                >
                   {t("close")}
                 </Button>
               </div>
@@ -290,7 +395,9 @@ const CustomersTable = ({
             >
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+                  onClick={() =>
+                    currentPage > 1 && setCurrentPage(currentPage - 1)
+                  }
                   className="cursor-pointer"
                   disabled={currentPage === 1}
                 />
@@ -308,7 +415,9 @@ const CustomersTable = ({
               ))}
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+                  onClick={() =>
+                    currentPage < totalPages && setCurrentPage(currentPage + 1)
+                  }
                   className="cursor-pointer"
                   disabled={currentPage === totalPages}
                 />
@@ -321,7 +430,14 @@ const CustomersTable = ({
   );
 };
 
-function renderTableCellContent(customer, key, isRTL, t, formatDate, setSelectedCustomer) {
+function renderTableCellContent(
+  customer,
+  key,
+  isRTL,
+  t,
+  formatDate,
+  setSelectedCustomer,
+) {
   switch (key) {
     case "userInfo":
       return (
@@ -376,6 +492,12 @@ function renderTableCellContent(customer, key, isRTL, t, formatDate, setSelected
     case "actions":
       return (
         <div className="flex gap-2">
+          <ReportGenerator
+            variant="link"
+            object={customer}
+            object_type="customers"
+            key={customer.id}
+          />
           <Button
             variant="link"
             className="text-primary underline hover:text-primary/80 p-0 h-auto"
@@ -456,9 +578,15 @@ export default function ProviderCustomersDashboard() {
   const currentCustomers = useMemo(() => {
     return customers.sort((a, b) => {
       if (filterType === "newest") {
-        return new Date(b.subscribeDate).getTime() - new Date(a.subscribeDate).getTime();
+        return (
+          new Date(b.subscribeDate).getTime() -
+          new Date(a.subscribeDate).getTime()
+        );
       } else if (filterType === "oldest") {
-        return new Date(a.subscribeDate).getTime() - new Date(b.subscribeDate).getTime();
+        return (
+          new Date(a.subscribeDate).getTime() -
+          new Date(b.subscribeDate).getTime()
+        );
       }
       return 0;
     });
@@ -479,8 +607,7 @@ export default function ProviderCustomersDashboard() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col lg:flex-row gap-4 w-full">
-          </div>
+          <div className="flex flex-col lg:flex-row gap-4 w-full"></div>
           <Card>
             <CardHeader className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <div>
@@ -504,7 +631,8 @@ export default function ProviderCustomersDashboard() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value || statusFilter === item.value
+                            filterType === item.value ||
+                            statusFilter === item.value
                               ? "bg-gray-200 dark:bg-gray-600"
                               : ""
                           }`}
