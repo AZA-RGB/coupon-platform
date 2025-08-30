@@ -628,7 +628,7 @@ export default function TypesAllCouponsPage() {
               <div className="flex space-x-2">
                 <AddTypeDialog refreshTypes={fetchCouponTypesData} />
                 <div className="relative">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     className="cursor-pointer text-muted-foreground"
@@ -639,7 +639,7 @@ export default function TypesAllCouponsPage() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button>
+                  </Button> */}
                   <div
                     id="filter-menu"
                     className="cursor-pointer absolute right-0 z-10 mt-2 w-40 bg-secondary border rounded shadow hidden"
@@ -668,7 +668,7 @@ export default function TypesAllCouponsPage() {
                     ))}
                   </div>
                 </div>
-                <div className="relative">
+                {/* <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
@@ -676,7 +676,7 @@ export default function TypesAllCouponsPage() {
                     onChange={(e) => debouncedSetSearchTerm(e.target.value)}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div>
+                </div> */}
               </div>
             </CardHeader>
           </Card>

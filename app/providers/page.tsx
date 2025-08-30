@@ -1099,7 +1099,7 @@ export default function AllProvidersPage() {
               </div>
               <div className="flex space-x-2">
                 <div className="relative">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     className="text-muted-foreground"
@@ -1107,7 +1107,7 @@ export default function AllProvidersPage() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button>
+                  </Button> */}
                   {isFilterMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
