@@ -1,112 +1,143 @@
-import api from "@/lib/api";
 import axios from "axios";
+import Cookies from "js-cookie";
 
-interface MiniAction {
-  id: number;
-  provider_id: number;
-  type: number;
-  description: string;
-  points: number;
-  is_manual: boolean;
-  expiryDate: string;
-  expected_time: number;
-  content: string;
-  action_rules: string;
-  usage_number: number;
-}
+const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 
-interface Customer {
-  id: number;
-  user_id: number;
-  bank_id: string;
-  birth_date: string;
-  location: string;
-  purchases_count: number;
-}
-
-interface File {
-  id: number;
-  path: string;
-  file_type: number;
-  name: string;
-  title: string | null;
-}
-
-interface MiniActionProof {
-  id: number;
-  mini_action_id: number;
-  customer_id: number;
-  status: "pending" | "success" | "rejected";
-  gained_points: number;
-  time: number;
-  files: File[];
-  mini_action: MiniAction;
-  customer: Customer | null; // Allow customer to be null
-}
-
-export const fetchMiniActionProofs = async (
-  page: number,
-  search: string,
-  filter: string,
-) => {
+export const fetchMiniActionProofs = async (page = 1, perPage = 10, searchQuery = "", filterType = "") => {
   try {
-    const response = await api.get("/mini-action-proofs/all", {
-      params: { page, search, filter },
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString(),
     });
-    const miniActionProofs = response.data.data;
 
-    // Validate that miniActionProofs is an array and filter out invalid entries
-    if (!Array.isArray(miniActionProofs)) {
-      throw new Error("API response data is not an array");
-    }
+    // if (searchQuery) {
+    //   params.append("search", searchQuery);
+    // }
+    // if (filterType) {
+    //   params.append("filter", filterType);
+    // }
 
-    // Filter out proofs with missing or null customer
-    const validMiniActionProofs = miniActionProofs.filter(
-      (proof: MiniActionProof) => proof.customer && proof.customer.bank_id,
+    const response = await axios.get(
+      `http://164.92.67.78:3002/api/mini-action-proofs/all?${params.toString()}&needToken=true`,
+      {
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
 
-    if (validMiniActionProofs.length < miniActionProofs.length) {
-      console.warn(
-        `Filtered out ${
-          miniActionProofs.length - validMiniActionProofs.length
-        } invalid MiniActionProofs with missing customer or bank_id`,
-      );
+    // Access the top-level data array directly
+    const data = response.data.data;
+
+    if (!Array.isArray(data)) {
+      console.error("Invalid API response structure:", response.data);
+      throw new Error("Invalid API response: data is not an array");
     }
 
+    // Return all proofs with proper handling for incomplete customer data
     return {
-      miniActionProofs: validMiniActionProofs,
-      totalPages: response.data.totalPages || 1,
-      currentPage: response.data.currentPage || page,
+      miniActionProofs: data.map((proof) => ({
+        ...proof,
+        // Handle cases where customer might be null or incomplete
+        customer: proof.customer || { 
+          id: null, 
+          user_id: null, 
+          bank_id: 'Unknown Customer', 
+          birth_date: null, 
+          location: null, 
+          purchases_count: null 
+        },
+        files: proof.files.map((file) => ({
+          ...file,
+          path: file.path ? `${CDN_BASE_URL}/${file.path}` : file.path,
+        })),
+      })),
+      totalPages: response.data.last_page || Math.ceil(data.length / perPage) || 1,
+      currentPage: response.data.current_page || page,
     };
   } catch (error) {
     console.error("Error fetching mini action proofs:", error);
-    throw error;
+    return { miniActionProofs: [], totalPages: 1, currentPage: page };
   }
 };
 
-export const fetchMiniActionProofDetails = async (id: number) => {
+export const fetchMiniActionProofDetails = async (id) => {
   try {
-    const response = await api.get(`/mini-action-proofs/${id}`);
-    return response.data.data;
+    const response = await axios.get(
+      `http://164.92.67.78:3002/api/mini-action-proofs/${id}`,
+      {
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const { data } = response.data;
+
+    if (!data) {
+      console.error("Invalid API response structure:", response.data);
+      throw new Error("Invalid API response: data is missing");
+    }
+
+    return {
+      ...data,
+      // Handle cases where customer might be null or incomplete
+      customer: data.customer || { 
+        id: null, 
+        user_id: null, 
+        bank_id: 'Unknown Customer', 
+        birth_date: null, 
+        location: null, 
+        purchases_count: null 
+      },
+      files: data.files.map((file) => ({
+        ...file,
+        path: file.path ? `${CDN_BASE_URL}/${file.path}` : file.path,
+      })),
+    };
   } catch (error) {
-    throw error;
+    console.error(`Error fetching mini action proof ${id}:`, error);
+    return { miniActionProofs: [], totalPages: 1, currentPage: 1 };
   }
 };
 
-export const approveMiniActionProof = async (id: number) => {
+export const approveMiniActionProof = async (id) => {
   try {
-    await api.post(`/mini-action-proofs/${id}/approve`);
-    return { success: true, id };
+    const response = await axios.post(
+      `http://164.92.67.78:3002/api/mini-action-proofs/${id}/approve`,
+      {},
+      {
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(`Approve mini action proof response:`, response);
+    return { success: true, response };
   } catch (error) {
-    return { success: false, id, error };
+    console.error(`Error approving mini action proof ${id}:`, error);
+    return { success: false, error };
   }
 };
 
-export const rejectMiniActionProof = async (id: number) => {
+export const rejectMiniActionProof = async (id) => {
   try {
-    await api.post(`/mini-action-proofs/${id}/reject`);
-    return { success: true, id };
+    const response = await axios.post(
+      `http://164.92.67.78:3002/api/mini-action-proofs/${id}/reject`,
+      {},
+      {
+        headers: {
+          authorization: `Bearer ${Cookies.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(`Reject mini action proof response:`, response);
+    return { success: true, response };
   } catch (error) {
-    return { success: false, id, error };
+    console.error(`Error rejecting mini action proof ${id}:`, error);
+    return { success: false, error };
   }
 };

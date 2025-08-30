@@ -71,6 +71,7 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface MiniAction {
   id: string;
@@ -137,9 +138,16 @@ const AddMiniActionDialog = ({
         usage_number: values.usage_number,
       };
 
-      await axios.post("http://164.92.67.78:3002/api/mini-actions/create", payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await axios.post(
+        "http://164.92.67.78:3002/api/mini-actions/create",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
 
       toast.success(t("addSuccessDesc"), {
         description: t("addSuccess"),
@@ -151,9 +159,14 @@ const AddMiniActionDialog = ({
       console.error("Form submission error", error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          toast.error(`${t("addErrorDesc")}: ${error.response.data.message || t("addError")}`, {
-            duration: 7000,
-          });
+          toast.error(
+            `${t("addErrorDesc")}: ${
+              error.response.data.message || t("addError")
+            }`,
+            {
+              duration: 7000,
+            }
+          );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
         } else {
@@ -186,7 +199,10 @@ const AddMiniActionDialog = ({
                   <FormControl>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-full justify-between">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
                           {field.value === "1" ? t("video") : t("action")}
                           <span className="ml-2">▼</span>
                         </Button>
@@ -212,7 +228,10 @@ const AddMiniActionDialog = ({
                 <FormItem>
                   <FormLabel>{t("descriptionPlaceholder")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("descriptionPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -226,11 +245,13 @@ const AddMiniActionDialog = ({
                   <FormLabel>{t("points")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"                         min="0"
-
+                      type="number"
+                      min="0"
                       placeholder={t("pointsPlaceholder")}
                       value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -245,7 +266,9 @@ const AddMiniActionDialog = ({
                   <FormControl>
                     <Checkbox
                       checked={field.value}
-                      onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                      onCheckedChange={(checked) =>
+                        field.onChange(Boolean(checked))
+                      }
                     />
                   </FormControl>
                   <FormLabel>{t("isManual")}</FormLabel>
@@ -275,11 +298,13 @@ const AddMiniActionDialog = ({
                     <FormLabel>{t("expectedTime")}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"                         min="0"
-
+                        type="number"
+                        min="0"
                         placeholder={t("expectedTimePlaceholder")}
                         value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value) || 0)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -307,7 +332,10 @@ const AddMiniActionDialog = ({
                 <FormItem>
                   <FormLabel>{t("actionRules")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("actionRulesPlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("actionRulesPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -321,11 +349,13 @@ const AddMiniActionDialog = ({
                   <FormLabel>{t("usageNumber")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"                         min="0"
-
+                      type="number"
+                      min="0"
                       placeholder={t("usageNumberPlaceholder")}
                       value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -394,9 +424,13 @@ const EditMiniActionDialog = ({
         usage_number: values.usage_number,
       };
 
-      await axios.put(`http://164.92.67.78:3002/api/mini-actions/${miniAction.id}`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await axios.put(
+        `http://164.92.67.78:3002/api/mini-actions/${miniAction.id}`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       toast.success(t("editSuccessDesc"), {
         description: t("editSuccess"),
@@ -408,9 +442,14 @@ const EditMiniActionDialog = ({
       console.error("Form submission error", error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          toast.error(`${t("editErrorDesc")}: ${error.response.data.message || t("editError")}`, {
-            duration: 7000,
-          });
+          toast.error(
+            `${t("editErrorDesc")}: ${
+              error.response.data.message || t("editError")
+            }`,
+            {
+              duration: 7000,
+            }
+          );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
         } else {
@@ -448,7 +487,10 @@ const EditMiniActionDialog = ({
                   <FormControl>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-full justify-between">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
                           {field.value === "1" ? t("video") : t("action")}
                           <span className="ml-2">▼</span>
                         </Button>
@@ -474,7 +516,10 @@ const EditMiniActionDialog = ({
                 <FormItem>
                   <FormLabel>{t("descriptionPlaceholder")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("descriptionPlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("descriptionPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -488,11 +533,13 @@ const EditMiniActionDialog = ({
                   <FormLabel>{t("points")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"                         min="0"
-
+                      type="number"
+                      min="0"
                       placeholder={t("pointsPlaceholder")}
                       value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -507,7 +554,9 @@ const EditMiniActionDialog = ({
                   <FormControl>
                     <Checkbox
                       checked={field.value}
-                      onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                      onCheckedChange={(checked) =>
+                        field.onChange(Boolean(checked))
+                      }
                     />
                   </FormControl>
                   <FormLabel>{t("isManual")}</FormLabel>
@@ -537,11 +586,13 @@ const EditMiniActionDialog = ({
                     <FormLabel>{t("expectedTime")}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"                         min="0"
-
+                        type="number"
+                        min="0"
                         placeholder={t("expectedTimePlaceholder")}
                         value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value) || 0)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -569,7 +620,10 @@ const EditMiniActionDialog = ({
                 <FormItem>
                   <FormLabel>{t("actionRules")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("actionRulesPlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("actionRulesPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -583,11 +637,13 @@ const EditMiniActionDialog = ({
                   <FormLabel>{t("usageNumber")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"                         min="0"
-
+                      type="number"
+                      min="0"
                       placeholder={t("usageNumberPlaceholder")}
                       value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -632,118 +688,276 @@ const MiniActionDetailsModal = ({
 
   // Check for dark mode preference
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkMode(mediaQuery.matches);
-    
+
     const handler = (e) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    
-    return () => mediaQuery.removeEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
+
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-[650px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
+      <DialogContent
+        className={`sm:max-w-[650px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${
+          isDarkMode
+            ? "bg-gray-900 border-gray-700"
+            : "bg-white border-gray-200"
+        }`}
+      >
         {/* Header with teal accent */}
         <div className="bg-[#00cbc1] h-2 w-full rounded-t-lg"></div>
-        
+
         <DialogHeader className="px-6 pt-4 pb-2">
           <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden shadow-md">
-            <MyImage 
-              src={miniAction.image} 
-              alt={miniAction.description} 
+            <MyImage
+              src={miniAction.image}
+              alt={miniAction.description}
               className="object-cover w-full h-full"
             />
           </div>
-          <DialogTitle className={`text-2xl font-bold mt-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <DialogTitle
+            className={`text-2xl font-bold mt-4 ${
+              isDarkMode ? "text-white" : "text-gray-800"
+            }`}
+          >
             {miniAction.description}
           </DialogTitle>
-          <DialogDescription className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <DialogDescription
+            className={`mt-2 text-base ${
+              isDarkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             {miniAction.content}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 px-6 py-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("provider")}</h4>
-              <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+            <div
+              className={`p-3 rounded-lg ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-50"
+              }`}
+            >
+              <h4
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {t("provider")}
+              </h4>
+              <p
+                className={`text-sm font-semibold mt-1 ${
+                  isDarkMode ? "text-gray-200" : "text-gray-800"
+                }`}
+              >
                 {miniAction.provider}
               </p>
             </div>
-            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("type")}</h4>
+            <div
+              className={`p-3 rounded-lg ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-50"
+              }`}
+            >
+              <h4
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {t("type")}
+              </h4>
               <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00cbc1] bg-opacity-15 text-[#00857e] mt-1 capitalize">
                 {t(miniAction.type)}
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
-            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("points")}</h4>
+            <div
+              className={`p-3 rounded-lg ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-50"
+              }`}
+            >
+              <h4
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {t("points")}
+              </h4>
               <div className="flex items-center mt-1">
-                <svg className="w-5 h-5 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  className="w-5 h-5 text-yellow-500 mr-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span className={`text-lg font-bold ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                <span
+                  className={`text-lg font-bold ${
+                    isDarkMode ? "text-yellow-400" : "text-yellow-600"
+                  }`}
+                >
                   {miniAction.points}
                 </span>
               </div>
             </div>
-            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("isManual")}</h4>
-              <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                miniAction.isManual 
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-              }`}>
+            <div
+              className={`p-3 rounded-lg ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-50"
+              }`}
+            >
+              <h4
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {t("isManual")}
+              </h4>
+              <div
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                  miniAction.isManual
+                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                }`}
+              >
                 {miniAction.isManual ? t("yes") : t("no")}
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
-            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("expiryDate")}</h4>
+            <div
+              className={`p-3 rounded-lg ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-50"
+              }`}
+            >
+              <h4
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {t("expiryDate")}
+              </h4>
               <div className="flex items-center mt-1">
-                <svg className="w-4 h-4 mr-2 text-[#00cbc1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                <svg
+                  className="w-4 h-4 mr-2 text-[#00cbc1]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  ></path>
                 </svg>
-                <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                <span
+                  className={`text-sm font-semibold ${
+                    isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+                >
                   {new Date(miniAction.expiryDate).toLocaleDateString()}
                 </span>
               </div>
             </div>
             {miniAction.type === "video" && (
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("expectedTime")}</h4>
+              <div
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("expectedTime")}
+                </h4>
                 <div className="flex items-center mt-1">
-                  <svg className="w-4 h-4 mr-2 text-[#00cbc1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  <svg
+                    className="w-4 h-4 mr-2 text-[#00cbc1]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
                   </svg>
-                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                  <span
+                    className={`text-sm font-semibold ${
+                      isDarkMode ? "text-gray-200" : "text-gray-800"
+                    }`}
+                  >
                     {miniAction.expectedTime} {t("seconds")}
                   </span>
                 </div>
               </div>
             )}
           </div>
-          
-          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-            <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("actionRules")}</h4>
-            <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+
+          <div
+            className={`p-3 rounded-lg ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-50"
+            }`}
+          >
+            <h4
+              className={`text-sm font-medium ${
+                isDarkMode ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              {t("actionRules")}
+            </h4>
+            <p
+              className={`text-sm mt-1 ${
+                isDarkMode ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
               {miniAction.actionRules}
             </p>
           </div>
-          
-          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-            <h4 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t("usageNumber")}</h4>
+
+          <div
+            className={`p-3 rounded-lg ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-50"
+            }`}
+          >
+            <h4
+              className={`text-sm font-medium ${
+                isDarkMode ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              {t("usageNumber")}
+            </h4>
             <div className="flex items-center mt-1">
-              <svg className="w-4 h-4 mr-2 text-[#00cbc1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              <svg
+                className="w-4 h-4 mr-2 text-[#00cbc1]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
               </svg>
-              <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+              <span
+                className={`text-sm font-semibold ${
+                  isDarkMode ? "text-gray-200" : "text-gray-800"
+                }`}
+              >
                 {miniAction.usageNumber}
               </span>
             </div>
@@ -778,7 +992,8 @@ const MiniActionsTable = ({
 }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const [selectedMiniAction, setSelectedMiniAction] = useState<MiniAction | null>(null);
+  const [selectedMiniAction, setSelectedMiniAction] =
+    useState<MiniAction | null>(null);
 
   const columns = useMemo(
     () => [
@@ -808,8 +1023,12 @@ const MiniActionsTable = ({
   };
 
   const handleToggleSelectAll = () => {
-    const allSelected = miniActions.every((action) => selectedMiniActions.includes(action.id));
-    setSelectedMiniActions(allSelected ? [] : miniActions.map((action) => action.id));
+    const allSelected = miniActions.every((action) =>
+      selectedMiniActions.includes(action.id)
+    );
+    setSelectedMiniActions(
+      allSelected ? [] : miniActions.map((action) => action.id)
+    );
   };
 
   return (
@@ -830,7 +1049,8 @@ const MiniActionsTable = ({
               className="cursor-pointer"
             >
               {t(
-                selectedMiniActions.length === miniActions.length && miniActions.length > 0
+                selectedMiniActions.length === miniActions.length &&
+                  miniActions.length > 0
                   ? "deselectAll"
                   : "selectAll"
               )}
@@ -849,7 +1069,9 @@ const MiniActionsTable = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {t("confirmDeleteDesc", { count: selectedMiniActions.length })}
+                    {t("confirmDeleteDesc", {
+                      count: selectedMiniActions.length,
+                    })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -869,7 +1091,9 @@ const MiniActionsTable = ({
                     {columns.map((column) => (
                       <TableHead
                         key={column.key}
-                        className={`px-4 py-3 font-medium ${isRTL ? "text-right" : "text-left"}`}
+                        className={`px-4 py-3 font-medium ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
                       >
                         {column.label}
                       </TableHead>
@@ -895,7 +1119,9 @@ const MiniActionsTable = ({
                         {columns.map((column) => (
                           <TableCell
                             key={`${action.id}-${column.key}`}
-                            className={`px-4 py-3 ${isRTL ? "text-right" : "text-left"}`}
+                            className={`px-4 py-3 ${
+                              isRTL ? "text-right" : "text-left"
+                            }`}
                           >
                             {renderTableCellContent(
                               action,
@@ -920,10 +1146,16 @@ const MiniActionsTable = ({
         </CardContent>
         <CardFooter className="pt-4">
           <Pagination className="w-full">
-            <PaginationContent className={`w-full ${isRTL ? "justify-center" : "justify-center"}`}>
+            <PaginationContent
+              className={`w-full ${
+                isRTL ? "justify-center" : "justify-center"
+              }`}
+            >
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+                  onClick={() =>
+                    currentPage > 1 && setCurrentPage(currentPage - 1)
+                  }
                   className="cursor-pointer"
                   disabled={currentPage === 1}
                 />
@@ -941,7 +1173,9 @@ const MiniActionsTable = ({
               ))}
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+                  onClick={() =>
+                    currentPage < totalPages && setCurrentPage(currentPage + 1)
+                  }
                   className="cursor-pointer"
                   disabled={currentPage === totalPages}
                 />
@@ -1039,18 +1273,20 @@ export default function MiniActionsAllPage() {
 
   const handleSelectMiniAction = (id: string) => {
     setSelectedMiniActions((prev) =>
-      prev.includes(id) ? prev.filter((actionId) => actionId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((actionId) => actionId !== id)
+        : [...prev, id]
     );
   };
 
   const fetchMiniActionsData = async () => {
     setIsLoading(true);
     try {
-      const { miniActions, totalPages, currentPage: apiCurrentPage } = await fetchMiniActions(
-        currentPage,
-        searchQuery,
-        filterType
-      );
+      const {
+        miniActions,
+        totalPages,
+        currentPage: apiCurrentPage,
+      } = await fetchMiniActions(currentPage, searchQuery, filterType);
       if (!Array.isArray(miniActions)) {
         throw new Error("Mini-actions data is not an array");
       }
@@ -1089,7 +1325,9 @@ export default function MiniActionsAllPage() {
   const handleDeleteSelected = async () => {
     setIsLoading(true);
     try {
-      const deletePromises = selectedMiniActions.map((id) => deleteMiniAction(id));
+      const deletePromises = selectedMiniActions.map((id) =>
+        deleteMiniAction(id)
+      );
       const results = await Promise.all(deletePromises);
       const failedDeletions = results.filter((result) => !result.success);
       if (failedDeletions.length > 0) {
@@ -1097,17 +1335,22 @@ export default function MiniActionsAllPage() {
           const error = result.error;
           const status = error.response?.status;
           const message = error.response?.data?.message || error.message;
-          return `Mini-action ID ${result.id}: ${status ? `Status ${status} - ` : ""}${message}`;
+          return `Mini-action ID ${result.id}: ${
+            status ? `Status ${status} - ` : ""
+          }${message}`;
         });
         toast.error(t("deleteFailedDesc"), {
           description: errorMessages.join("; ") || t("deleteFailed"),
           duration: 7000,
         });
       } else {
-        toast.success(t("deleteSuccessDesc", { count: selectedMiniActions.length }), {
-          description: t("deleteSuccess"),
-          duration: 3000,
-        });
+        toast.success(
+          t("deleteSuccessDesc", { count: selectedMiniActions.length }),
+          {
+            description: t("deleteSuccess"),
+            duration: 3000,
+          }
+        );
         setSelectedMiniActions([]);
         setCurrentPage(1);
         await fetchMiniActionsData();
@@ -1116,7 +1359,9 @@ export default function MiniActionsAllPage() {
       const status = error.response?.status;
       const message = error.response?.data?.message || error.message;
       toast.error(
-        `${t("deleteErrorDesc")} ${status ? `(Status ${status})` : ""}: ${message}`,
+        `${t("deleteErrorDesc")} ${
+          status ? `(Status ${status})` : ""
+        }: ${message}`,
         {
           description: t("deleteError"),
           duration: 7000,
@@ -1130,9 +1375,13 @@ export default function MiniActionsAllPage() {
   const currentMiniActions = useMemo(() => {
     return miniActions.sort((a, b) => {
       if (filterType === "newest") {
-        return new Date(b.expiryDate).getTime() - new Date(a.expiryDate).getTime();
+        return (
+          new Date(b.expiryDate).getTime() - new Date(a.expiryDate).getTime()
+        );
       } else if (filterType === "oldest") {
-        return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
+        return (
+          new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime()
+        );
       }
       return 0;
     });
@@ -1160,7 +1409,10 @@ export default function MiniActionsAllPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2 relative z-50">
-                <AddMiniActionDialog refreshMiniActions={fetchMiniActionsData} t={t} />
+                <AddMiniActionDialog
+                  refreshMiniActions={fetchMiniActionsData}
+                  t={t}
+                />
                 <div className="relative">
                   {/* <Button
                     variant="outline"
@@ -1177,7 +1429,9 @@ export default function MiniActionsAllPage() {
                         <button
                           key={item.value}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            filterType === item.value ? "bg-gray-200 dark:bg-gray-600" : ""
+                            filterType === item.value
+                              ? "bg-gray-200 dark:bg-gray-600"
+                              : ""
                           }`}
                           onClick={() => {
                             setFilterType(item.value);
