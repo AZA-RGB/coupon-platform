@@ -116,7 +116,13 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
     const fetchCoupons = async () => {
       try {
         const response = await axios.get(
-          "http://164.92.67.78:3002/api/coupons/all"
+          "http://164.92.67.78:3002/api/coupons/all?needToken=true",
+          {
+            headers: {
+              "authorization": `Bearer ${Cookies.get("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         const { data } = response.data;
         if (data && Array.isArray(data)) {
@@ -254,7 +260,13 @@ const AddGiftToPackageDialog = ({ pkg, refreshPackages, t }) => {
     const fetchCoupons = async () => {
       try {
         const response = await axios.get(
-          "http://164.92.67.78:3002/api/coupons/all"
+          "http://164.92.67.78:3002/api/coupons/all?needToken=true",
+          {
+            headers: {
+              "authorization": `Bearer ${Cookies.get("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         const { data } = response.data;
         if (data && Array.isArray(data)) {

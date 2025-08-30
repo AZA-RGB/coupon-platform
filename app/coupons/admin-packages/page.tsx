@@ -626,11 +626,11 @@ function renderTableCellContent(
           >
             {t("viewDetails")}
           </Button>
-          <EditPackageDialog
+          {/* <EditPackageDialog
             pkg={pkg}
             refreshPackages={refreshPackages}
             t={t}
-          />
+          /> */}
           <ReportGenerator
             variant="link"
             object={pkg}
