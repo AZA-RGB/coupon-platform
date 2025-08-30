@@ -73,6 +73,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Cookies from "js-cookie";
+import api from "@/lib/api";
 
 const idUser = Cookies.get("id");
 
@@ -104,7 +105,7 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
       z.object({
         coupon_id: z.string().min(1, { message: "couponRequired" }),
         value: z.string().min(1, { message: "valueRequired" }),
-      })
+      }),
     ),
     defaultValues: {
       coupon_id: "",
@@ -119,10 +120,10 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
           "http://164.92.67.78:3002/api/coupons/all?needToken=true",
           {
             headers: {
-              "authorization": `Bearer ${Cookies.get("token")}`,
+              authorization: `Bearer ${Cookies.get("token")}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         const { data } = response.data;
         if (data && Array.isArray(data)) {
@@ -139,11 +140,12 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
   const onSubmit = async (values) => {
     setIsLoading(true);
     try {
-      await axios.post("http://164.92.67.78:3002/api/coupon_packages/create", {
+      await api.post("/coupon_packages/create", {
         package_id: pkg.id,
         coupon_id: values.coupon_id,
         value: values.value,
       });
+
       toast.success(t("addCouponSuccessDesc"), {
         description: t("addCouponSuccess"),
         duration: 3000,
@@ -160,7 +162,6 @@ const AddCouponToPackageDialog = ({ pkg, refreshPackages, t }) => {
       setIsLoading(false);
     }
   };
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -263,10 +264,10 @@ const AddGiftToPackageDialog = ({ pkg, refreshPackages, t }) => {
           "http://164.92.67.78:3002/api/coupons/all?needToken=true",
           {
             headers: {
-              "authorization": `Bearer ${Cookies.get("token")}`,
+              authorization: `Bearer ${Cookies.get("token")}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         const { data } = response.data;
         if (data && Array.isArray(data)) {
@@ -305,10 +306,7 @@ const AddGiftToPackageDialog = ({ pkg, refreshPackages, t }) => {
           ? { coupon_id: parseInt(selectedGiftCouponId) }
           : { points: parseInt(pointsValue) }),
       };
-      const response = await axios.post(
-        "http://164.92.67.78:3002/api/gift-programs/create",
-        giftData
-      );
+      const response = await api.post("/gift-programs/create", giftData);
       if (response.data.success) {
         toast.success(t("giftSuccess"), {
           description: t("giftSuccessDesc"),
@@ -525,7 +523,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
           ?.value || "",
       max_coupons_number:
         pkg?.package_settings?.find(
-          (s) => s.criteria.name === "MaxCouponsNumber"
+          (s) => s.criteria.name === "MaxCouponsNumber",
         )?.value || "",
       file: null,
     },
@@ -546,7 +544,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
             authorization: `Bearer ${Cookies.get("token")}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       toast.success(t("editSuccessDesc"), {
@@ -565,7 +563,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
             `${t("editErrorDesc")}: ${
               error.response.data.message || t("editError")
             }`,
-            { duration: 7000 }
+            { duration: 7000 },
           );
         } else if (error.request) {
           toast.error(t("networkError"), { duration: 7000 });
@@ -792,7 +790,9 @@ const PackageDetailsModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={`sm:max-w-[700px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${
-          isDarkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"
+          isDarkMode
+            ? "bg-gray-900 border-gray-700"
+            : "bg-white border-gray-200"
         }`}
       >
         <div className="bg-[#00cbc1] h-2 w-full rounded-t-lg"></div>
@@ -981,8 +981,8 @@ const PackageDetailsModal = ({
                           i < Math.floor(pkg.average_rating)
                             ? "text-yellow-400"
                             : isDarkMode
-                            ? "text-gray-600"
-                            : "text-gray-300"
+                              ? "text-gray-600"
+                              : "text-gray-300"
                         }`}
                         viewBox="0 0 24 24"
                         fill="currentColor"
@@ -1036,7 +1036,6 @@ const PackageDetailsModal = ({
   );
 };
 
-
 const PackagesTable = ({
   t,
   packages,
@@ -1064,12 +1063,12 @@ const PackagesTable = ({
       { key: "coupons", label: t("coupons") || "Coupons" },
       { key: "actions", label: t("actions") || "Actions" },
     ],
-    [t]
+    [t],
   );
 
   const displayedData = useMemo(
     () => (isRTL ? [...packages].reverse() : packages),
-    [packages, isRTL]
+    [packages, isRTL],
   );
 
   const formatDate = (date) => {
@@ -1082,7 +1081,7 @@ const PackagesTable = ({
 
   const handleToggleSelectAll = () => {
     const allSelected = packages.every((pkg) =>
-      selectedPackages.includes(pkg.id)
+      selectedPackages.includes(pkg.id),
     );
     setSelectedPackages(allSelected ? [] : packages.map((pkg) => pkg.id));
   };
@@ -1109,7 +1108,7 @@ const PackagesTable = ({
                 selectedPackages.length === packages.length &&
                   packages.length > 0
                   ? "deselectAll"
-                  : "selectAll"
+                  : "selectAll",
               )}
             </Button>
             <AlertDialog>
@@ -1187,7 +1186,7 @@ const PackagesTable = ({
                               handleSelectPackage,
                               setSelectedPackage,
                               refreshPackages,
-                              selectedPackages
+                              selectedPackages,
                             )}
                           </TableCell>
                         ))}
@@ -1252,7 +1251,7 @@ function renderTableCellContent(
   handleSelectPackage,
   setSelectedPackage,
   refreshPackages,
-  selectedPackages
+  selectedPackages,
 ) {
   switch (key) {
     case "select":
@@ -1296,8 +1295,8 @@ function renderTableCellContent(
             pkg.status === "active"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
               : pkg.status === "expired"
-              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
           }`}
         >
           {t(pkg.status)}
@@ -1352,7 +1351,7 @@ export default function PackagesAllPage() {
 
   const handleSelectPackage = (id) => {
     setSelectedPackages((prev) =>
-      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((pkgId) => pkgId !== id) : [...prev, id],
     );
   };
 
@@ -1424,7 +1423,7 @@ export default function PackagesAllPage() {
           {
             description: t("deleteSuccess"),
             duration: 3000,
-          }
+          },
         );
         setSelectedPackages([]);
         setCurrentPage(1);
@@ -1440,7 +1439,7 @@ export default function PackagesAllPage() {
         {
           description: t("deleteError"),
           duration: 7000,
-        }
+        },
       );
     } finally {
       setIsLoading(false);
@@ -1449,11 +1448,11 @@ export default function PackagesAllPage() {
 
   const currentPackages = useMemo(() => {
     let filteredPackages = packages;
-    
+
     // Apply provider filter
     if (providerFilter === "me" && idUser) {
       filteredPackages = packages.filter(
-        (pkg) => pkg.provider_id === parseInt(idUser)
+        (pkg) => pkg.provider_id === parseInt(idUser),
       );
     } else if (providerFilter === "showAll") {
       filteredPackages = packages; // No filtering, show all packages

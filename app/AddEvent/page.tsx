@@ -14,18 +14,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { DatetimePicker } from "@/components/ui/dateTime-picker";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
-import FileUploadDropzone from "@/components/file-uplaod-zone";
 import { useTranslations } from "next-intl";
 import { DateTimePickerV2 } from "@/components/date-time-picker-v2";
 import api from "@/lib/api";
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { Plus, SplinePointer } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const formSchema = z.object({
@@ -34,70 +30,83 @@ const formSchema = z.object({
   from_date: z.coerce.date(),
   to_date: z.coerce.date(),
   coupon_per_provider: z.coerce.number().min(1),
-  images: z.array(z.instanceof(File)).min(1, "min imagwe"),
+  image: z
+    .instanceof(File)
+    .refine((file) => file.size > 0, "Image is required"),
 });
 
 export default function AddEvent({ refreshEvents }) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("addEvent");
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // Consider setting default values for 'from_date' and 'to_date' if desired, e.g.:
-      // from_date: new Date(),
-      // to_date: new Date(),
+      title: "",
+      description: "",
+      coupon_per_provider: 1,
+      image: new File([], ""), // Empty file as initial value
     },
   });
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      form.setValue("image", files[0], { shouldValidate: true });
+    }
+  };
+
+  const removeFile = () => {
+    form.setValue("image", new File([], ""), { shouldValidate: true });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true); // Set loading to true on submission start
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
-      // Convert Date objects to ISO strings for consistent API handling
       formData.append("from_date", values.from_date.toISOString());
       formData.append("to_date", values.to_date.toISOString());
-      // Convert number to string for FormData
       formData.append(
         "coupon_per_provider",
         values.coupon_per_provider.toString(),
       );
 
-      // Append each image file
-      values.images.forEach((file) => {
-        formData.append("images", file); // Use "images" as field name for array of files
-      });
+      // Append the single image file
+      if (values.image && values.image.size > 0) {
+        formData.append("file", values.image);
+      }
 
-      // Make the API call
       const response = await api.post("/seasonal-events/create", formData, {
         headers: {
-          "Content-Type": "multipart/form-data", // Important for FormData
+          "Content-Type": "multipart/form-data",
         },
       });
+
       refreshEvents();
       console.log("API Response:", response.data);
       toast.success(response.data.message || t("submissionSuccess"));
       setIsOpen(false);
       form.reset();
-    } catch (error: any) {
-      console.error("Form submission error", error);
-      // Use error message from API response, or a fallback
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error(t("validation.formError"));
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
+    } catch (error: any) {
+      console.error("Form submission error:", error);
+      toast.error(error.response?.data?.message || t("validation.formError"));
     } finally {
-      setIsLoading(false); // Set loading to false when submission finishes
+      setIsLoading(false);
     }
   }
+
+  const selectedImage = form.watch("image");
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -107,147 +116,168 @@ export default function AddEvent({ refreshEvents }) {
           {t("newEvent")}
         </Button>
       </DialogTrigger>
-      <DialogContent className=" max-h-svh overflow-auto">
+      <DialogContent className="max-h-svh overflow-auto">
         <title>Add Event</title>
-        <div className="">
+        <div>
           <div className="text-bold text-3xl text-primary mb-3">
             {t("AddEvent")}
           </div>
-          <div className="block">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-10  w-full  "
-              >
-                <FormField
-                  control={form.control}
-                  name="images"
-                  render={({ field }) => (
-                    <FormItem>
-                      {/* <FormLabel>{t("eventCoverImages")}</FormLabel> */}
-                      <FormControl>
-                        <FileUploadDropzone field={field} maxFiles={1} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("eventTitle")}</FormLabel>
-                      <FormControl>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-10 w-full"
+            >
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("eventCoverImage")}</FormLabel>
+                    <FormControl>
+                      <div className="space-y-4">
                         <Input
-                          placeholder={t("eventTitlePlaceholder")}
-                          type="text"
-                          {...field}
-                          disabled={isLoading} // Disable input while loading
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          disabled={isLoading}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("eventDescription")}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder=""
-                          {...field}
-                          disabled={isLoading} // Disable textarea while loading
-                        />
-                      </FormControl>
-                      <FormDescription>{t("addDescription")}</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="from_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>{t("startDate")}</FormLabel>
-                      <DateTimePickerV2
-                        description="Expiration Date"
-                        label="expiration date"
-                        field={field}
-                        disabled={isLoading} // Disable date picker while loading
+                        {selectedImage && selectedImage.size > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-sm text-muted-foreground">
+                              Selected image:
+                            </p>
+                            <div className="flex items-center justify-between p-2 border rounded-md">
+                              <span className="text-sm truncate">
+                                {selectedImage.name}
+                              </span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={removeFile}
+                                disabled={isLoading}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("eventTitle")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("eventTitlePlaceholder")}
+                        type="text"
+                        {...field}
+                        disabled={isLoading}
                       />
-                      <FormDescription></FormDescription>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="to_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>{t("expirationDate")}</FormLabel>
-                      <DateTimePickerV2
-                        description="Expiration Date"
-                        label="expiration date"
-                        field={field}
-                        disabled={isLoading} // Disable date picker while loading
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("eventDescription")}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder=""
+                        {...field}
+                        disabled={isLoading}
                       />
-                      <FormDescription></FormDescription>
-                    </FormItem>
+                    </FormControl>
+                    <FormDescription>{t("addDescription")}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="from_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>{t("startDate")}</FormLabel>
+                    <DateTimePickerV2
+                      description="Start Date"
+                      label="start date"
+                      field={field}
+                      disabled={isLoading}
+                    />
+                    <FormDescription />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="to_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>{t("expirationDate")}</FormLabel>
+                    <DateTimePickerV2
+                      description="Expiration Date"
+                      label="expiration date"
+                      field={field}
+                      disabled={isLoading}
+                    />
+                    <FormDescription />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="coupon_per_provider"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("maxPerProvider")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("maxPerProviderPlaceholder")}
+                        type="number"
+                        {...field}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? "" : Number(value));
+                        }}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t("maxPerProviderDescription")}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex flex-1 place-content-around">
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? (
+                    <Spinner className="animate-spin text-foreground" />
+                  ) : (
+                    t("submit")
                   )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="coupon_per_provider"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("maxPerProvider")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t("maxPerProviderPlaceholder")}
-                          type="number"
-                          {...field}
-                          onChange={(e) => {
-                            // Ensure the value is a number or empty string
-                            const value = e.target.value;
-                            field.onChange(value === "" ? "" : Number(value));
-                          }}
-                          disabled={isLoading} // Disable input while loading
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t("maxPerProviderDescription")}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex flex-1 place-content-around">
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? (
-                      <Spinner className="animate-spin text-foreground" />
-                    ) : (
-                      t("submit")
-                    )}
+                </Button>
+                <Link href="/dashboard">
+                  <Button variant="outline" disabled={isLoading}>
+                    {t("cancel")}
                   </Button>
-                  <Link href="/dashboard">
-                    <Button variant="outline" disabled={isLoading}>
-                      {t("cancel")}
-                    </Button>{" "}
-                  </Link>
-                </div>
-              </form>
-            </Form>
-          </div>
-          {/* </Card> */}
+                </Link>
+              </div>
+            </form>
+          </Form>
         </div>
       </DialogContent>
     </Dialog>

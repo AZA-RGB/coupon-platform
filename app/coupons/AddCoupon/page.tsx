@@ -49,7 +49,6 @@ const formSchema = z
     date: z.coerce.date(),
     price: z.coerce.number().min(1),
     amount: z.coerce.number().min(1),
-    pointsToBuy: z.coerce.number().min(0),
     images: z.array(z.instanceof(File)).min(1),
     Type: z.string().min(1, "You must select type before adding new coupon"),
   })
@@ -65,7 +64,6 @@ export default function AddCoupon() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date(),
-      pointsToBuy: 0,
       Type: typeId, // Set initial Type value from typeId
     },
   });
@@ -73,12 +71,12 @@ export default function AddCoupon() {
   const { data, isLoading, error } = useSWR("/coupon-types/index?page=1");
   const { isMutating: mutatingTypes, trigger: mutateTypes } = useSWRMutation(
     "/coupon-types/index?page=1",
-    fetcher
+    fetcher,
   );
   const { data: criteriadata, isLoading: LoadingCriteria } = useSWR(
     form.watch("Type")
       ? `/criterias/for-add-Coupon/list/${form.watch("Type")}`
-      : null
+      : null,
   );
   const handleTypeChange = (value: string) => {
     form.setValue("Type", value);
@@ -89,7 +87,6 @@ export default function AddCoupon() {
       "description",
       "date",
       "price",
-      "pointsToBuy",
       "amount",
       "images",
       "Type",
@@ -114,7 +111,6 @@ export default function AddCoupon() {
       name,
       description,
       price,
-      pointsToBuy,
       amount,
       images,
       ...rest
@@ -146,9 +142,7 @@ export default function AddCoupon() {
 
     try {
       const formData = new FormData();
-      formData.append("pointsToBuy", pointsToBuy);
       formData.append("amount", amount);
-      console.log("pointsToBuy", pointsToBuy);
 
       formData.append("date", date.toISOString());
 
@@ -182,7 +176,7 @@ export default function AddCoupon() {
         toast.error(
           error.response?.data?.message ||
             error.message ||
-            t("validation.formError")
+            t("validation.formError"),
         );
       }
     }
@@ -243,7 +237,7 @@ export default function AddCoupon() {
                                     >
                                       {type.name}
                                     </SelectItem>
-                                  )
+                                  ),
                                 )}
                               </SelectContent>
                             </Select>
@@ -363,19 +357,6 @@ export default function AddCoupon() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>amount</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="0" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="pointsToBuy"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Points to buy</FormLabel>
                         <FormControl>
                           <Input type="number" min="0" {...field} />
                         </FormControl>
