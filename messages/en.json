@@ -708,7 +708,12 @@
     "endDate": "End Date",
     "startDate": "Start Date",
     "id": "Id",
-    "noCouponsFound": "No coupons found"
+    "noCouponsFound": "No coupons found",
+    "edit":"Edit",
+    "noPackageSelected": "No package selected",
+    "packageDetailsDesc": "Package details",
+    "packageDetails": "Package details",
+    "couponDescription": "Coupon Description"
   },
   "Categories": {
     "title": "All Categories",
@@ -1079,7 +1084,7 @@
     "yes": "Yes",
     "no": "No",
     "expiryDate": "Expiry Date",
-    "expectedTime": "Expected Time (minutes)",
+    "expectedTime": "Expected Time (seconds)",
     "expectedTimePlaceholder": "Enter expected time",
     "content": "Content",
     "contentPlaceholder": "Enter content",
@@ -1164,7 +1169,7 @@
     "pending": "Pending",
     "success": "Success",
     "rejected": "Rejected",
-    "seconds": "minutes",
+    "seconds": "seconds",
     "files": "Files",
     "video": "Video",
     "action": "Action",

@@ -579,12 +579,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="link"
-          className="text-primary underline hover:text-primary/80 p-0 h-auto"
-        >
-          {t("editPackage")}
-        </Button>
+        <Button variant="outline">{t("edit")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-h-[80vh] flex flex-col">
         <DialogHeader>
@@ -614,10 +609,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormItem>
                     <FormLabel>{t("description")}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder={t("descriptionPlaceholder")}
-                        {...field}
-                      />
+                      <Input placeholder={t("descriptionPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -656,12 +648,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormItem>
                     <FormLabel>{t("maxProviders")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder={t("maxProvidersPlaceholder")}
-                        {...field}
-                      />
+                      <Input type="number" placeholder={t("maxProvidersPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -674,12 +661,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormItem>
                     <FormLabel>{t("maxPrice")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder={t("maxPricePlaceholder")}
-                        {...field}
-                      />
+                      <Input type="number" placeholder={t("maxPricePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -692,12 +674,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormItem>
                     <FormLabel>{t("maxAmount")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder={t("maxAmountPlaceholder")}
-                        {...field}
-                      />
+                      <Input type="number" placeholder={t("maxAmountPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -710,12 +687,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                   <FormItem>
                     <FormLabel>{t("maxCouponsNumber")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder={t("maxCouponsNumberPlaceholder")}
-                        {...field}
-                      />
+                      <Input type="number" placeholder={t("maxCouponsNumberPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -730,10 +702,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                     <FormControl>
                       <Input
                         type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          field.onChange(e.target.files?.[0] || null)
-                        }
+                        onChange={(e) => field.onChange(e.target.files?.[0] || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -744,16 +713,7 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
                 <DialogTrigger asChild>
                   <Button variant="outline">{t("cancel")}</Button>
                 </DialogTrigger>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("submitting")}
-                    </>
-                  ) : (
-                    t("updatePackage")
-                  )}
-                </Button>
+                <Button type="submit">{t("submit")}</Button>
               </div>
             </form>
           </Form>
@@ -763,273 +723,139 @@ const EditPackageDialog = ({ pkg, refreshPackages, t }) => {
   );
 };
 
-const PackageDetailsModal = ({
-  pkg,
-  t,
-  open,
-  onOpenChange,
-  refreshPackages,
-}) => {
-  if (!pkg) return null;
-
+const PackageDetailsModal = ({ pkg, t, open, onOpenChange, refreshPackages }) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDarkMode(mediaQuery.matches);
-
-    const handler = (e) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener("change", handler);
-
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={`sm:max-w-[700px] max-h-[85vh] flex flex-col overflow-y-auto p-0 rounded-lg ${
-          isDarkMode
-            ? "bg-gray-900 border-gray-700"
-            : "bg-white border-gray-200"
-        }`}
-      >
-        <div className="bg-[#00cbc1] h-2 w-full rounded-t-lg"></div>
-
-        <DialogHeader className="px-6 pt-4 pb-2">
-          <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden shadow-md">
-            <MyImage
-              src={pkg.image}
-              alt={pkg.title}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <DialogTitle
-            className={`text-2xl font-bold mt-4 ${
-              isDarkMode ? "text-white" : "text-gray-800"
-            }`}
-          >
-            {pkg.title}
-          </DialogTitle>
-          <DialogDescription
-            className={`mt-2 text-base ${
-              isDarkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            {pkg.description}
-          </DialogDescription>
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>{t("packageDetails")}</DialogTitle>
+          <DialogDescription>{t("packageDetailsDesc")}</DialogDescription>
         </DialogHeader>
-
-        <div className="flex-1 px-6 py-4">
-          <div className="grid gap-6">
-            {/* ID & Provider */}
-            <div className="grid grid-cols-2 gap-4">
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("id")}
-                </h4>
-                <p
-                  className={`text-sm font-semibold mt-1 ${
-                    isDarkMode ? "text-gray-200" : "text-gray-800"
-                  }`}
-                >
-                  {pkg.id}
-                </p>
-              </div>
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("provider")}
-                </h4>
-                <p
-                  className={`text-sm font-semibold mt-1 ${
-                    isDarkMode ? "text-gray-200" : "text-gray-800"
-                  }`}
-                >
-                  {pkg.provider}
-                </p>
-              </div>
-            </div>
-
-            {/* Status & Start Date */}
-            <div className="grid grid-cols-2 gap-4">
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("status")}
-                </h4>
-                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00cbc1] bg-opacity-15 text-[#00857e] mt-1 capitalize">
-                  {t(pkg.status)}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {pkg ? (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold">{t("title")}</h3>
+                  <p>{pkg.title}</p>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">{t("provider")}</h3>
+                  <p>{pkg.provider}</p>
                 </div>
               </div>
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("startDate")}
-                </h4>
-                <p
-                  className={`text-sm font-semibold mt-1 ${
-                    isDarkMode ? "text-gray-200" : "text-gray-800"
-                  }`}
-                >
-                  {new Date(pkg.fromDate).toLocaleDateString()}
-                </p>
+              <div>
+                <h3 className="font-semibold">{t("description")}</h3>
+                <p>{pkg.description}</p>
               </div>
-            </div>
-
-            {/* End Date & Amount */}
-            <div className="grid grid-cols-2 gap-4">
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("endDate")}
-                </h4>
-                <p
-                  className={`text-sm font-semibold mt-1 ${
-                    isDarkMode ? "text-gray-200" : "text-gray-800"
-                  }`}
-                >
-                  {new Date(pkg.toDate).toLocaleDateString()}
-                </p>
-              </div>
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("amount")}
-                </h4>
-                <p
-                  className={`text-sm font-semibold mt-1 ${
-                    isDarkMode ? "text-gray-200" : "text-gray-800"
-                  }`}
-                >
-                  {pkg.amount}
-                </p>
-              </div>
-            </div>
-
-            {/* Average Rating & Total Price */}
-            <div className="grid grid-cols-2 gap-4">
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("averageRating")}
-                </h4>
-                <div className="flex items-center mt-1">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold">{t("dateRange")}</h3>
+                  <p>
+                    {formatDate(pkg.fromDate)} - {formatDate(pkg.toDate)}
+                  </p>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">{t("status")}</h3>
                   <span
-                    className={`text-sm font-semibold mr-2 ${
-                      isDarkMode ? "text-gray-200" : "text-gray-800"
+                    className={`px-2 py-0.5 rounded-full text-xs ${
+                      pkg.status === "active"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        : pkg.status === "expired"
+                        ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                     }`}
                   >
-                    {pkg.average_rating}
+                    {t(pkg.status)}
                   </span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < Math.floor(pkg.average_rating)
-                            ? "text-yellow-400"
-                            : isDarkMode
-                              ? "text-gray-600"
-                              : "text-gray-300"
-                        }`}
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                    ))}
-                  </div>
                 </div>
               </div>
-              <div
-                className={`p-3 rounded-lg ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-medium ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {t("totalPrice")}
-                </h4>
-                <p className="text-lg font-bold text-[#00cbc1] mt-1">
-                  {pkg.total_price}
-                </p>
+              <div>
+                <h3 className="font-semibold">{t("totalPrice")}</h3>
+                <p>{pkg.total_price}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">{t("coupons")}</h3>
+                {pkg.coupons && pkg.coupons.length > 0 ? (
+                  <div className="mt-2 overflow-x-auto">
+                    <Table dir={isRTL ? "rtl" : "ltr"}>
+                      <TableHeader className="bg-gray-100 dark:bg-gray-800">
+                        <TableRow>
+                          <TableHead className={`font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                            {t("couponName")}
+                          </TableHead>
+                          <TableHead className={`font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                            {t("couponDescription")}
+                          </TableHead>
+                          <TableHead className={`font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                            {t("couponCode")}
+                          </TableHead>
+                          <TableHead className={`font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                            {t("price")}
+                          </TableHead>
+                          <TableHead className={`font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                            {t("status")}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pkg.coupons.map((coupon) => (
+                          <TableRow key={coupon.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <TableCell className={`${isRTL ? "text-right" : "text-left"}`}>
+                              {coupon.name}
+                            </TableCell>
+                            <TableCell className={`${isRTL ? "text-right" : "text-left"}`}>
+                              {coupon.description.length > 50
+                                ? coupon.description.slice(0, 50) + "..."
+                                : coupon.description}
+                            </TableCell>
+                            <TableCell className={`${isRTL ? "text-right" : "text-left"}`}>
+                              {coupon.coupon_code}
+                            </TableCell>
+                            <TableCell className={`${isRTL ? "text-right" : "text-left"}`}>
+                              {coupon.price}
+                            </TableCell>
+                            <TableCell className={`${isRTL ? "text-right" : "text-left"}`}>
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-xs ${
+                                  coupon.coupon_status === 0
+                                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                    : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                                }`}
+                              >
+                                {t(coupon.coupon_status === 0 ? "active" : "expired")}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">{t("noCouponsFound")}</p>
+                )}
+              </div>
+              <div className="flex gap-2">
+           
+                    <AddCouponToPackageDialog pkg={pkg} refreshPackages={refreshPackages} t={t} />
+                    <AddGiftToPackageDialog pkg={pkg} refreshPackages={refreshPackages} t={t} />
+                  
+           
               </div>
             </div>
-
-            {/* Coupons Section */}
-            {/* (Remaining sections are unchanged) */}
-            {/* ... keep the rest of the original code as is ... */}
-
-            <div className="flex justify-start gap-2">
-              <AddCouponToPackageDialog
-                pkg={pkg}
-                refreshPackages={refreshPackages}
-                t={t}
-              />
-              {pkg.provider_id === parseInt(idUser) && (
-                <AddGiftToPackageDialog
-                  pkg={pkg}
-                  refreshPackages={refreshPackages}
-                  t={t}
-                />
-              )}
-            </div>
-          </div>
+          ) : (
+            <p className="text-muted-foreground">{t("noPackageSelected")}</p>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -1295,8 +1121,8 @@ function renderTableCellContent(
             pkg.status === "active"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
               : pkg.status === "expired"
-                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
           }`}
         >
           {t(pkg.status)}

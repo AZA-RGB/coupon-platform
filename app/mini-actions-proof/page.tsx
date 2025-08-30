@@ -135,7 +135,8 @@ const MiniActionProofDetailsModal = ({
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("time")}</h4>
-              <p className="text-sm text-muted-foreground">{miniActionProof.time != null ? '${proof.time} ${t("seconds")}' : '---'}</p>
+              
+              <p className="text-sm text-muted-foreground">{miniActionProof.time != null ? `${miniActionProof.time} ${t("seconds")}` : '---'}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -379,7 +380,8 @@ function renderTableCellContent(
     case "gained_points":
       return <span>{proof.gained_points}</span>;
     case "time":
-      return <span>{proof.time != null ? '${proof.time} ${t("seconds")}' : '---'}</span>;
+      return <span>{proof.time != null ? `${proof.time} ${t("seconds")}` : '---'}</span>;
+
 
     case "actions":
       return (
