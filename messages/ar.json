@@ -1,5 +1,7 @@
 {
   "Auth": {
+    "providerNotVerifiedDesc": "لم يتم التحقق من هذا المزود حتى الان",
+    "providerNotVerified": "المزود لم يتم التحقق منه",
     "login": "تسجيل الدخول",
     "register": "التسجيل",
     "loginDescription": "سجل الدخول الآن كمزود لنشر خدماتك",

@@ -1,5 +1,7 @@
 {
   "Auth": {
+    "providerNotVerifiedDesc": "This provider has not been verified yet",
+    "providerNotVerified": "Provider not verified",
     "login": "Login",
     "register": "Register",
     "loginDescription": "Login now as a provider to publish your services",

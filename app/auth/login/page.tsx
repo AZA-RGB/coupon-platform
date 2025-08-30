@@ -1,4 +1,3 @@
-// pages/auth/login.tsx
 "use client";
 import Cookies from "js-cookie";
 import jwt from "jsonwebtoken";
@@ -58,10 +57,8 @@ export default function LoginPage() {
 
       console.log("API Response:", response.data);
 
-      // // Extract tokens and role from response
+      // Extract tokens and role from response
       const role = response.data.role || null;
-      // const role = "admin";
-
       const { access_token, refresh_token } = response.data.data || {};
 
       if (!access_token || !refresh_token || !role) {
@@ -71,24 +68,66 @@ export default function LoginPage() {
       console.log("Tokens:", access_token, refresh_token);
       console.log("Role:", role);
 
-      // // Save tokens and role to localStorage
+      // Save tokens and role to Cookies
       Cookies.set("token", access_token);
       Cookies.set("refreshToken", refresh_token);
       Cookies.set("userRole", role);
 
-      // setInterval(refreshToken, 5000);
-      toast.success(t("loginSuccess"), {
-        description: t("loginSuccessDesc"),
-        duration: 3000,
-      });
+      // Check provider verification status if role is provider
+      if (role === "provider") {
+        try {
+          const providerResponse = await axios.get("http://164.92.67.78:3002/api/providers/show-me", {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
 
-      // Redirect based on role
-      if (role === "admin") {
-        router.push("/admin-dashboard");
-      } else if (role === "provider") {
-        router.push("/provider-dashboard");
+          console.log("Provider Response:", providerResponse.data);
+          const providerStatus = providerResponse.data.data.status;
+
+          if (providerStatus === 1) {
+            // Verified provider
+            toast.success(t("loginSuccess"), {
+              description: t("loginSuccessDesc"),
+              duration: 3000,
+            });
+            router.push("/provider-dashboard");
+          } else {
+            // Unverified provider
+            toast.warning(t("providerNotVerified"), {
+              description: t("providerNotVerifiedDesc"),
+              duration: 5000,
+            });
+            // router.push("/auth/register");
+          }
+        } catch (providerError: any) {
+          console.error("Provider verification error:", providerError.response?.data || providerError.message);
+          let message = t("unknownError");
+          if (providerError.code === "ERR_NETWORK") {
+            message = t("networkError");
+          } else if (providerError.response?.data?.message) {
+            message = providerError.response.data.message;
+          } else if (providerError.message) {
+            message = providerError.message;
+          }
+          toast.error(t("providerVerificationError"), {
+            description: `${t("providerVerificationErrorDesc")}: ${message}`,
+            duration: 5000,
+          });
+          router.push("/auth/login");
+        }
       } else {
-        router.push("/auth/login"); // User or Guest
+        // Handle non-provider roles
+        toast.success(t("loginSuccess"), {
+          description: t("loginSuccessDesc"),
+          duration: 3000,
+        });
+
+        if (role === "admin") {
+          router.push("/admin-dashboard");
+        } else {
+          router.push("/auth/login"); // User or Guest
+        }
       }
     } catch (error: any) {
       console.error("Login error:", error.response?.data || error.message);
