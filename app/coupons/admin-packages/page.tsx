@@ -795,7 +795,7 @@ export default function PackagesAllPage() {
                 <CardDescription>{t("description")}</CardDescription>
               </div>
               <div className="flex space-x-2 relative z-50">
-                <AddPackageDialog refreshPackages={fetchPackagesData} />
+                {/* <AddPackageDialog refreshPackages={fetchPackagesData} /> */}
                 <div className="relative">
                   <Button
                     variant="outline"
