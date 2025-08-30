@@ -119,11 +119,12 @@ const MiniActionProofDetailsModal = ({
             <div>
               <h4 className="text-sm font-medium">{t("customer")}</h4>
               <p className="text-sm text-muted-foreground">
-                {miniActionProof.customer?.bank_id ?? t("unknownCustomer")}
+                {miniActionProof.customer?.email ?? t("unknownCustomer")}
               </p>
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("status")}</h4>
+              
               <p className="text-sm text-muted-foreground capitalize">{t(miniActionProof.status)}</p>
             </div>
           </div>
@@ -134,7 +135,7 @@ const MiniActionProofDetailsModal = ({
             </div>
             <div>
               <h4 className="text-sm font-medium">{t("time")}</h4>
-              <p className="text-sm text-muted-foreground">{miniActionProof.time} {t("seconds")}</p>
+              <p className="text-sm text-muted-foreground">{miniActionProof.time != null ? '${proof.time} ${t("seconds")}' : '---'}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -372,13 +373,14 @@ function renderTableCellContent(
         </span>
       );
     case "customer":
-      return <span>{proof.customer?.bank_id || 'Unknown Customer'}</span>;
+      return <span>{proof.customer?.email || 'Unknown Customer'}</span>;
     case "status":
       return <span className="capitalize">{t(proof.status)}</span>;
     case "gained_points":
       return <span>{proof.gained_points}</span>;
     case "time":
-      return <span>{proof.time} {t("seconds")}</span>;
+      return <span>{proof.time != null ? '${proof.time} ${t("seconds")}' : '---'}</span>;
+
     case "actions":
       return (
         <div className="flex gap-2">
@@ -513,7 +515,7 @@ export default function MiniActionProofsAllPage() {
               </div>
               <div className="flex space-x-2 relative z-50">
                 <div className="relative">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     className="text-muted-foreground"
@@ -521,7 +523,7 @@ export default function MiniActionProofsAllPage() {
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("filter")}
-                  </Button>
+                  </Button> */}
                   {isFilterMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 border rounded shadow-lg z-50">
                       {filterOptions.map((item) => (
@@ -542,7 +544,7 @@ export default function MiniActionProofsAllPage() {
                     </div>
                   )}
                 </div>
-                <div className="relative">
+                {/* <div className="relative">
                   <Input
                     type="text"
                     placeholder={t("search")}
@@ -552,7 +554,7 @@ export default function MiniActionProofsAllPage() {
                     onKeyPress={handleSearchKeyPress}
                   />
                   <Search className="absolute right-2 top-2 h-4 w-4 text-muted-foreground" />
-                </div>
+                </div> */}
               </div>
             </CardHeader>
           </Card>
