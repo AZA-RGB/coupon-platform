@@ -11,7 +11,7 @@ interface AnalyticsData {
 
 export default function ProviderGeneralCards() {
   const { data, error, isLoading } = useSWR<AnalyticsData>(
-    "/users/general-analytics",
+    "/providers/general-analytics",
   );
 
   if (error) return <div>Failed to load analytics</div>;
