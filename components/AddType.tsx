@@ -42,10 +42,7 @@ import {
 const formSchema = z.object({
   type_name: z.string().min(1, "اسم النوع مطلوب"),
   type_description: z.string(),
-  criteria_list: z
-    .array(z.string())
-    .nonempty("الرجاء اختيار عنصر واحد على الأقل")
-    .optional(),
+  criteria_list: z.array(z.string()).optional(),
   image: z.any().optional(),
 });
 
