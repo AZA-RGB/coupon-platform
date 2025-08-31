@@ -1,9 +1,11 @@
 
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
 const DEFAULT_IMAGE =
   "https://cdn.pixabay.com/photo/2017/06/10/06/39/calender-2389150_1280.png";
+
 
 export const fetchSeasonalEvents = async (page = 1, perPage = 10) => {
   try {
@@ -69,7 +71,13 @@ export const fetchSeasonalEvents = async (page = 1, perPage = 10) => {
 export const fetchCoupons = async () => {
   try {
     const response = await axios.get(
-      `http://164.92.67.78:3002/api/coupons/index`
+      `http://164.92.67.78:3002/api/coupons/index?needToken=true`,
+      {
+          headers: {
+            "authorization": `Bearer ${Cookies.get("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
     );
     const { data } = response.data;
 
@@ -94,7 +102,12 @@ export const fetchCoupons = async () => {
 export const fetchPackages = async () => {
   try {
     const response = await axios.get(
-      `http://164.92.67.78:3002/api/packages/index`
+      `http://164.92.67.78:3002/api/packages/index?needToken=true`,{
+          headers: {
+            "authorization": `Bearer ${Cookies.get("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
     );
     const { data } = response.data;
 
@@ -122,8 +135,11 @@ export const addItemToEvent = async (eventId, itemData) => {
       `http://164.92.67.78:3002/api/seasonal-event-coupons/create`,
       itemData,
       {
-        headers: { "Content-Type": "application/json" },
-      }
+          headers: {
+            "authorization": `Bearer ${Cookies.get("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
     );
     console.log(`Add item response for event ${eventId}:`, response);
     return { success: true, response };
