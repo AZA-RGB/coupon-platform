@@ -47,6 +47,7 @@ const ReportGenerator = ({ object, object_type, variant }) => {
                 object_name: object.name || object.title,
                 date_filter_start: formatDate(dateRange?.from),
                 date_filter_end: formatDate(dateRange?.to),
+                image: object.image,
               },
             }}
           >

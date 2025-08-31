@@ -1,4 +1,13 @@
 {
+  "common": {
+    "GeneralStatisticsCards": {
+      "TotalPurchases": "إجمالي المشتريات",
+      "NewCustomers": "العملاء الجدد",
+      "RegistrationRequests": "طلبات التسجيل",
+      "TotalRevenue": "إجمالي الإيرادات",
+      "TotalCustomers": "إجمالي العملاء"
+    }
+  },
   "Auth": {
     "providerNotVerifiedDesc": "لم يتم التحقق من هذا المزود حتى الان",
     "providerNotVerified": "المزود لم يتم التحقق منه",
@@ -277,7 +286,7 @@
     "close": "إغلاق"
   },
   "Coupons": {
-    "edit":"تعديل",
+    "edit": "تعديل",
     "noCouponFound": "لم يتم العثور على قسيمة بالمعرف المقدم.",
     "error": "خطأ",
     "backToCoupons": "العودة إلى القسائم",
@@ -597,7 +606,7 @@
   "pickDate": "اختر تاريخ",
   "Topcustomers": "أفضل الزبائن",
   "Packages": {
-    "me":"لي",
+    "me": "لي",
     "showAll": "اظهار الكل",
     "close": "اغلاق",
     "title": "الباقات",
@@ -996,8 +1005,12 @@
       "billId": "رقم الفاتورة",
       "coupon": "كوبون",
       "date": "التاريخ",
-      "customers": "العملاء"
-    }
+      "customers": "العملاء",
+      "provider": "المزود"
+    },
+    "previous": "السابق",
+    "next": "التالي",
+    "page": "الصفحة"
   },
   "Purchases": {
     "title": "جميع المشتريات",

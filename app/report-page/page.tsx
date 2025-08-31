@@ -42,6 +42,8 @@ const ReportPage = () => {
   const object_id = searchParams.get("object_id");
   const date_filter_start = searchParams.get("date_filter_start");
   const date_filter_end = searchParams.get("date_filter_end");
+  const image = searchParams.get("image");
+
   const reportURL = `/${object_type}/${object_id}/report?date[]=${date_filter_start}&date[]=${date_filter_end}`;
   const { data: reportData, isLoading, error } = useSWR(reportURL);
   if (reportData) {
@@ -49,7 +51,7 @@ const ReportPage = () => {
   }
   return (
     <div className="px-6 mb-6 gap-4">
-      <ProfileHeader name={object_name} />
+      <ProfileHeader name={object_name} image={image} />
       <SalesReportCard
         object_type={object_type}
         object_id={object_id}
