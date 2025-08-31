@@ -11,6 +11,7 @@ export const SummaryCards = ({ t }) => {
 
   useEffect(() => {
     const loadStats = async () => {
+
       const statsData = await fetchCouponStats();
       setStats(statsData);
     };

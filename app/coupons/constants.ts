@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from "js-cookie";
 
 const DEFAULT_IMAGE = "https://cdn.pixabay.com/photo/2022/04/22/01/04/ticket-7148607_1280.png";
 const CDN_BASE_URL = "https://ecoupon-files.sfo3.cdn.digitaloceanspaces.com";
@@ -87,7 +88,12 @@ export const fetchCouponDetails = async (id: number) => {
 };
 export const fetchCouponStats = async () => {
   try {
-    const response = await axios.get('http://164.92.67.78:3002/api/coupons/coupons-general-statistics');
+    const response = await axios.get('http://164.92.67.78:3002/api/coupons/coupons-general-statistics',{
+      headers: {
+        "authorization": `Bearer ${Cookies.get("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
     const { data } = response.data;
     return {
       activeCoupons: data.active_coupons,

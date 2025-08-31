@@ -59,6 +59,7 @@ export const fetchCoupons = async (page = 1, search = "", status = "") => {
 
 export const fetchCouponStats = async () => {
   try {
+
     const response = await api.get("/coupons/coupons-general-statistics",{
       headers: {
         "authorization": `Bearer ${Cookies.get("token")}`,
@@ -76,6 +77,9 @@ export const fetchCouponStats = async () => {
     return { activeCoupons: 0, monthlyReturn: "0.00", totalCoupons: 0 };
   }
 };
+
+
+
 
 export const deleteCoupon = async (id) => {
   try {
