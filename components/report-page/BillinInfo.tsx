@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/table";
 import { useTranslations, useFormatter, useLocale } from "next-intl";
 import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher"; // Assuming you have a pre-configured fetcher
+import { fetcher } from "@/lib/fetcher";
 import { Spinner } from "../ui/spinner";
+import { useState } from "react";
 
 interface BillingInfoProps {
   object_type: string;
@@ -46,6 +47,10 @@ interface Purchase {
 interface ApiResponse {
   data: {
     data: Purchase[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
   };
 }
 
@@ -60,7 +65,7 @@ const formatDate = (dateString) => {
 
     return `${hours}:${minutes}    ${year}/${month}/${day}`;
   } catch (error) {
-    return dateString; // fallback to original string if parsing fails
+    return dateString;
   }
 };
 
@@ -74,21 +79,28 @@ export default function BillingInfo({
   const format = useFormatter();
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const [page, setPage] = useState(1);
 
-  // Build the API URL based on props
-  const apiUrl = `/purchases/index?${object_type.slice(0, -1)}_id=${object_id}&date=${from},${to}`;
-  console.log(apiUrl);
-  const { data, error, isLoading } = useSWR<ApiResponse>(apiUrl);
-  // if (data) console.log(data);
+  const apiUrl = `/purchases/index?${object_type.slice(0, -1)}_id=${object_id}&date=${from},${to}&page=${page}`;
+  const { data, error, isLoading } = useSWR<ApiResponse>(apiUrl, fetcher);
+
+  const handlePrevious = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    if (data?.data.current_page < data?.data.last_page) setPage(page + 1);
+  };
+
   return (
     <Card
       className={`md:col-span-2 col-span-1 grid grid-rows-6 gap-1 px-3 pt-0 h-[62vh] ${isRTL ? "text-right" : "text-left"}`}
     >
       <div className="row-span-1 flex flex-row place-content-between items-center">
-        <div className="text-3xl ">{t("title")}</div>
+        <div className="text-3xl">{t("title")}</div>
       </div>
-      <div className="row-span-5 overflow-auto rounded-2xl">
-        {isLoading && <Spinner className="amimate-spin" />}
+      <div className="row-span-4 overflow-scroll rounded-2xl">
+        {isLoading && <Spinner className="animate-spin" />}
         {error && (
           <span className="text-destructive">couldn't load purchases</span>
         )}
@@ -100,7 +112,7 @@ export default function BillingInfo({
                   {t("tableHeaders.billId")}
                 </TableHead>
                 <TableHead className="rtl:text-right text-muted-foreground">
-                  {t("tableHeaders.coupon")}
+                  Item
                 </TableHead>
                 <TableHead className="rtl:text-right text-muted-foreground">
                   {t("tableHeaders.date")}
@@ -109,7 +121,7 @@ export default function BillingInfo({
                   {t("tableHeaders.customers")}
                 </TableHead>
                 <TableHead className="rtl:text-right text-muted-foreground">
-                  provider
+                  {t("tableHeaders.provider")}
                 </TableHead>
                 <TableHead className="rtl:text-right text-muted-foreground">
                   {t("price")}
@@ -122,9 +134,11 @@ export default function BillingInfo({
                   <TableCell className="font-medium">#{purchase.id}</TableCell>
                   <TableCell>
                     {purchase.purchaseCoupons?.[0]?.coupon?.name ||
+                      purchase.purchasedItems?.[0]?.title ||
                       purchase.purchasedItems?.[0]?.name ||
                       t("noCoupon")}
                   </TableCell>
+
                   <TableCell>{formatDate(purchase.date)}</TableCell>
                   <TableCell>
                     <div>{purchase.customer.name}</div>
@@ -143,6 +157,26 @@ export default function BillingInfo({
             </TableBody>
           </Table>
         )}
+      </div>
+      <div className="row-span-1 flex justify-between items-center  px-4 py-0 -my-10">
+        <Button
+          variant="outline"
+          onClick={handlePrevious}
+          disabled={page === 1}
+        >
+          {t("previous")}
+        </Button>
+        <span>
+          {t("page")} {data?.data.current_page || 1} /{" "}
+          {data?.data.last_page || 1}
+        </span>
+        <Button
+          variant="outline"
+          onClick={handleNext}
+          disabled={page === data?.data.last_page}
+        >
+          {t("next")}
+        </Button>
       </div>
     </Card>
   );

@@ -7,6 +7,7 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface AnalyticsData {
   total_purchases: number;
@@ -17,38 +18,43 @@ interface AnalyticsData {
 }
 
 export default function GeneralStatisticsCards() {
+  const t = useTranslations("common"); // Assuming translations are under "common" namespace
   const { data, error, isLoading } = useSWR<AnalyticsData>(
     "/users/general-analytics",
   );
 
-  if (error) return <div>Failed to load analytics</div>;
-  if (isLoading) return <div>Loading...</div>;
+  if (error)
+    return (
+      <div>{t("GeneralStatisticsCards.Error", "Failed to load analytics")}</div>
+    );
+  if (isLoading)
+    return <div>{t("GeneralStatisticsCards.Loading", "Loading...")}</div>;
 
   const cardData = [
     {
-      title: "Total Purchases",
+      title: t("GeneralStatisticsCards.TotalPurchases"),
       value: data?.total_purchases?.toLocaleString() || "0",
       icon: <ShoppingCart className="h-5 w-5" />,
     },
     {
-      title: "New Customers",
+      title: t("GeneralStatisticsCards.NewCustomers"),
       value: data?.new_customers?.toLocaleString() || "0",
       icon: <UserPlus className="h-5 w-5" />,
     },
     {
-      title: "Registration Requests",
+      title: t("GeneralStatisticsCards.RegistrationRequests"),
       value: data?.registration_requests?.toLocaleString() || "0",
       icon: <Users className="h-5 w-5" />,
     },
     {
-      title: "Total Revenue",
+      title: t("GeneralStatisticsCards.TotalRevenue"),
       value:
         `SYP ${data?.total_revenue?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` ||
         "SYP 0.00",
       icon: <DollarSign className="h-5 w-5" />,
     },
     {
-      title: "Total Customers",
+      title: t("GeneralStatisticsCards.TotalCustomers"),
       value: data?.total_customers?.toLocaleString() || "0",
       icon: <TrendingUp className="h-5 w-5" />,
     },

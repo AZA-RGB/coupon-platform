@@ -1,4 +1,13 @@
 {
+  "common": {
+    "GeneralStatisticsCards": {
+      "TotalPurchases": "Total Purchases",
+      "NewCustomers": "New Customers",
+      "RegistrationRequests": "RegistrationRequests",
+      "TotalRevenue": "Total Revenue",
+      "TotalCustomers": "Total Customers"
+    }
+  },
   "Auth": {
     "providerNotVerifiedDesc": "This provider has not been verified yet",
     "providerNotVerified": "Provider not verified",
@@ -269,9 +278,9 @@
     "redeemedBy": "Redeemed by",
     "close": "Close"
   },
-  
+
   "Coupons": {
-    "edit":"Edit",
+    "edit": "Edit",
     "noCouponFound": "No coupon found with the provided ID.",
     "error": "Error",
     "backToCoupons": "Back to Coupons",
@@ -279,7 +288,6 @@
     "details": "Details",
     "giftCoupon": "Gift Coupon",
     "type": "Type",
-
 
     "averageRating": "Average Rating",
     "addedDate": "Added Date",
@@ -997,17 +1005,21 @@
     "price": "${price}"
   },
   "BillingInfo": {
-    "noCoupon": "No coupon",
+    "noCoupons": "No coupons",
     "price": "Price",
     "title": "Billing Information",
     "exportButton": "Export",
-    "priceFormat": "${price}",
+    "priceFormat": "",
     "tableHeaders": {
       "billId": "Bill ID",
       "coupon": "Coupon",
       "date": "Date",
-      "customers": "Customers"
-    }
+      "customers": "Customers",
+      "provider": "Provider"
+    },
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page"
   },
   "Purchases": {
     "title": "All Purchases",
