@@ -216,7 +216,7 @@ const AddItemDialog = ({ eventId, refreshEvents, t }) => {
                           ))
                         : packages.map((pkg) => (
                             <SelectItem key={pkg.id} value={pkg.id.toString()}>
-                              {pkg.title} ({t("price")}: {pkg.total_price})
+                              {pkg.title}
                             </SelectItem>
                           ))}
                     </SelectContent>

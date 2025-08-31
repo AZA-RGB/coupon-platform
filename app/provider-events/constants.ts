@@ -102,7 +102,7 @@ export const fetchCoupons = async () => {
 export const fetchPackages = async () => {
   try {
     const response = await axios.get(
-      `http://164.92.67.78:3002/api/packages/index?needToken=true`,{
+      `http://164.92.67.78:3002/api/packages/my-packages`,{
           headers: {
             "authorization": `Bearer ${Cookies.get("token")}`,
             "Content-Type": "application/json",
@@ -111,17 +111,17 @@ export const fetchPackages = async () => {
     );
     const { data } = response.data;
 
-    if (!data || !Array.isArray(data.data)) {
+    if (!data || !Array.isArray(data)) {
       console.error("Invalid packages API response structure:", response.data);
       throw new Error(
         "Invalid API response: packages data is missing or not an array"
       );
     }
 
-    return data.data.map((pkg) => ({
+    return data.map((pkg) => ({
       id: pkg.id,
       title: pkg.title || "Unnamed Package",
-      total_price: pkg.total_price.toString() || "0",
+      total_price: "",
     }));
   } catch (error) {
     console.error("Error fetching packages:", error);
